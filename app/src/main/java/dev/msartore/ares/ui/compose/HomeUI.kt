@@ -112,7 +112,7 @@ fun HomeUI(
 
     Column {
         TextAuto(
-            id = R.string.media,
+            id = R.string.file,
             fontSize = 18.sp,
             fontWeight = FontWeight.SemiBold
         )
