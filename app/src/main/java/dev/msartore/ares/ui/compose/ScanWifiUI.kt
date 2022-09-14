@@ -69,7 +69,8 @@ fun ScanWifiUI(
 
                 Column(
                     modifier = Modifier
-                        .weight(5f),
+                        .weight(5f)
+                        .padding(vertical = 16.dp),
                     verticalArrangement = Arrangement.SpaceAround,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

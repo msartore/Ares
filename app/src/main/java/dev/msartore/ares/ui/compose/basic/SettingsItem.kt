@@ -57,13 +57,15 @@ fun SettingsItem(
             overflow = Ellipsis,
         )
 
-        Row(
-            modifier = Modifier
-                .weight(3f)
-                .wrapContentSize(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            content?.invoke()
+        if (content != null) {
+            Row(
+                modifier = Modifier
+                    .weight(3f)
+                    .wrapContentSize(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                content.invoke()
+            }
         }
     }
 }

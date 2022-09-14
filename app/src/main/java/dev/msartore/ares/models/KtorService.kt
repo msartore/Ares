@@ -2,15 +2,14 @@ package dev.msartore.ares.models
 
 import android.app.*
 import android.content.Intent
-import android.os.IBinder
 import androidx.compose.runtime.mutableStateOf
 import dev.msartore.ares.MainActivity
 import dev.msartore.ares.R
 import dev.msartore.ares.models.KtorService.KtorServer.CHANNEL_ID
 import dev.msartore.ares.models.KtorService.KtorServer.ONGOING_NOTIFICATION_ID
 import dev.msartore.ares.models.KtorService.KtorServer.PORT
-import dev.msartore.ares.models.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.models.KtorService.KtorServer.concurrentMutableList
+import dev.msartore.ares.models.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.models.KtorService.KtorServer.server
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -36,9 +35,7 @@ class KtorService: Service() {
         var server: ApplicationEngine? = null
     }
 
-    override fun onBind(intent: Intent?): IBinder? {
-        TODO("Not yet implemented")
-    }
+    override fun onBind(intent: Intent?) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 

@@ -23,6 +23,7 @@ fun TextAuto(
     fontWeight: FontWeight? = null,
     textAlign: TextAlign = TextAlign.Start,
     fontSize: TextUnit = 14.sp,
+    maxLines: Int = 2,
     color: Color = if (isDarkTheme.value) Color.White else Color.Black,
     style: TextStyle = LocalTextStyle.current
 ) {
@@ -34,6 +35,7 @@ fun TextAuto(
             fontWeight = fontWeight,
             textAlign = textAlign,
             lineHeight = 17.sp,
+            maxLines = maxLines,
             fontSize = fontSize,
             overflow = TextOverflow.Ellipsis,
             style = style
@@ -47,6 +49,7 @@ fun TextAuto(
             textAlign = textAlign,
             lineHeight = 17.sp,
             fontSize = fontSize,
+            maxLines = maxLines,
             overflow = TextOverflow.Ellipsis,
             style = style
         )

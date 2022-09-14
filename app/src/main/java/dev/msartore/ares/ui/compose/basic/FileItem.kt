@@ -20,7 +20,7 @@ fun FileItem(
 ) {
     Row(
         modifier = Modifier
-            .height(80.dp)
+            .height(120.dp)
             .width(250.dp)
             .background(
                 color = if (fileData.selected.value)

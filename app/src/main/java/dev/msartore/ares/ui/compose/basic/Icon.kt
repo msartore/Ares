@@ -38,7 +38,7 @@ fun Icon(
     id: Int? = null,
     painter: Painter? = null,
     imageVector: ImageVector? = null,
-    shadowEnabled: Boolean = true,
+    shadowEnabled: Boolean = false,
     contentDescription: String? = null,
     onClick: (() -> Unit)? = null,
 ) {
