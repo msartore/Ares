@@ -62,4 +62,7 @@
     <string name="donate">Donate</string>
     <string name="more_about_me">More about me</string>
     <string name="ktor_title">Ktor</string>
+    <string name="privacy_policy">Privacy policy</string>
+    <string name="illustrations_credit">Illustrations by Storyset</string>
+    <string name="media">Media</string>
 </resources>

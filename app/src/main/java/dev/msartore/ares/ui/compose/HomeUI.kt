@@ -1,19 +1,25 @@
 package dev.msartore.ares.ui.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import dev.msartore.ares.MainActivity.MActivity.networkInfo
 import dev.msartore.ares.R
 import dev.msartore.ares.models.KtorService.KtorServer.PORT
@@ -34,10 +40,31 @@ fun HomeUI(
     val state = rememberLazyGridState()
     val scope = rememberCoroutineScope()
 
-    Column {
-        TextAuto(id = R.string.server)
+    Column(
+        modifier = Modifier
+            .background(
+                color = MaterialTheme.colorScheme.secondaryContainer,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(16.dp)
+    ) {
+        TextAuto(
+            id = R.string.server,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold
+        )
 
-        TextAuto(text = "${stringResource(id = R.string.running)}: ${isServerOn.value}")
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row {
+            TextAuto(text = "${stringResource(id = R.string.running)}: ")
+
+            TextAuto(
+                text = isServerOn.value.toString(),
+                color = if (isServerOn.value) Color.Green else Color.Red
+            )
+        }
+
 
         networkInfo.apply {
             TextAuto(
@@ -84,7 +111,13 @@ fun HomeUI(
     )
 
     Column {
-        TextAuto(id = R.string.file)
+        TextAuto(
+            id = R.string.media,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         TextAuto(text = "${stringResource(id = R.string.available)}: ${concurrentMutableList.size.value}" )
 

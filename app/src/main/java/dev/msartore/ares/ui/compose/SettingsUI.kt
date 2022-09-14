@@ -132,6 +132,22 @@ fun SettingsUI(
                         )
 
                         SettingsItem(
+                            title = stringResource(R.string.privacy_policy),
+                            icon = painterResource(id = R.drawable.policy_24px),
+                            onClick = {
+                                openUrl("https://msartore.dev/ares/privacy/")
+                            }
+                        )
+                        
+                        SettingsItem(
+                            title = stringResource(id = R.string.illustrations_credit),
+                            icon = painterResource(id = R.drawable.draw_24px),
+                            onClick = {
+                                openUrl("http://storyset.com/")
+                            }
+                        )
+
+                        SettingsItem(
                             title = stringResource(R.string.contribute),
                             icon = painterResource(id = R.drawable.handshake_24px),
                             onClick = {

@@ -1,5 +1,6 @@
 package dev.msartore.ares.ui.compose
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -10,6 +11,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.MainActivity.MActivity.ipSearchData
@@ -96,8 +98,15 @@ fun ScanWifiUI(
                             }
                         }
                     }
-                    else
+                    else {
+                        Image(
+                            painter = painterResource(id = R.drawable.server_error_rafiki),
+                            contentDescription = stringResource(id = R.string.no_server_found)
+                        )
+
                         TextAuto(id = R.string.no_server_found)
+                    }
+
 
                     if (ipSearchData.isSearching.value == 0)
                         Button(onClick = {
