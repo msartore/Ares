@@ -96,8 +96,16 @@ fun SettingsUI(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         TextAuto(
+                            id = R.string.settings,
+                            style = MaterialTheme.typography.displaySmall,
+                            interactable = true
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        TextAuto(
                             id = R.string.wifi_scan,
-                            style = MaterialTheme.typography.headlineSmall,
+                            style = MaterialTheme.typography.labelLarge,
                             interactable = true
                         )
 
@@ -121,7 +129,7 @@ fun SettingsUI(
 
                         TextAuto(
                             id = R.string.about,
-                            style = MaterialTheme.typography.headlineSmall,
+                            style = MaterialTheme.typography.labelLarge,
                             interactable = true
                         )
 
