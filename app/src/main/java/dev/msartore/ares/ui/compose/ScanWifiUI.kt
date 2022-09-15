@@ -113,7 +113,10 @@ fun ScanWifiUI(
                         Button(onClick = {
                             context.findServers(settings = settings)
                         }) {
-                            TextAuto(id = R.string.scan_network_for_servers)
+                            TextAuto(
+                                id = R.string.scan_network_for_servers,
+                                interactable = true
+                            )
                         }
                 }
         }

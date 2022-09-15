@@ -17,9 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import dev.msartore.ares.MainActivity.MActivity.networkInfo
 import dev.msartore.ares.R
 import dev.msartore.ares.models.KtorService.KtorServer.PORT
@@ -50,8 +48,7 @@ fun HomeUI(
     ) {
         TextAuto(
             id = R.string.server,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold
+            style = MaterialTheme.typography.headlineSmall
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -92,14 +89,20 @@ fun HomeUI(
                     if (isServerOn.value)
                         onStopServerClick()
                 }) {
-                    TextAuto(id = R.string.stop_server)
+                    TextAuto(
+                        id = R.string.stop_server,
+                        interactable = true
+                    )
                 }
             }
             else {
                 networkInfo.apply {
                     if (isNetworkAvailable.value && isWifiNetwork.value)
                         TextButton(onClick = { onStartServerClick() }) {
-                            TextAuto(id = R.string.start_server)
+                            TextAuto(
+                                id = R.string.start_server,
+                                interactable = true
+                            )
                         }
                 }
             }
@@ -113,8 +116,7 @@ fun HomeUI(
     Column {
         TextAuto(
             id = R.string.file,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold
+            style = MaterialTheme.typography.headlineSmall
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -145,7 +147,10 @@ fun HomeUI(
                             concurrentMutableList.removeIf { it.selected.value }
                         }
                     }) {
-                        TextAuto(text = stringResource(id = R.string.delete_selected))
+                        TextAuto(
+                            id = R.string.delete_selected,
+                            interactable = true
+                        )
                     }
 
                 if (concurrentMutableList.size.value > 0) {
@@ -164,13 +169,17 @@ fun HomeUI(
                             if (allSelected)
                                 R.string.unselect_all
                             else
-                                R.string.select_all
+                                R.string.select_all,
+                            interactable = true
                         )
                     }
                 }
 
                 TextButton(onClick = { onImportFilesClick() }) {
-                    TextAuto(id = R.string.import_files)
+                    TextAuto(
+                        id = R.string.import_files,
+                        interactable = true
+                    )
                 }
             }
         }

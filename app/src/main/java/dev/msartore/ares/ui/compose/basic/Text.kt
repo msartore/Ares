@@ -22,9 +22,14 @@ fun TextAuto(
     id: Int? = null,
     fontWeight: FontWeight? = null,
     textAlign: TextAlign = TextAlign.Start,
-    fontSize: TextUnit = 14.sp,
+    fontSize: TextUnit = TextUnit.Unspecified,
     maxLines: Int = 2,
-    color: Color = if (isDarkTheme.value) Color.White else Color.Black,
+    interactable: Boolean = false,
+    color: Color =
+        if (interactable)
+            Color.Unspecified
+        else
+            if (isDarkTheme.value) Color.White else Color.Black,
     style: TextStyle = LocalTextStyle.current
 ) {
     if (id != null)

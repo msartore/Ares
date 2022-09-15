@@ -15,7 +15,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -49,12 +48,11 @@ fun SettingsItem(
             contentDescription = title,
         )
 
-        Text(
+        TextAuto(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .weight(5f),
             text = title,
-            overflow = Ellipsis,
         )
 
         if (content != null) {

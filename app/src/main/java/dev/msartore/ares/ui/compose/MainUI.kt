@@ -44,9 +44,24 @@ fun MainUI(
                         icon = {
                             Icon(
                                 id = when(item) {
-                                    MainPages.HOME -> R.drawable.home_24px
-                                    MainPages.SCAN_WIFI -> R.drawable.search_24px
-                                    else -> R.drawable.settings_24px
+                                    MainPages.HOME -> {
+                                        if (selectedItem.value == item)
+                                            R.drawable.home_filled_24px
+                                        else
+                                            R.drawable.home_24px
+                                    }
+                                    MainPages.SCAN_WIFI -> {
+                                        if (selectedItem.value == item)
+                                            R.drawable.wifi_find_filled_24px
+                                        else
+                                            R.drawable.wifi_find_24px
+                                    }
+                                    else -> {
+                                        if (selectedItem.value == item)
+                                            R.drawable.settings_filled_24px
+                                        else
+                                            R.drawable.settings_24px
+                                    }
                                 },
                                 contentDescription = stringResource(id = item.stringId)
                             )
@@ -57,7 +72,8 @@ fun MainUI(
                                     MainPages.HOME -> R.string.home
                                     MainPages.SCAN_WIFI -> R.string.wifi_scan
                                     else -> R.string.settings
-                                }
+                                },
+                                interactable = true
                             )
                         },
                         selected = selectedItem.value == item,

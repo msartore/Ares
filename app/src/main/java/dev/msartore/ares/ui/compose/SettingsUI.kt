@@ -96,8 +96,9 @@ fun SettingsUI(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         TextAuto(
-                            id = R.string.app,
-                            style = MaterialTheme.typography.bodySmall
+                            id = R.string.wifi_scan,
+                            style = MaterialTheme.typography.headlineSmall,
+                            interactable = true
                         )
 
                         SettingsItemSwitch(
@@ -120,7 +121,8 @@ fun SettingsUI(
 
                         TextAuto(
                             id = R.string.about,
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.headlineSmall,
+                            interactable = true
                         )
 
                         SettingsItem(
