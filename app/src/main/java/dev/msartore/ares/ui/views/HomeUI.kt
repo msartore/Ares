@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.MainActivity.MActivity.networkInfo
 import dev.msartore.ares.R
@@ -137,50 +138,72 @@ fun HomeUI(
                     strokeWidth = 2.dp
                 )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(100.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                userScrollEnabled = false,
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+                verticalArrangement = Arrangement.Center
             ) {
-                if (concurrentMutableList.list.any { it.selected.value })
-                    TextButton(onClick = {
-                        scope.launch {
-                            concurrentMutableList.removeIf { it.selected.value }
+                item {
+                    if (concurrentMutableList.list.any { it.selected.value })
+                        TextButton(
+                            modifier = Modifier.wrapContentWidth(),
+                            onClick = {
+                                scope.launch {
+                                    concurrentMutableList.removeIf { it.selected.value }
+                                }
+                            }
+                        ) {
+                            TextAuto(
+                                id = R.string.delete_selected,
+                                textAlign = TextAlign.Center,
+                                interactable = true
+                            )
                         }
-                    }) {
-                        TextAuto(
-                            id = R.string.delete_selected,
-                            interactable = true
-                        )
-                    }
+                }
 
-                if (concurrentMutableList.size.value > 0) {
-                    val allSelected =concurrentMutableList.list.all { it.selected.value }
+                item {
+                    if (concurrentMutableList.size.value > 0) {
+                        val allSelected =concurrentMutableList.list.all { it.selected.value }
 
-                    TextButton(onClick = {
-                        scope.launch {
-                            if (allSelected)
-                                concurrentMutableList.list.forEach { it.selected.value = false }
-                            else
-                                concurrentMutableList.list.forEach { it.selected.value = true }
+                        TextButton(
+                            modifier = Modifier.wrapContentWidth(),
+                            onClick = {
+                                scope.launch {
+                                    if (allSelected)
+                                        concurrentMutableList.list.forEach { it.selected.value = false }
+                                    else
+                                        concurrentMutableList.list.forEach { it.selected.value = true }
+                                }
+                            }
+                        ) {
+                            TextAuto(
+                                id =
+                                if (allSelected)
+                                    R.string.unselect_all
+                                else
+                                    R.string.select_all,
+                                textAlign = TextAlign.Center,
+                                interactable = true
+                            )
                         }
-                    }) {
-                        TextAuto(
-                            id =
-                            if (allSelected)
-                                R.string.unselect_all
-                            else
-                                R.string.select_all,
-                            interactable = true
-                        )
                     }
                 }
 
-                TextButton(onClick = { onImportFilesClick() }) {
-                    TextAuto(
-                        id = R.string.import_files,
-                        interactable = true
-                    )
+                item {
+                    TextButton(
+                        modifier = Modifier.wrapContentWidth(),
+                        onClick = { onImportFilesClick() }
+                    ) {
+                        TextAuto(
+                            id = R.string.import_files,
+                            textAlign = TextAlign.Center,
+                            interactable = true
+                        )
+                    }
                 }
             }
         }

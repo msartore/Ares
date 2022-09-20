@@ -93,7 +93,7 @@ fun ScanWifiUI(
                                 ) {
                                     IPItem(
                                         IP = ipSearchData.ipList.list.elementAt(it).ip,
-                                        url = "http://${ipSearchData.ipList.list.elementAt(it)}:$PORT",
+                                        url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$PORT",
                                         openUrl = openUrl
                                     ) {
                                         selectedItem.value = ScanWifiPages.SERVER
