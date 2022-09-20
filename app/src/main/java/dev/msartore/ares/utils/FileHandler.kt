@@ -3,9 +3,15 @@ package dev.msartore.ares.utils
 import android.content.ContentResolver
 import android.database.Cursor
 import android.net.Uri
+import android.provider.MediaStore
 import android.provider.OpenableColumns
+import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonPrimitive
 import dev.msartore.ares.R
 import dev.msartore.ares.models.FileData
+import dev.msartore.ares.models.FileDataJson
+import dev.msartore.ares.models.FileType
 import java.util.*
 
 fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
@@ -23,19 +29,19 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
                 return null
 
             val displayName: String = it.getString(index)
-
+            val typeIndex =  it.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
             val sizeIndex: Int = it.getColumnIndex(OpenableColumns.SIZE)
-            val displaySize = it.getInt(sizeIndex)
 
             fileData.apply {
-                size = displaySize
+                size = it.getInt(sizeIndex)
                 name = displayName
                 fileType = fileType(displayName.lowercase(Locale.ROOT))
+                mimeType = it.getString(typeIndex)
                 icon = when (fileType) {
                     FileType.VIDEO -> R.drawable.video_file_24px
                     FileType.IMAGE -> R.drawable.image_24px
                     FileType.DOCUMENT -> R.drawable.description_24px
-                    FileType.ZIP -> R.drawable.folder_zip_24px
+                    FileType.COMPRESSED_ARCHIVE -> R.drawable.folder_zip_24px
                     FileType.APK -> R.drawable.apk_document_24px
                     else -> R.drawable.draft_24px
                 }
@@ -48,11 +54,11 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
 
 fun fileType(name: String): FileType {
     return when {
-        name.contains(listOf("mp4", "mkv", "webm", "3gp")) -> FileType.VIDEO
-        name.contains(listOf("jpg", "png", "raw", "psd", "bmp", "jpeg", "gif", "dng", "tiff")) -> FileType.IMAGE
-        name.contains(listOf("pdf", "txt", "docs")) -> FileType.DOCUMENT
+        name.contains(listOf("mp4", "wav", "mpg", "mpeg", "mp4", "3gp", "3gpp", "mkv", "avi")) -> FileType.VIDEO
+        name.contains(listOf("jpg", "png", "jpeg", "gif", "bmp", "wbmp", "webp")) -> FileType.IMAGE
+        name.contains(listOf("pdf", "txt", "html", "htm")) -> FileType.DOCUMENT
         name.contains(listOf("apk")) -> FileType.APK
-        name.contains(listOf("zip")) -> FileType.ZIP
+        name.contains(listOf("zip", "rar", "tar")) -> FileType.COMPRESSED_ARCHIVE
         else -> FileType.UNKNOWN
     }
 }
@@ -60,11 +66,33 @@ fun fileType(name: String): FileType {
 fun String.contains(collection: Collection<String>) =
     collection.any { this.contains(it) }
 
-enum class FileType {
-    VIDEO,
-    IMAGE,
-    DOCUMENT,
-    ZIP,
-    APK,
-    UNKNOWN
+fun Int.printableSize() =
+    when(this) {
+        in 0..10000 -> "${(this)/1}B"
+        in 10000..1000000 -> "%.2f".format((this)/1000.0) + "KB"
+        in 1000000..100000000 -> "%.2f".format((this)/1000000.0) + "MB"
+        else -> "%.2f".format((this)/100000000.0) + "GB"
+    }
+
+fun FileData.toFileDataJson(index: Int?) =
+    FileDataJson(
+        name = this.name,
+        size = this.size,
+        fileType = this.fileType,
+        mimeType = mimeType,
+        icon = this.icon,
+        index = index
+    )
+
+fun FileDataJson.toJson(): String =
+    Gson().toJson(this)
+
+fun Collection<FileDataJson>.toJsonArray(): JsonArray {
+    val array = JsonArray()
+
+    this.forEach {
+        array.add(JsonPrimitive(it.toJson()))
+    }
+
+    return array
 }

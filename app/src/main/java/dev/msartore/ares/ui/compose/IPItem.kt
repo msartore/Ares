@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.compose.basic
+package dev.msartore.ares.ui.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,7 +17,8 @@ import dev.msartore.ares.R
 fun IPItem(
     IP: String,
     url: String,
-    openUrl: (String) -> Unit
+    openUrl: (String) -> Unit,
+    serverSelected: () -> Unit
 ) {
 
     Row(
@@ -30,7 +31,7 @@ fun IPItem(
             )
             .clip(RoundedCornerShape(16.dp))
             .clickable {
-                openUrl(url)
+                serverSelected()
             }
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,

@@ -1,5 +1,6 @@
 package dev.msartore.ares
 
+import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
@@ -16,16 +17,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.datastore.preferences.preferencesDataStore
+import dev.msartore.ares.MainActivity.MActivity.client
 import dev.msartore.ares.MainActivity.MActivity.dataStore
+import dev.msartore.ares.MainActivity.MActivity.downloadManager
 import dev.msartore.ares.MainActivity.MActivity.isDarkTheme
 import dev.msartore.ares.models.*
-import dev.msartore.ares.models.KtorService.KtorServer.concurrentMutableList
-import dev.msartore.ares.ui.compose.MainUI
+import dev.msartore.ares.server.KtorService
+import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.ui.theme.AresTheme
+import dev.msartore.ares.ui.views.MainUI
 import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.extractFileInformation
 import dev.msartore.ares.utils.findServers
 import dev.msartore.ares.utils.work
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -38,6 +45,10 @@ class MainActivity : ComponentActivity() {
         val isDarkTheme = mutableStateOf(false)
         val networkInfo = NetworkInfo()
         val ipSearchData = IPSearchData()
+        val client: HttpClient = HttpClient(CIO) {
+            install(HttpTimeout)
+        }
+        var downloadManager: DownloadManager? = null
     }
 
     private var service: Intent? = null
@@ -50,6 +61,7 @@ class MainActivity : ComponentActivity() {
 
         service = Intent(this, KtorService::class.java)
         connectivityManager = getSystemService(ConnectivityManager::class.java)
+        downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
         networkCallback = NetworkCallback(
             onNetworkLost = {
                 stopService(service)
@@ -147,16 +159,9 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-
-        work {
-            settings?.save()
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
+        client.close()
         networkCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
     }
 }

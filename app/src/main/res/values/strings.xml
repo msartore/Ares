@@ -15,7 +15,7 @@
     <string name="notification_message">Running…</string>
     <string name="ticker_text">server notification</string>
     <string name="channel_description">This notification is used to keep the server alive in the background</string>
-    <string name="channel_name">"Server "</string>
+    <string name="channel_name">Server Service</string>
     <string name="download">Download</string>
     <string name="ip_address">IP Address</string>
     <string name="wrong_network">You must use a local area network</string>
@@ -40,7 +40,7 @@
     <string name="server_found">Server found</string>
     <string name="scan_network_for_servers">Scan network for servers</string>
     <string name="find_servers_start_app">Find servers during app start up</string>
-    <string name="no_ip_availables">No IP available</string>
+    <string name="no_ip_available">No IP available</string>
     <string name="ip_timeout">IP timeout</string>
     <string name="no_server_found">No server found</string>
     <string name="wifi_scan">Wifi scan</string>
@@ -49,7 +49,7 @@
     <string name="apache_license" translatable="false">"\n\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at\n\nhttp://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License."</string>
     <string name="kotlin_title" translatable="false">Kotlin (programming language)</string>
     <string name="kotlin_descriptionTitle" translatable="false">Copyright 2010–2020 JetBrains s.r.o. and Kotlin Programming Language contributors.</string>
-    <string name="accompanist_title" translatable="false">Accompanist (system ui controller and appcompact theme adapter )</string>
+    <string name="accompanist_title" translatable="false">Accompanist (System UI Controller, App Compact Theme Adapter and Swipe Refresh )</string>
     <string name="accompanist_descriptionTitle" translatable="false">"Copyright 2020 The Android Open Source Project "</string>
     <string name="ares_description" translatable="false">Copyright © 2022 Massimiliano Sartore\n\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/</string>
     <string name="third_party_licenses">Third party licenses</string>
@@ -65,4 +65,8 @@
     <string name="privacy_policy">Privacy policy</string>
     <string name="illustrations_credit">Illustrations by Storyset</string>
     <string name="media">Media</string>
+    <string name="download_description">Downloading: </string>
+    <string name="ktor_descriptionTitle" translatable="false">Copyright 2000–2022 JetBrains s.r.o.</string>
+    <string name="gson_title" translatable="false">Gson</string>
+    <string name="gson_descriptionTitle" translatable="false">Copyright 2008 Google Inc.</string>
 </resources>

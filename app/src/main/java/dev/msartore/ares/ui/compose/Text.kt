@@ -1,5 +1,4 @@
-
-package dev.msartore.ares.ui.compose.basic
+package dev.msartore.ares.ui.compose
 
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text

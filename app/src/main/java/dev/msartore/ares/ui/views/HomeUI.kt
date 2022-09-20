@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.compose
+package dev.msartore.ares.ui.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,11 +20,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.MainActivity.MActivity.networkInfo
 import dev.msartore.ares.R
-import dev.msartore.ares.models.KtorService.KtorServer.PORT
-import dev.msartore.ares.models.KtorService.KtorServer.concurrentMutableList
-import dev.msartore.ares.models.KtorService.KtorServer.isServerOn
-import dev.msartore.ares.ui.compose.basic.FileItem
-import dev.msartore.ares.ui.compose.basic.TextAuto
+import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
+import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
+import dev.msartore.ares.ui.compose.FileItem
+import dev.msartore.ares.ui.compose.TextAuto
 import kotlinx.coroutines.launch
 
 @Composable
@@ -40,6 +40,7 @@ fun HomeUI(
 
     Column(
         modifier = Modifier
+            .padding(top = 16.dp)
             .background(
                 color = MaterialTheme.colorScheme.secondaryContainer,
                 shape = RoundedCornerShape(16.dp)

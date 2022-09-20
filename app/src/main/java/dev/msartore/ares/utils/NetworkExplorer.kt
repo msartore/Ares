@@ -5,10 +5,9 @@ import android.widget.Toast
 import dev.msartore.ares.MainActivity.MActivity.ipSearchData
 import dev.msartore.ares.MainActivity.MActivity.networkInfo
 import dev.msartore.ares.R
-import dev.msartore.ares.models.KtorService
-import dev.msartore.ares.models.KtorService.KtorServer.PORT
+import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import dev.msartore.ares.server.ServerInfo
 import dev.msartore.ares.models.Settings
-import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 
@@ -45,7 +44,7 @@ fun Context.findServers(
                                 runCatching {
                                     val client = Socket()
                                     client.connect(InetSocketAddress(ip, PORT), settings?.ipTimeout?.value ?: 150)
-                                        ipSearchData.ipList.add(firstThree + i)
+                                        ipSearchData.ipList.add(ServerInfo(ip = firstThree + i))
                                 }
                         }
 

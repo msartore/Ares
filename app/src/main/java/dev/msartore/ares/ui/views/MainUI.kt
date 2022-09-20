@@ -1,24 +1,23 @@
-package dev.msartore.ares.ui.compose
+package dev.msartore.ares.ui.views
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import dev.msartore.ares.MainActivity
 import dev.msartore.ares.R
 import dev.msartore.ares.models.Settings
-import dev.msartore.ares.ui.compose.basic.Icon
-import dev.msartore.ares.ui.compose.basic.TextAuto
+import dev.msartore.ares.ui.compose.Icon
+import dev.msartore.ares.ui.compose.SnackBar
+import dev.msartore.ares.ui.compose.TextAuto
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -33,7 +32,7 @@ fun MainUI(
 
     val selectedItem = remember { mutableStateOf(MainPages.HOME) }
     val items = listOf(MainPages.HOME, MainPages.SCAN_WIFI, MainPages.SETTINGS)
-    val transition = updateTransition(selectedItem.value, label = "")
+    val transition = updateTransition(selectedItem.value, label = selectedItem.value.name)
 
     Scaffold(
         modifier = Modifier.fillMaxHeight(),
@@ -73,7 +72,8 @@ fun MainUI(
                                     MainPages.SCAN_WIFI -> R.string.wifi_scan
                                     else -> R.string.settings
                                 },
-                                interactable = true
+                                interactable = true,
+                                style = MaterialTheme.typography.labelLarge
                             )
                         },
                         selected = selectedItem.value == item,
@@ -87,36 +87,70 @@ fun MainUI(
         }
     ) { paddingV ->
 
-        transition.AnimatedContent(
+        val scope = rememberCoroutineScope()
+
+        Box(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(
-                    top = 16.dp,
+                    top = paddingV.calculateTopPadding(),
                     start = 16.dp,
                     end = 16.dp,
                     bottom = paddingV.calculateBottomPadding()
                 )
         ) {
-            Column {
-                when(it) {
-                    MainPages.HOME -> {
-                        HomeUI(
-                            isLoading = isLoading,
-                            onImportFilesClick = onImportFilesClick,
-                            onStartServerClick = onStartServerClick,
-                            onStopServerClick = onStopServerClick
-                        )
+            transition.AnimatedContent {
+                Column {
+                    when(it) {
+                        MainPages.HOME -> {
+                            HomeUI(
+                                isLoading = isLoading,
+                                onImportFilesClick = onImportFilesClick,
+                                onStartServerClick = onStartServerClick,
+                                onStopServerClick = onStopServerClick
+                            )
+                        }
+                        MainPages.SCAN_WIFI -> {
+                            ScanWifiUI(
+                                settings = settings,
+                                openUrl = openUrl,
+                            )
+                        }
+                        MainPages.SETTINGS -> {
+                            SettingsUI(
+                                openUrl = openUrl,
+                                settings = settings
+                            )
+                        }
                     }
-                    MainPages.SCAN_WIFI -> {
-                        ScanWifiUI(
-                            settings = settings,
-                            openUrl = openUrl,
-                        )
+                }
+            }
+
+            SnackBar(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp),
+                visible = MainActivity.MActivity.ipSearchData.isSearching.value != 0
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        TextAuto(id = R.string.scanning_servers)
+
+                        TextAuto(text = "${stringResource(id = R.string.ip_left_check)}: ${MainActivity.MActivity.ipSearchData.ipLeft.value}")
                     }
-                    MainPages.SETTINGS -> {
-                        SettingsUI(
-                            openUrl = openUrl,
-                            settings = settings
-                        )
+
+                    Icon(
+                        id = R.drawable.cancel_24px
+                    ) {
+                        scope.launch {
+                            MainActivity.MActivity.ipSearchData.job.cancelAndJoin()
+                            MainActivity.MActivity.ipSearchData.isSearching.value = 0
+                        }
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.compose.basic
+package dev.msartore.ares.ui.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -72,7 +72,8 @@ fun SettingsItem(
 fun SettingsItemSwitch(
     title: String,
     icon: Painter,
-    item: MutableState<Boolean>
+    item: MutableState<Boolean>,
+    onClick: (() -> Unit)? = null
 ) {
 
     SettingsItem(
@@ -80,12 +81,14 @@ fun SettingsItemSwitch(
         icon = icon,
         onClick = {
             item.value = !item.value
+            onClick?.invoke()
         }
     ) {
         Switch(
             checked = item.value,
             onCheckedChange = {
                 item.value = it
+                onClick?.invoke()
             }
         )
     }
@@ -96,7 +99,8 @@ fun SettingsItemSwitch(
 fun SettingsItemInput(
     title: String,
     icon: Painter,
-    item: MutableState<Int>
+    item: MutableState<Int>,
+    onClick: (() -> Unit)? = null
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -107,7 +111,10 @@ fun SettingsItemInput(
     ) {
         TextField(
             value = item.value.toString(),
-            onValueChange = { item.value = it.toIntOrNull() ?: 0 },
+            onValueChange = {
+                item.value = it.toIntOrNull() ?: 0
+                onClick?.invoke()
+            },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Done

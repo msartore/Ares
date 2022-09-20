@@ -21,7 +21,7 @@ android {
         versionCode 1
         versionName "1.0"
         resConfigs "en", "it"
-        setProperty("archivesBaseName", "gallery-$versionName")
+        setProperty("archivesBaseName", "ares-$versionName")
         vectorDrawables.useSupportLibrary = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -89,14 +89,20 @@ dependencies {
     // Accompanist
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
     implementation "com.google.accompanist:accompanist-appcompat-theme:$accompanist_version"
+    implementation "com.google.accompanist:accompanist-swiperefresh:$accompanist_version"
 
     // Ktor
     implementation "io.ktor:ktor-server-core:$ktor_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "io.ktor:ktor-server-html-builder:$ktor_version"
+    implementation "io.ktor:ktor-client-core:$ktor_version"
+    implementation "io.ktor:ktor-client-cio:$ktor_version"
 
     // Preferences DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+    // Gson
+    implementation 'com.google.code.gson:gson:2.9.1'
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'

@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.compose
+package dev.msartore.ares.ui.views
 
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -25,11 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.msartore.ares.R
 import dev.msartore.ares.models.Settings
-import dev.msartore.ares.ui.compose.basic.SettingsItem
-import dev.msartore.ares.ui.compose.basic.SettingsItemInput
-import dev.msartore.ares.ui.compose.basic.SettingsItemSwitch
-import dev.msartore.ares.ui.compose.basic.Icon
-import dev.msartore.ares.ui.compose.basic.TextAuto
+import dev.msartore.ares.ui.compose.*
+import dev.msartore.ares.utils.work
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -56,7 +53,6 @@ fun SettingsUI(
             }
     }
 
-
     BackHandler(
         enabled = selectedItem.value == SettingsPages.ABOUT
     ) {
@@ -82,7 +78,8 @@ fun SettingsUI(
 
                     TextAuto(
                         id = R.string.licenses,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.headlineSmall,
                     )
                 }
             }
@@ -96,6 +93,8 @@ fun SettingsUI(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         TextAuto(
+                            modifier = Modifier
+                                .padding(top = 16.dp),
                             id = R.string.settings,
                             style = MaterialTheme.typography.displaySmall,
                             interactable = true
@@ -113,13 +112,17 @@ fun SettingsUI(
                             title = stringResource(id = R.string.find_servers_start_app),
                             icon = painterResource(id = R.drawable.wifi_find_24px),
                             item = settings.findServersAtStart,
-                        )
+                        ) {
+                            work { settings.save() }
+                        }
 
                         SettingsItemInput(
                             title = stringResource(id = R.string.ip_timeout),
                             icon = painterResource(id = R.drawable.timer_24px),
                             item = settings.ipTimeout,
-                        )
+                        ) {
+                            work { settings.save() }
+                        }
 
                         Divider(
                             modifier = Modifier

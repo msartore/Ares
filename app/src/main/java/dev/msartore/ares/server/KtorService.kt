@@ -1,16 +1,21 @@
-package dev.msartore.ares.models
+package dev.msartore.ares.server
 
 import android.app.*
 import android.content.Intent
 import androidx.compose.runtime.mutableStateOf
 import dev.msartore.ares.MainActivity
 import dev.msartore.ares.R
-import dev.msartore.ares.models.KtorService.KtorServer.CHANNEL_ID
-import dev.msartore.ares.models.KtorService.KtorServer.ONGOING_NOTIFICATION_ID
-import dev.msartore.ares.models.KtorService.KtorServer.PORT
-import dev.msartore.ares.models.KtorService.KtorServer.concurrentMutableList
-import dev.msartore.ares.models.KtorService.KtorServer.isServerOn
-import dev.msartore.ares.models.KtorService.KtorServer.server
+import dev.msartore.ares.models.ConcurrentMutableList
+import dev.msartore.ares.models.FileData
+import dev.msartore.ares.server.KtorService.KtorServer.CHANNEL_ID
+import dev.msartore.ares.server.KtorService.KtorServer.ONGOING_NOTIFICATION_ID
+import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
+import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
+import dev.msartore.ares.server.KtorService.KtorServer.server
+import dev.msartore.ares.utils.printableSize
+import dev.msartore.ares.utils.toFileDataJson
+import dev.msartore.ares.utils.toJsonArray
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
@@ -96,6 +101,11 @@ class KtorService: Service() {
                         }
                     }
                 }
+                get("/info") {
+                    call.respond(concurrentMutableList.list.mapIndexed { index, fileData ->
+                        fileData.toFileDataJson(index)
+                    }.toJsonArray().toString())
+                }
                 get("/") {
                     call.respondHtml {
                         head {
@@ -120,7 +130,7 @@ class KtorService: Service() {
                                                 +"${getString(R.string.name)}: ${concurrentMutableList.list.elementAt(i).name}"
                                             }
                                             dd {
-                                                +"${getString(R.string.size)}: ${"%.2f".format((concurrentMutableList.list.elementAt(i).size ?: 1)/1000000.0)}MB"
+                                                +"${getString(R.string.size)}: ${(concurrentMutableList.list.elementAt(i).size?:1).printableSize()}"
                                             }
                                             dd {
                                                 a(href = "/$i") {
