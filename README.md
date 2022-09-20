@@ -16,7 +16,7 @@ A tool to help you transfer files via local network
 
 ## License
 
-Ares is released under the [GNU General Public License v3.0](LICENSE).
+Ares is released under the [GNU General Public License v3.0](LICENSE.md).
 
 ```
 Copyright (C) 2022  Massimiliano Sartore
