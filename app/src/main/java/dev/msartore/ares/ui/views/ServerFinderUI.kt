@@ -25,38 +25,38 @@ import androidx.compose.ui.unit.dp
 import dev.msartore.ares.MainActivity.MActivity.ipSearchData
 import dev.msartore.ares.MainActivity.MActivity.networkInfo
 import dev.msartore.ares.R
+import dev.msartore.ares.models.Settings
 import dev.msartore.ares.server.KtorService.KtorServer.PORT
 import dev.msartore.ares.server.ServerInfo
-import dev.msartore.ares.models.Settings
 import dev.msartore.ares.ui.compose.IPItem
 import dev.msartore.ares.ui.compose.Icon
-import dev.msartore.ares.utils.findServers
 import dev.msartore.ares.ui.compose.TextAuto
+import dev.msartore.ares.utils.findServers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ScanWifiUI(
+fun ServerFinderUI(
     settings: Settings,
     openUrl: (String) -> Unit
 ) {
 
     val state = rememberLazyGridState()
     val context = LocalContext.current
-    val selectedItem = remember { mutableStateOf(ScanWifiPages.SCAN_WIFI) }
+    val selectedItem = remember { mutableStateOf(ServerFinderPages.SCAN_WIFI) }
     val transition = updateTransition(selectedItem.value, label = selectedItem.value.name)
     val serverSelected = remember { mutableStateOf<ServerInfo?>(null) }
     val scope = rememberCoroutineScope()
     val backAction = {
         scope.launch {
-            selectedItem.value = ScanWifiPages.SCAN_WIFI
+            selectedItem.value = ServerFinderPages.SCAN_WIFI
             delay(200)
             serverSelected.value = null
         }
     }
 
-    BackHandler(selectedItem.value == ScanWifiPages.SERVER) {
+    BackHandler(selectedItem.value == ServerFinderPages.SERVER) {
         backAction()
     }
 
@@ -66,7 +66,7 @@ fun ScanWifiUI(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (it) {
-                ScanWifiPages.SCAN_WIFI -> if (networkInfo.isNetworkAvailable.value && networkInfo.isWifiNetwork.value) {
+                ServerFinderPages.SCAN_WIFI -> if (networkInfo.isNetworkAvailable.value && networkInfo.isWifiNetwork.value) {
 
                     Column(
                         modifier = Modifier
@@ -76,46 +76,61 @@ fun ScanWifiUI(
                     ) {
                         if (ipSearchData.ipList.list.isNotEmpty()) {
 
-                            TextAuto(id = R.string.servers)
-
-                            LazyVerticalGrid(
-                                modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .weight(9f),
-                                columns = GridCells.Adaptive(250.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                state = state
+                            Column(
+                                modifier = Modifier.weight(8f),
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                items(
-                                    count = ipSearchData.ipList.size.value,
-                                    key = { ipSearchData.ipList.list.elementAt(it).hashCode() }
+                                TextAuto(id = R.string.servers)
+
+                                LazyVerticalGrid(
+                                    modifier = Modifier
+                                        .padding(top = 16.dp),
+                                    columns = GridCells.Adaptive(250.dp),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    state = state
                                 ) {
-                                    IPItem(
-                                        IP = ipSearchData.ipList.list.elementAt(it).ip,
-                                        url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$PORT",
-                                        openUrl = openUrl
+                                    items(
+                                        count = ipSearchData.ipList.size.value,
+                                        key = { ipSearchData.ipList.list.elementAt(it).hashCode() }
                                     ) {
-                                        selectedItem.value = ScanWifiPages.SERVER
-                                        serverSelected.value = ipSearchData.ipList.list.elementAt(it)
+                                        IPItem(
+                                            IP = ipSearchData.ipList.list.elementAt(it).ip,
+                                            url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$PORT",
+                                            openUrl = openUrl
+                                        ) {
+                                            selectedItem.value = ServerFinderPages.SERVER
+                                            serverSelected.value = ipSearchData.ipList.list.elementAt(it)
+                                        }
                                     }
                                 }
                             }
                         }
                         else {
-                            Image(
-                                painter = painterResource(id = R.drawable.server_error_rafiki),
-                                contentDescription = stringResource(id = R.string.no_server_found)
-                            )
+                            Column(
+                                modifier = Modifier.weight(9f, false),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    modifier = Modifier.weight(9f, false),
+                                    painter = painterResource(id = R.drawable.server_error_rafiki),
+                                    contentDescription = stringResource(id = R.string.no_server_found)
+                                )
 
-                            TextAuto(id = R.string.no_server_found)
+                                TextAuto(
+                                    modifier = Modifier.weight(1f, false),
+                                    id = R.string.no_server_found
+                                )
+                            }
                         }
 
 
                         if (ipSearchData.isSearching.value == 0)
-                            Button(onClick = {
-                                context.findServers(settings = settings)
-                            }) {
+                            Button(
+                                modifier = Modifier.weight(2f, false),
+                                onClick = { context.findServers(settings = settings) }
+                            ) {
                                 TextAuto(
                                     id = R.string.scan_network_for_servers,
                                     interactable = true
@@ -123,7 +138,7 @@ fun ScanWifiUI(
                             }
                     }
                 }
-                ScanWifiPages.SERVER -> {
+                ServerFinderPages.SERVER -> {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -151,7 +166,7 @@ fun ScanWifiUI(
     }
 }
 
-enum class ScanWifiPages {
+enum class ServerFinderPages {
     SCAN_WIFI,
     SERVER
 }

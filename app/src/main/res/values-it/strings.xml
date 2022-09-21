@@ -61,4 +61,8 @@
     <string name="illustrations_credit">Illustrazioni di Storyset</string>
     <string name="media">Media</string>
     <string name="download_description">Scaricando:</string>
+    <string name="error_during_connection">Errore durante la connessione</string>
+    <string name="error_during_connection_try_again">Errore durante la connessione, riprova!</string>
+    <string name="refresh">Aggiorna</string>
+    <string name="server_finder">Ricerca server</string>
 </resources>

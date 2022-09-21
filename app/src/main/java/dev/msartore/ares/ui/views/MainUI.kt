@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.MainActivity
 import dev.msartore.ares.R
@@ -16,6 +17,7 @@ import dev.msartore.ares.models.Settings
 import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.SnackBar
 import dev.msartore.ares.ui.compose.TextAuto
+import dev.msartore.ares.utils.isWideView
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 
@@ -29,74 +31,58 @@ fun MainUI(
     onStartServerClick: () -> Unit,
     onStopServerClick: () -> Unit
 ) {
-
     val selectedItem = remember { mutableStateOf(MainPages.HOME) }
-    val items = listOf(MainPages.HOME, MainPages.SCAN_WIFI, MainPages.SETTINGS)
+    val items = remember { listOf(MainPages.HOME, MainPages.SERVER_FINDER, MainPages.SETTINGS) }
     val transition = updateTransition(selectedItem.value, label = selectedItem.value.name)
-
-    Scaffold(
-        modifier = Modifier.fillMaxHeight(),
-        bottomBar = {
-            NavigationBar {
-                items.forEach { item ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(
-                                id = when(item) {
-                                    MainPages.HOME -> {
-                                        if (selectedItem.value == item)
-                                            R.drawable.home_filled_24px
-                                        else
-                                            R.drawable.home_24px
-                                    }
-                                    MainPages.SCAN_WIFI -> {
-                                        if (selectedItem.value == item)
-                                            R.drawable.wifi_find_filled_24px
-                                        else
-                                            R.drawable.wifi_find_24px
-                                    }
-                                    else -> {
-                                        if (selectedItem.value == item)
-                                            R.drawable.settings_filled_24px
-                                        else
-                                            R.drawable.settings_24px
-                                    }
-                                },
-                                contentDescription = stringResource(id = item.stringId)
-                            )
-                        },
-                        label = {
-                            TextAuto(
-                                id = when(item) {
-                                    MainPages.HOME -> R.string.home
-                                    MainPages.SCAN_WIFI -> R.string.wifi_scan
-                                    else -> R.string.settings
-                                },
-                                interactable = true,
-                                style = MaterialTheme.typography.labelLarge
-                            )
-                        },
-                        selected = selectedItem.value == item,
-                        onClick = {
-                            if (selectedItem.value != item)
-                                selectedItem.value = item
-                        }
-                    )
+    val icon: @Composable (MainPages) -> Unit = {
+        Icon(
+            id = when(it) {
+                MainPages.HOME -> {
+                    if (selectedItem.value == it)
+                        R.drawable.home_filled_24px
+                    else
+                        R.drawable.home_24px
                 }
-            }
-        }
-    ) { paddingV ->
+                MainPages.SERVER_FINDER -> {
+                    if (selectedItem.value == it)
+                        R.drawable.wifi_find_filled_24px
+                    else
+                        R.drawable.wifi_find_24px
+                }
+                else -> {
+                    if (selectedItem.value == it)
+                        R.drawable.settings_filled_24px
+                    else
+                        R.drawable.settings_24px
+                }
+            },
+            contentDescription = stringResource(id = it.stringId)
+        )
+    }
+    val label: @Composable (MainPages) -> Unit = {
+        TextAuto(
+            id = it.stringId,
+            interactable = true,
+            style = MaterialTheme.typography.labelLarge
+        )
+    }
+    val onClick: (MainPages) -> Unit = { page ->
 
+        if (selectedItem.value != page)
+            selectedItem.value = page
+    }
+    var maxWidth: Dp? = null
+    val mainUI: @Composable (PaddingValues?) -> Unit = {
         val scope = rememberCoroutineScope()
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    top = paddingV.calculateTopPadding(),
+                    top = 16.dp,
                     start = 16.dp,
                     end = 16.dp,
-                    bottom = paddingV.calculateBottomPadding()
+                    bottom = it?.calculateBottomPadding() ?: 16.dp
                 )
         ) {
             transition.AnimatedContent {
@@ -104,20 +90,22 @@ fun MainUI(
                     when(it) {
                         MainPages.HOME -> {
                             HomeUI(
+                                maxWidth = maxWidth,
                                 isLoading = isLoading,
                                 onImportFilesClick = onImportFilesClick,
                                 onStartServerClick = onStartServerClick,
                                 onStopServerClick = onStopServerClick
                             )
                         }
-                        MainPages.SCAN_WIFI -> {
-                            ScanWifiUI(
+                        MainPages.SERVER_FINDER -> {
+                            ServerFinderUI(
                                 settings = settings,
                                 openUrl = openUrl,
                             )
                         }
                         MainPages.SETTINGS -> {
                             SettingsUI(
+                                maxWidth = maxWidth,
                                 openUrl = openUrl,
                                 settings = settings
                             )
@@ -156,10 +144,53 @@ fun MainUI(
             }
         }
     }
+
+    BoxWithConstraints {
+
+        maxWidth = this.maxWidth
+
+        if (maxWidth?.isWideView() == true)
+            Row {
+                NavigationRail(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .wrapContentWidth()
+                ) {
+                    items.forEach { item ->
+                        NavigationRailItem(
+                            icon = { icon(item) },
+                            label = { label(item) },
+                            onClick = { onClick(item) },
+                            selected = selectedItem.value == item
+                        )
+                    }
+                }
+
+                mainUI(null)
+            }
+        else
+            Scaffold(
+                modifier = Modifier.fillMaxHeight(),
+                bottomBar = {
+                    NavigationBar {
+                        items.forEach { item ->
+                            NavigationBarItem(
+                                icon = { icon(item) },
+                                label = { label(item) },
+                                onClick = { onClick(item) },
+                                selected = selectedItem.value == item
+                            )
+                        }
+                    }
+                }
+            ) {
+                mainUI(it)
+            }
+    }
 }
 
 enum class MainPages(val stringId: Int) {
     HOME(R.string.home),
-    SCAN_WIFI(R.string.find_devices),
+    SERVER_FINDER(R.string.server_finder),
     SETTINGS(R.string.settings)
 }

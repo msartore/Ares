@@ -21,28 +21,28 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.msartore.ares.R
 import dev.msartore.ares.models.Settings
 import dev.msartore.ares.ui.compose.*
+import dev.msartore.ares.utils.isWideView
 import dev.msartore.ares.utils.work
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SettingsUI(
+    maxWidth: Dp?,
     openUrl: (String) -> Unit,
     settings: Settings
 ) {
-
-    val scrollState = rememberScrollState()
     var info: PackageInfo?
     val selectedItem = remember { mutableStateOf(SettingsPages.SETTINGS) }
     val transition = updateTransition(selectedItem.value, label = "")
     val backAction = {
         selectedItem.value = SettingsPages.SETTINGS
     }
-
     LocalContext.current.apply {
         info =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -51,6 +51,114 @@ fun SettingsUI(
                 @Suppress("DEPRECATION")
                 packageManager.getPackageInfo(packageName, 0)
             }
+    }
+    val settingsUIContent1: @Composable () -> Unit = {
+        TextAuto(
+            modifier = Modifier
+                .padding(top = 16.dp),
+            id = R.string.settings,
+            style = MaterialTheme.typography.displaySmall,
+            interactable = true
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TextAuto(
+            id = R.string.wifi_scan,
+            style = MaterialTheme.typography.labelLarge,
+            interactable = true
+        )
+
+        SettingsItemSwitch(
+            title = stringResource(id = R.string.find_servers_start_app),
+            icon = painterResource(id = R.drawable.wifi_find_24px),
+            item = settings.findServersAtStart,
+        ) {
+            work { settings.save() }
+        }
+
+        SettingsItemInput(
+            title = stringResource(id = R.string.ip_timeout),
+            icon = painterResource(id = R.drawable.timer_24px),
+            item = settings.ipTimeout,
+        ) {
+            work { settings.save() }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            SettingsItemSwitch(
+                title = stringResource(id = R.string.material_you),
+                icon = painterResource(id = R.drawable.palette_24px),
+                item = settings.isMaterialYouEnabled,
+            ) {
+                work { settings.save() }
+            }
+    }
+    val settingsUIContent2: @Composable () -> Unit = {
+        TextAuto(
+            id = R.string.about,
+            style = MaterialTheme.typography.labelLarge,
+            interactable = true
+        )
+
+        SettingsItem(
+            title = stringResource(R.string.licenses),
+            icon = painterResource(id = R.drawable.description_24px),
+            onClick = {
+                selectedItem.value = SettingsPages.ABOUT
+            }
+        )
+
+        SettingsItem(
+            title = stringResource(R.string.privacy_policy),
+            icon = painterResource(id = R.drawable.policy_24px),
+            onClick = {
+                openUrl("https://msartore.dev/ares/privacy/")
+            }
+        )
+
+        SettingsItem(
+            title = stringResource(id = R.string.illustrations_credit),
+            icon = painterResource(id = R.drawable.draw_24px),
+            onClick = {
+                openUrl("http://storyset.com/")
+            }
+        )
+
+        SettingsItem(
+            title = stringResource(R.string.contribute),
+            icon = painterResource(id = R.drawable.handshake_24px),
+            onClick = {
+                openUrl("https://github.com/msartore/Ares")
+            }
+        )
+
+        SettingsItem(
+            title = stringResource(R.string.donate),
+            icon = painterResource(id = R.drawable.volunteer_activism_24px),
+            onClick = {
+                openUrl("https://msartore.dev/donation/")
+            }
+        )
+
+        SettingsItem(
+            title = stringResource(R.string.more_about_me),
+            icon = painterResource(id = R.drawable.favorite_24px),
+            onClick = {
+                openUrl("https://msartore.dev/#projects")
+            }
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            TextAuto(
+                text = "Ares v${info?.versionName}",
+                fontSize = 10.sp
+            )
+        }
     }
 
     BackHandler(
@@ -62,141 +170,97 @@ fun SettingsUI(
     transition.AnimatedContent {
         Column {
 
-            if (it == SettingsPages.ABOUT) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.arrow_back_24px),
-                        contentDescription = stringResource(id = R.string.back),
-                    ) {
-                        backAction()
-                    }
-
-                    TextAuto(
-                        id = R.string.licenses,
-                        fontWeight = FontWeight.SemiBold,
-                        style = MaterialTheme.typography.headlineSmall,
-                    )
-                }
-            }
-
-            when(it) {
-                SettingsPages.SETTINGS -> {
+            if (maxWidth?.isWideView() == true) {
+                Row {
+                    val scrollState1 = rememberScrollState()
+                    val scrollState2 = rememberScrollState()
 
                     Column(
-                        modifier = Modifier
-                            .verticalScroll(scrollState),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        Modifier
+                            .weight(1f)
+                            .verticalScroll(scrollState1)
                     ) {
-                        TextAuto(
-                            modifier = Modifier
-                                .padding(top = 16.dp),
-                            id = R.string.settings,
-                            style = MaterialTheme.typography.displaySmall,
-                            interactable = true
-                        )
-                        
-                        Spacer(modifier = Modifier.height(8.dp))
+                        settingsUIContent1()
+                    }
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .verticalScroll(scrollState2)
+                    ) {
+                        if (it == SettingsPages.ABOUT) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.arrow_back_24px),
+                                    contentDescription = stringResource(id = R.string.back),
+                                ) {
+                                    backAction()
+                                }
 
-                        TextAuto(
-                            id = R.string.wifi_scan,
-                            style = MaterialTheme.typography.labelLarge,
-                            interactable = true
-                        )
-
-                        SettingsItemSwitch(
-                            title = stringResource(id = R.string.find_servers_start_app),
-                            icon = painterResource(id = R.drawable.wifi_find_24px),
-                            item = settings.findServersAtStart,
-                        ) {
-                            work { settings.save() }
+                                TextAuto(
+                                    id = R.string.licenses,
+                                    fontWeight = FontWeight.SemiBold,
+                                    style = MaterialTheme.typography.headlineSmall,
+                                )
+                            }
                         }
 
-                        SettingsItemInput(
-                            title = stringResource(id = R.string.ip_timeout),
-                            icon = painterResource(id = R.drawable.timer_24px),
-                            item = settings.ipTimeout,
-                        ) {
-                            work { settings.save() }
-                        }
-
-                        Divider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp)
-                        )
-
-                        TextAuto(
-                            id = R.string.about,
-                            style = MaterialTheme.typography.labelLarge,
-                            interactable = true
-                        )
-
-                        SettingsItem(
-                            title = stringResource(R.string.licenses),
-                            icon = painterResource(id = R.drawable.description_24px),
-                            onClick = {
-                                selectedItem.value = SettingsPages.ABOUT
+                        when(it) {
+                            SettingsPages.SETTINGS -> {
+                                settingsUIContent2()
                             }
-                        )
-
-                        SettingsItem(
-                            title = stringResource(R.string.privacy_policy),
-                            icon = painterResource(id = R.drawable.policy_24px),
-                            onClick = {
-                                openUrl("https://msartore.dev/ares/privacy/")
-                            }
-                        )
-                        
-                        SettingsItem(
-                            title = stringResource(id = R.string.illustrations_credit),
-                            icon = painterResource(id = R.drawable.draw_24px),
-                            onClick = {
-                                openUrl("http://storyset.com/")
-                            }
-                        )
-
-                        SettingsItem(
-                            title = stringResource(R.string.contribute),
-                            icon = painterResource(id = R.drawable.handshake_24px),
-                            onClick = {
-                                openUrl("https://github.com/msartore/Ares")
-                            }
-                        )
-
-                        SettingsItem(
-                            title = stringResource(R.string.donate),
-                            icon = painterResource(id = R.drawable.volunteer_activism_24px),
-                            onClick = {
-                                openUrl("https://msartore.dev/donation/")
-                            }
-                        )
-
-                        SettingsItem(
-                            title = stringResource(R.string.more_about_me),
-                            icon = painterResource(id = R.drawable.favorite_24px),
-                            onClick = {
-                                openUrl("https://msartore.dev/#projects")
-                            }
-                        )
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            TextAuto(
-                                text = "Ares v${info?.versionName}",
-                                fontSize = 10.sp
-                            )
+                            SettingsPages.ABOUT -> LicenseUI()
                         }
                     }
                 }
-                SettingsPages.ABOUT -> LicenseUI()
+            }
+            else {
+                val scrollState = rememberScrollState()
+
+                if (it == SettingsPages.ABOUT) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_back_24px),
+                            contentDescription = stringResource(id = R.string.back),
+                        ) {
+                            backAction()
+                        }
+
+                        TextAuto(
+                            id = R.string.licenses,
+                            fontWeight = FontWeight.SemiBold,
+                            style = MaterialTheme.typography.headlineSmall,
+                        )
+                    }
+                }
+
+                when(it) {
+                    SettingsPages.SETTINGS -> {
+                        Column(
+                            modifier = Modifier
+                                .verticalScroll(scrollState),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            settingsUIContent1()
+
+                            Divider(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 16.dp)
+                            )
+
+                            settingsUIContent2()
+                        }
+                    }
+                    SettingsPages.ABOUT -> LicenseUI()
+                }
             }
         }
     }

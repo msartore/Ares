@@ -69,4 +69,9 @@
     <string name="ktor_descriptionTitle" translatable="false">Copyright 2000–2022 JetBrains s.r.o.</string>
     <string name="gson_title" translatable="false">Gson</string>
     <string name="gson_descriptionTitle" translatable="false">Copyright 2008 Google Inc.</string>
+    <string name="error_during_connection">Error during connection</string>
+    <string name="error_during_connection_try_again">Error during connection, try again!</string>
+    <string name="refresh">Refresh</string>
+    <string name="server_finder">Server finder</string>
+    <string name="material_you" translatable="false">Material You</string>
 </resources>

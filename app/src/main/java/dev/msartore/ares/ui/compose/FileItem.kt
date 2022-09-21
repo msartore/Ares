@@ -83,7 +83,7 @@ fun FileItem(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier.weight(10F, false),
+            modifier = Modifier.weight(9F, false),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
@@ -101,7 +101,7 @@ fun FileItem(
         }
 
         Row(
-            modifier = Modifier.weight(1.5F, false),
+            modifier = Modifier.weight(2F, false),
         ) {
             content?.invoke()
         }

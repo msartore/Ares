@@ -42,18 +42,19 @@ fun SettingsItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Icon(
-            modifier = Modifier.weight(1f, false),
-            painter = icon,
-            contentDescription = title,
-        )
+        Row(modifier = Modifier.weight(5f)) {
+            Icon(
+                painter = icon,
+                contentDescription = title,
+            )
 
-        TextAuto(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .weight(5f),
-            text = title,
-        )
+            TextAuto(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp),
+                text = title,
+                maxLines = Int.MAX_VALUE
+            )
+        }
 
         if (content != null) {
             Row(

@@ -1,21 +1,12 @@
 package dev.msartore.ares.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.SideEffect
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.ViewCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dev.msartore.ares.models.Settings
 
 private val LightThemeColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -76,20 +67,20 @@ private val DarkThemeColors = darkColorScheme(
 @Composable
 fun AresTheme(
     isDarkTheme: MutableState<Boolean>,
+    settings: Settings?,
     changeStatusBarColor: MutableState<() -> Unit>,
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val darkTheme = isSystemInDarkTheme()
     val systemUiController = rememberSystemUiController()
+
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+        settings?.isMaterialYouEnabled?.value == true && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
+        settings?.isMaterialYouEnabled?.value == true && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
         darkTheme -> DarkThemeColors
         else -> LightThemeColors
     }
+
 
     changeStatusBarColor.value = {
         systemUiController.setSystemBarsColor(

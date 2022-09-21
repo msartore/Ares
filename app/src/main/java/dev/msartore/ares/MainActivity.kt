@@ -21,7 +21,10 @@ import dev.msartore.ares.MainActivity.MActivity.client
 import dev.msartore.ares.MainActivity.MActivity.dataStore
 import dev.msartore.ares.MainActivity.MActivity.downloadManager
 import dev.msartore.ares.MainActivity.MActivity.isDarkTheme
-import dev.msartore.ares.models.*
+import dev.msartore.ares.models.IPSearchData
+import dev.msartore.ares.models.NetworkCallback
+import dev.msartore.ares.models.NetworkInfo
+import dev.msartore.ares.models.Settings
 import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.ui.theme.AresTheme
@@ -102,7 +105,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
         val openUrl: (String) -> Unit = {
             runCatching {
                 startActivity(
@@ -135,6 +137,7 @@ class MainActivity : ComponentActivity() {
             AresTheme(
                 changeStatusBarColor = resetStatusBarColor,
                 isDarkTheme = isDarkTheme,
+                settings = settings
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),

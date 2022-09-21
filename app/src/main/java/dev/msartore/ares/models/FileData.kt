@@ -17,6 +17,7 @@ data class FileData(
     var icon: Int? = null,
 )
 
+@Keep
 data class FileDataJson(
     var name: String? = null,
     var size: Int? = null,
