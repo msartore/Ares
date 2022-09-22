@@ -68,10 +68,10 @@ fun String.contains(collection: Collection<String>) =
 
 fun Int.printableSize() =
     when(this) {
-        in 0..10000 -> "${(this)/1}B"
-        in 10000..1000000 -> "%.2f".format((this)/1000.0) + "KB"
-        in 1000000..1000000000 -> "%.2f".format((this)/1000000.0) + "MB"
-        else -> "%.2f".format((this)/1000000000.0) + "GB"
+        in 0..10000 -> "${this/1}B"
+        in 10000..1000000 -> "%.2f".format(this/1000.0) + "KB"
+        in 1000000..1000000000 -> "%.2f".format(this/1000000.0) + "MB"
+        else -> "%.2f".format(this/1000000000.0) + "GB"
     }
 
 fun FileData.toFileDataJson(index: Int?) =

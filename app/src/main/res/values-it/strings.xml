@@ -65,4 +65,11 @@
     <string name="error_during_connection_try_again">Errore durante la connessione, riprova!</string>
     <string name="refresh">Aggiorna</string>
     <string name="server_finder">Ricerca server</string>
+    <string name="cancel">Annulla</string>
+    <string name="confirm">Conferma</string>
+    <string name="permission_request">Richiesta di permesso</string>
+    <string name="permission_request_text">Questa app deve disporre dell\'autorizzazione per inviarti notifiche. Si prega di concedere il permesso.</string>
+    <string name="permission_rejected">Autorizzazione rifiutata</string>
+    <string name="permission_rejected_text">Autorizzazione notifiche negata. Per favore, concedici l\'accesso alla schermata Impostazioni.</string>
+    <string name="open_settings">Apri le impostazioni</string>
 </resources>

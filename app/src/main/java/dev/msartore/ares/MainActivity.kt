@@ -17,6 +17,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.MultiplePermissionsState
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dev.msartore.ares.MainActivity.MActivity.client
 import dev.msartore.ares.MainActivity.MActivity.dataStore
 import dev.msartore.ares.MainActivity.MActivity.downloadManager
@@ -29,9 +32,11 @@ import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.ui.theme.AresTheme
 import dev.msartore.ares.ui.views.MainUI
+import dev.msartore.ares.utils.Permissions
 import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.extractFileInformation
 import dev.msartore.ares.utils.findServers
+import dev.msartore.ares.utils.getRightPermissions
 import dev.msartore.ares.utils.work
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -59,6 +64,7 @@ class MainActivity : ComponentActivity() {
     private var networkCallback: NetworkCallback? = null
     private var settings: Settings? = null
 
+    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,6 +78,10 @@ class MainActivity : ComponentActivity() {
         )
 
         val isLoading = mutableStateOf(false)
+        var fileAndMediaPermissionState: MultiplePermissionsState? = null
+        val getContentPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (fileAndMediaPermissionState?.allPermissionsGranted == false) finishAffinity()
+        }
         val getContent = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
 
             val listFileSizeB = concurrentMutableList.size.value
@@ -116,6 +126,10 @@ class MainActivity : ComponentActivity() {
                 it.printStackTrace()
             }
         }
+        val intentSettings = Intent(
+            android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", packageName, null)
+        )
 
         settings = Settings(dataStore)
 
@@ -133,6 +147,7 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             val resetStatusBarColor = remember { mutableStateOf({}) }
+            fileAndMediaPermissionState = rememberMultiplePermissionsState(permissions = getRightPermissions())
 
             AresTheme(
                 changeStatusBarColor = resetStatusBarColor,
@@ -143,18 +158,30 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainUI(
-                        settings = settings!!,
-                        isLoading = isLoading,
-                        openUrl = openUrl,
-                        onImportFilesClick = {
-                            getContent.launch(arrayOf("*/*"))
+
+                    Permissions(
+                        fileAndMediaPermissionState = fileAndMediaPermissionState,
+                        navigateToSettingsScreen = {
+                            getContentPermission.launch(intentSettings)
                         },
-                        onStartServerClick = {
-                            startForegroundService(service)
+                        onPermissionDenied = {
+                            finishAffinity()
                         },
-                        onStopServerClick = {
-                            stopService(service)
+                        onPermissionGranted = {
+                            MainUI(
+                                settings = settings!!,
+                                isLoading = isLoading,
+                                openUrl = openUrl,
+                                onImportFilesClick = {
+                                    getContent.launch(arrayOf("*/*"))
+                                },
+                                onStartServerClick = {
+                                    startForegroundService(service)
+                                },
+                                onStopServerClick = {
+                                    stopService(service)
+                                }
+                            )
                         }
                     )
                 }
