@@ -41,7 +41,7 @@ fun TransferDialog(
                 LinearProgressIndicator(progress = progress.value)
             else
                 LinearProgressIndicator()
-            
+
             Icon(
                 id = R.drawable.cancel_24px,
                 contentDescription = stringResource(id = R.string.cancel)
