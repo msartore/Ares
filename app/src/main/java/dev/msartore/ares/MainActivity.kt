@@ -1,33 +1,29 @@
 package dev.msartore.ares
 
+import android.Manifest
 import android.app.DownloadManager
-import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.datastore.preferences.preferencesDataStore
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import dev.msartore.ares.MainActivity.MActivity.client
-import dev.msartore.ares.MainActivity.MActivity.dataStore
-import dev.msartore.ares.MainActivity.MActivity.downloadManager
-import dev.msartore.ares.MainActivity.MActivity.isDarkTheme
-import dev.msartore.ares.models.IPSearchData
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import dev.msartore.ares.models.NetworkCallback
-import dev.msartore.ares.models.NetworkInfo
-import dev.msartore.ares.models.Settings
 import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.ui.theme.AresTheme
@@ -36,59 +32,36 @@ import dev.msartore.ares.utils.Permissions
 import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.extractFileInformation
 import dev.msartore.ares.utils.findServers
-import dev.msartore.ares.utils.getRightPermissions
 import dev.msartore.ares.utils.work
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.*
+import dev.msartore.ares.viewmodels.HomeViewModel
+import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.viewmodels.ServerFinderViewModel
+import dev.msartore.ares.viewmodels.SettingsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+@ExperimentalGetImage
 class MainActivity : ComponentActivity() {
-
-    object MActivity {
-        val Context.dataStore by preferencesDataStore(
-            name = "user_preferences_settings"
-        )
-        val isDarkTheme = mutableStateOf(false)
-        val networkInfo = NetworkInfo()
-        val ipSearchData = IPSearchData()
-        val client: HttpClient = HttpClient(CIO) {
-            install(HttpTimeout)
-        }
-        var downloadManager: DownloadManager? = null
-    }
 
     private var service: Intent? = null
     private var connectivityManager: ConnectivityManager? = null
     private var networkCallback: NetworkCallback? = null
-    private var settings: Settings? = null
+    private val mainViewModel: MainViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
+    private val serverFinderViewModel: ServerFinderViewModel by viewModels()
 
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        service = Intent(this, KtorService::class.java)
-        connectivityManager = getSystemService(ConnectivityManager::class.java)
-        downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
-        networkCallback = NetworkCallback(
-            onNetworkLost = {
-                stopService(service)
-            }
-        )
-
-        val isLoading = mutableStateOf(false)
-        var fileAndMediaPermissionState: MultiplePermissionsState? = null
-        val getContentPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (fileAndMediaPermissionState?.allPermissionsGranted == false) finishAffinity()
-        }
         val getContent = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
 
             val listFileSizeB = concurrentMutableList.size.value
 
             work {
                 if (!uris.isNullOrEmpty()) {
-                    isLoading.value = true
+                    homeViewModel.isLoading.value = true
 
                     concurrentMutableList.apply {
                         addAll(
@@ -111,76 +84,104 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                    isLoading.value = false
+                    homeViewModel.isLoading.value = false
                 }
             }
         }
-        val openUrl: (String) -> Unit = {
-            runCatching {
-                startActivity(
-                    Intent(Intent.ACTION_VIEW).apply {
-                        data = Uri.parse(it)
-                    }
-                )
-            }.getOrElse {
-                it.printStackTrace()
-            }
+        var permissionState: MultiplePermissionsState? = null
+        val getContentPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (permissionState?.allPermissionsGranted == false) finishAffinity()
         }
         val intentSettings = Intent(
             android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             Uri.fromParts("package", packageName, null)
         )
+        val navigateToSettingsScreen = {
+            getContentPermission.launch(intentSettings)
+        }
 
-        settings = Settings(dataStore)
+        service = Intent(this, KtorService::class.java)
+        connectivityManager = getSystemService(ConnectivityManager::class.java)
+        networkCallback = NetworkCallback(
+            networkInfo = mainViewModel.networkInfo,
+            onNetworkLost = {
+                stopService(service)
+            }
+        )
 
         cor {
             networkCallback?.let {
                 connectivityManager?.registerDefaultNetworkCallback(it)
             }
+        }
 
-            settings?.update()
+        mainViewModel.apply {
+            startSettings()
+            pm = packageManager
+            onFindServers = { _settings, _networkInfo ->
+                findServers(
+                    _networkInfo,
+                    _settings,
+                    serverFinderViewModel.ipSearchData
+                )
+            }
+            downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
+            onOpenUrl = { url ->
+                runCatching {
+                    startActivity(
+                        Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(url)
+                        }
+                    )
+                }.getOrElse {
+                    it.printStackTrace()
+                }
+            }
+        }
 
-            if (settings?.findServersAtStart?.value == true)
-                findServers(settings)
+        settingsViewModel.onOpenThirdLicenses = {
+            startActivity(Intent(applicationContext, OssLicensesMenuActivity::class.java))
+        }
+
+        homeViewModel.apply {
+            onImportFiles = {
+                getContent.launch(arrayOf("*/*"))
+            }
+            onStopServer = {
+                stopService(service)
+            }
+            onStartServer = {
+                startForegroundService(service)
+            }
         }
 
         setContent {
 
             val resetStatusBarColor = remember { mutableStateOf({}) }
-            fileAndMediaPermissionState = rememberMultiplePermissionsState(permissions = getRightPermissions())
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.POST_NOTIFICATIONS))
 
             AresTheme(
                 changeStatusBarColor = resetStatusBarColor,
-                isDarkTheme = isDarkTheme,
-                settings = settings
+                mainViewModel = mainViewModel
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
                     Permissions(
-                        fileAndMediaPermissionState = fileAndMediaPermissionState,
-                        navigateToSettingsScreen = {
-                            getContentPermission.launch(intentSettings)
-                        },
+                        permissionState = permissionState,
+                        settingsStringId = R.string.notification_permission_rejected_text,
+                        requestStringId = R.string.notification_permission_request_text,
+                        navigateToSettingsScreen = navigateToSettingsScreen,
                         onPermissionDenied = {
                             finishAffinity()
                         },
                         onPermissionGranted = {
                             MainUI(
-                                settings = settings!!,
-                                isLoading = isLoading,
-                                openUrl = openUrl,
-                                onImportFilesClick = {
-                                    getContent.launch(arrayOf("*/*"))
-                                },
-                                onStartServerClick = {
-                                    startForegroundService(service)
-                                },
-                                onStopServerClick = {
-                                    stopService(service)
-                                }
+                                navigateToSettingsScreen = navigateToSettingsScreen,
+                                mainViewModel = mainViewModel
                             )
                         }
                     )
@@ -191,7 +192,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        client.close()
+        mainViewModel.client.close()
         networkCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
     }
 }

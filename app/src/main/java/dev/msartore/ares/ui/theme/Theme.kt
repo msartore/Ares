@@ -1,14 +1,19 @@
 package dev.msartore.ares.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import dev.msartore.ares.models.Settings
+import dev.msartore.ares.utils.cor
+import dev.msartore.ares.viewmodels.MainViewModel
 
-private val LightThemeColors = lightColorScheme(
+private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
     primaryContainer = md_theme_light_primaryContainer,
@@ -34,8 +39,12 @@ private val LightThemeColors = lightColorScheme(
     outline = md_theme_light_outline,
     inverseOnSurface = md_theme_light_inverseOnSurface,
     inverseSurface = md_theme_light_inverseSurface,
+    inversePrimary = md_theme_light_inversePrimary,
+    surfaceTint = md_theme_light_surfaceTint,
 )
-private val DarkThemeColors = darkColorScheme(
+
+
+private val DarkColors = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
     primaryContainer = md_theme_dark_primaryContainer,
@@ -61,13 +70,14 @@ private val DarkThemeColors = darkColorScheme(
     outline = md_theme_dark_outline,
     inverseOnSurface = md_theme_dark_inverseOnSurface,
     inverseSurface = md_theme_dark_inverseSurface,
+    inversePrimary = md_theme_dark_inversePrimary,
+    surfaceTint = md_theme_dark_surfaceTint,
 )
 
 
 @Composable
 fun AresTheme(
-    isDarkTheme: MutableState<Boolean>,
-    settings: Settings?,
+    mainViewModel: MainViewModel,
     changeStatusBarColor: MutableState<() -> Unit>,
     content: @Composable () -> Unit
 ) {
@@ -75,10 +85,12 @@ fun AresTheme(
     val systemUiController = rememberSystemUiController()
 
     val colorScheme = when {
-        settings?.isMaterialYouEnabled?.value == true && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
-        settings?.isMaterialYouEnabled?.value == true && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
-        darkTheme -> DarkThemeColors
-        else -> LightThemeColors
+        mainViewModel.settings?.isMaterialYouEnabled?.value == true && darkTheme ->
+            dynamicDarkColorScheme(LocalContext.current)
+        mainViewModel.settings?.isMaterialYouEnabled?.value == true && !darkTheme ->
+            dynamicLightColorScheme(LocalContext.current)
+        darkTheme -> DarkColors
+        else -> LightColors
     }
 
 
@@ -89,7 +101,7 @@ fun AresTheme(
         )
     }
 
-    isDarkTheme.value = darkTheme
+    cor { mainViewModel.isDarkTheme.emit(darkTheme) }
 
     systemUiController.setSystemBarsColor(
         color = colorScheme.background,

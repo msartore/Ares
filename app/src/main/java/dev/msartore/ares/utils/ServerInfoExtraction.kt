@@ -1,13 +1,18 @@
 package dev.msartore.ares.utils
 
+import androidx.camera.core.ExperimentalGetImage
 import com.google.gson.Gson
-import dev.msartore.ares.MainActivity.MActivity.client
 import dev.msartore.ares.models.FileDataJson
 import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import io.ktor.client.HttpClient
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 
-suspend fun serverInfoExtraction(ip: String): List<FileDataJson>? {
+@ExperimentalGetImage
+suspend fun serverInfoExtraction(
+    ip: String,
+    client: HttpClient
+): List<FileDataJson>? {
 
     val response = client.get("http://$ip:${PORT}/info")
 

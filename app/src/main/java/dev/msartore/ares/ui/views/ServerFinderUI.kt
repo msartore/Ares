@@ -1,16 +1,20 @@
 package dev.msartore.ares.ui.views
 
 import androidx.activity.compose.BackHandler
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,26 +24,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import dev.msartore.ares.MainActivity.MActivity.ipSearchData
-import dev.msartore.ares.MainActivity.MActivity.networkInfo
 import dev.msartore.ares.R
-import dev.msartore.ares.models.Settings
 import dev.msartore.ares.server.KtorService.KtorServer.PORT
 import dev.msartore.ares.server.ServerInfo
 import dev.msartore.ares.ui.compose.IPItem
-import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.utils.findServers
+import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.viewmodels.ServerFinderViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalAnimationApi::class)
+@ExperimentalGetImage
 @Composable
 fun ServerFinderUI(
-    settings: Settings,
-    openUrl: (String) -> Unit
+    mainViewModel: MainViewModel,
+    serverFinderViewModel: ServerFinderViewModel
 ) {
 
     val state = rememberLazyGridState()
@@ -66,7 +68,7 @@ fun ServerFinderUI(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (it) {
-                ServerFinderPages.SCAN_WIFI -> if (networkInfo.isNetworkAvailable.value && networkInfo.isWifiNetwork.value) {
+                ServerFinderPages.SCAN_WIFI -> if (mainViewModel.networkInfo.isNetworkAvailable.value && mainViewModel.networkInfo.isWifiNetwork.value) {
 
                     Column(
                         modifier = Modifier
@@ -74,7 +76,7 @@ fun ServerFinderUI(
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (ipSearchData.ipList.list.isNotEmpty()) {
+                        if (serverFinderViewModel.ipSearchData.ipList.size.value > 0) {
 
                             Column(
                                 modifier = Modifier.weight(8f),
@@ -90,17 +92,21 @@ fun ServerFinderUI(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                                     state = state
                                 ) {
-                                    items(
-                                        count = ipSearchData.ipList.size.value,
-                                        key = { ipSearchData.ipList.list.elementAt(it).hashCode() }
-                                    ) {
-                                        IPItem(
-                                            IP = ipSearchData.ipList.list.elementAt(it).ip,
-                                            url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$PORT",
-                                            openUrl = openUrl
+                                    serverFinderViewModel.apply {
+                                        items(
+                                            count = ipSearchData.ipList.size.value,
+                                            key = { ipSearchData.ipList.list.elementAt(it).hashCode() }
                                         ) {
-                                            selectedItem.value = ServerFinderPages.SERVER
-                                            serverSelected.value = ipSearchData.ipList.list.elementAt(it)
+                                            IPItem(
+                                                IP = ipSearchData.ipList.list.elementAt(it).ip,
+                                                url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$PORT",
+                                                openUrl = { url ->
+                                                    mainViewModel.openUrl(url)
+                                                }
+                                            ) {
+                                                selectedItem.value = ServerFinderPages.SERVER
+                                                serverSelected.value = ipSearchData.ipList.list.elementAt(it)
+                                            }
                                         }
                                     }
                                 }
@@ -125,41 +131,44 @@ fun ServerFinderUI(
                             }
                         }
 
-
-                        if (ipSearchData.isSearching.value == 0)
-                            Button(
-                                modifier = Modifier.weight(2f, false),
-                                onClick = { context.findServers(settings = settings) }
+                        if (serverFinderViewModel.ipSearchData.isSearching.value == 0)
+                            Column(
+                                modifier = Modifier
+                                    .weight(2f, false)
+                                    .fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                TextAuto(
-                                    id = R.string.scan_network_for_servers,
-                                    interactable = true
-                                )
+                                Button(
+                                    onClick = {
+                                        context.findServers(
+                                            settings = mainViewModel.settings,
+                                            networkInfo = mainViewModel.networkInfo,
+                                            ipSearchData = serverFinderViewModel.ipSearchData
+                                        )
+                                    }
+                                ) {
+                                    TextAuto(
+                                        id = R.string.scan_network_for_servers,
+                                    )
+                                }
+                                if (mainViewModel.hasCamera())
+                                    Button(
+                                        onClick = { serverFinderViewModel.scanQRCode() }
+                                    ) {
+                                        TextAuto(
+                                            id = R.string.scan_qrcode,
+                                        )
+                                    }
                             }
                     }
                 }
                 ServerFinderPages.SERVER -> {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.arrow_back_24px),
-                            contentDescription = stringResource(id = R.string.back),
-                        ) {
-                            backAction()
-                        }
-
-                        TextAuto(
-                            text = serverSelected.value?.ip,
-                            fontWeight = FontWeight.SemiBold,
-                            style = MaterialTheme.typography.headlineSmall,
-                        )
-                    }
-
-                    ServerUI(serverInfo = serverSelected.value)
+                    ServerUI(
+                        serverInfo = serverSelected.value,
+                        mainViewModel = mainViewModel,
+                        backAction = backAction
+                    )
                 }
             }
         }

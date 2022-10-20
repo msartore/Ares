@@ -36,7 +36,6 @@ fun LicenseItem(
 
         TextAuto(
             id = titleId,
-            interactable = true
         )
 
         Divider(

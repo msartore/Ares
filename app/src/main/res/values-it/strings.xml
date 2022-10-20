@@ -47,7 +47,7 @@
     <string name="wifi_scan">Scansione WiFi</string>
     <string name="servers">Servers</string>
     <string name="license">Licenza</string>
-    <string name="third_party_licenses">Licenze di terze parti</string>
+    <string name="open_source_licenses">Licenze di terze parti</string>
     <string name="ares_title">Licenza di Ares</string>
     <string name="back">Indietro</string>
     <string name="app">Applicazione</string>
@@ -68,8 +68,13 @@
     <string name="cancel">Annulla</string>
     <string name="confirm">Conferma</string>
     <string name="permission_request">Richiesta di permesso</string>
-    <string name="permission_request_text">Questa app deve disporre dell\'autorizzazione per inviarti notifiche. Si prega di concedere il permesso.</string>
+    <string name="notification_permission_request_text">Questa app deve disporre dell\'autorizzazione per inviarti notifiche. Si prega di concedere il permesso.</string>
     <string name="permission_rejected">Autorizzazione rifiutata</string>
-    <string name="permission_rejected_text">Autorizzazione notifiche negata. Per favore, concedici l\'accesso alla schermata Impostazioni.</string>
+    <string name="notification_permission_rejected_text">Autorizzazione notifiche negata. Per favore, concedici l\'accesso alla schermata Impostazioni.</string>
+    <string name="camera_permission_request_text">Questa app deve avere l\'autorizzazione per accedere alla tua fotocamera per scansionare il codice QR. Si prega di concedere il permesso.</string>
+    <string name="camera_permission_rejected_text">Autorizzazione della fotocamera negata. Per favore, concedici l\'accesso alla schermata Impostazioni.</string>
     <string name="open_settings">Apri le impostazioni</string>
+    <string name="close">Chiudi</string>
+    <string name="scan_qrcode">Scansiona QR code</string>
+    <string name="server_not_found">Server non trovato, prova di nuovo!</string>
 </resources>

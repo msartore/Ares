@@ -1,32 +1,73 @@
 package dev.msartore.ares.server
 
-import android.app.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Intent
+import android.os.Environment
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.mutableStateOf
 import dev.msartore.ares.MainActivity
 import dev.msartore.ares.R
 import dev.msartore.ares.models.ConcurrentMutableList
 import dev.msartore.ares.models.FileData
+import dev.msartore.ares.models.FileTransfer
 import dev.msartore.ares.server.KtorService.KtorServer.CHANNEL_ID
 import dev.msartore.ares.server.KtorService.KtorServer.ONGOING_NOTIFICATION_ID
 import dev.msartore.ares.server.KtorService.KtorServer.PORT
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
+import dev.msartore.ares.server.KtorService.KtorServer.fileTransfer
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.server
 import dev.msartore.ares.utils.printableSize
 import dev.msartore.ares.utils.toFileDataJson
 import dev.msartore.ares.utils.toJsonArray
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.engine.*
-import io.ktor.server.html.*
-import io.ktor.server.netty.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.utils.io.*
-import io.ktor.utils.io.jvm.javaio.*
-import kotlinx.html.*
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.PartData
+import io.ktor.http.content.forEachPart
+import io.ktor.http.content.streamProvider
+import io.ktor.server.application.call
+import io.ktor.server.engine.ApplicationEngine
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.html.respondHtml
+import io.ktor.server.netty.Netty
+import io.ktor.server.request.header
+import io.ktor.server.request.receiveMultipart
+import io.ktor.server.response.header
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondBytesWriter
+import io.ktor.server.response.respondRedirect
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.routing
+import io.ktor.utils.io.consumeEachBufferRange
+import io.ktor.utils.io.jvm.javaio.toByteReadChannel
+import kotlinx.html.ButtonType
+import kotlinx.html.FormEncType
+import kotlinx.html.FormMethod
+import kotlinx.html.InputType
+import kotlinx.html.a
+import kotlinx.html.b
+import kotlinx.html.body
+import kotlinx.html.button
+import kotlinx.html.dd
+import kotlinx.html.div
+import kotlinx.html.dl
+import kotlinx.html.dt
+import kotlinx.html.form
+import kotlinx.html.h2
+import kotlinx.html.head
+import kotlinx.html.input
+import kotlinx.html.li
+import kotlinx.html.ol
+import kotlinx.html.style
+import java.io.File
 
+@ExperimentalGetImage
 class KtorService: Service() {
 
     object KtorServer {
@@ -38,6 +79,7 @@ class KtorService: Service() {
         val isServerOn = mutableStateOf(false)
 
         var server: ApplicationEngine? = null
+        var fileTransfer = FileTransfer()
     }
 
     override fun onBind(intent: Intent?) = null
@@ -106,15 +148,107 @@ class KtorService: Service() {
                         fileData.toFileDataJson(index)
                     }.toJsonArray().toString())
                 }
+                post("/upload") {
+
+                    fileTransfer.pipelineContext = this
+
+                    var fileName: String
+                    var file: File? = null
+                    val multipartData = call.receiveMultipart()
+                    val contentLength = call.request.header(HttpHeaders.ContentLength)
+                    var fileSizeRemaining = 0
+                    var result = false
+
+                    fileTransfer.isActive.value = true
+
+                    runCatching {
+
+                        multipartData.forEachPart { part ->
+
+                            when (part) {
+
+                                is PartData.FileItem -> {
+
+                                    fileName = part.originalFileName as String
+
+                                    file = File("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$fileName")
+
+                                    if (file?.exists() != true) {
+                                        file?.createNewFile()
+
+                                        fileTransfer.apply {
+
+                                            if (name == null) {
+                                                name = fileName
+                                                size = contentLength?.toInt()
+                                            }
+
+                                            file?.outputStream()?.channel.use {
+                                                part.streamProvider().toByteReadChannel().consumeEachBufferRange { buffer, last ->
+
+                                                    it?.write(buffer)
+
+                                                    fileSizeRemaining += buffer.capacity()
+
+                                                    sizeTransferred.value = (fileSizeRemaining/(contentLength?.toFloatOrNull() ?: 1f))
+
+                                                    !last
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    part.dispose()
+                                }
+
+                                else -> {}
+                            }
+                        }
+
+                        result = true
+                    }.getOrElse {
+                        it.printStackTrace()
+                        file?.delete()
+                    }
+
+                    fileTransfer.apply {
+                        isActive.value = false
+                        sizeTransferred.value = 0f
+                    }
+
+                    call.respondRedirect("/?success=$result")
+                }
                 get("/") {
+                    val result = runCatching {
+                        call.parameters["success"]
+                    }.getOrNull()
+
                     call.respondHtml {
                         head {
                             style {
-                                +"a { color:black; } .file { margin:10px; }"
+                                +"a { color:black; } .file { margin:10px; } .form { height: 250px; border: 2px solid white; border-radius: 50px ; background-color: coral; } .form form, .form b { position: relative; left: 5%; top: 25%; }"
                             }
                         }
                         body {
-                            h1 {
+                            div(classes = "form") {
+                                form(
+                                    action = "/upload",
+                                    method = FormMethod.post,
+                                    encType = FormEncType.multipartFormData
+                                ) {
+                                    input(type=InputType.file, name="upload")
+                                    button(name = "upload", type = ButtonType.submit) {
+                                        a {
+                                            +"Upload"
+                                        }
+                                    }
+                                }
+                                if (result != null)
+                                    b {
+                                        +"file sent: $result"
+                                    }
+                            }
+                            h2 {
                                 +getString(
                                     if (concurrentMutableList.list.isEmpty())
                                         R.string.no_file_available

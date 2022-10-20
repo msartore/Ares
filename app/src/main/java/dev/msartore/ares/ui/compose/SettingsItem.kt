@@ -8,6 +8,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -105,16 +107,16 @@ fun SettingsItemInput(
 ) {
 
     val focusManager = LocalFocusManager.current
+    val timeout = remember { mutableStateOf(item.value.toString()) }
 
     SettingsItem(
         title = title,
         icon = icon,
     ) {
         TextField(
-            value = item.value.toString(),
+            value = timeout.value,
             onValueChange = {
-                item.value = it.toIntOrNull() ?: 0
-                onClick?.invoke()
+                timeout.value = it
             },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
@@ -122,6 +124,8 @@ fun SettingsItemInput(
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
+                    item.value = timeout.value.toIntOrNull() ?: 0
+                    onClick?.invoke()
                     focusManager.clearFocus()
                 },
             )

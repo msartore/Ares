@@ -2,17 +2,20 @@ package dev.msartore.ares.utils
 
 import android.content.Context
 import android.widget.Toast
-import dev.msartore.ares.MainActivity.MActivity.ipSearchData
-import dev.msartore.ares.MainActivity.MActivity.networkInfo
+import androidx.camera.core.ExperimentalGetImage
 import dev.msartore.ares.R
+import dev.msartore.ares.models.IPSearchData
+import dev.msartore.ares.models.NetworkInfo
+import dev.msartore.ares.models.Settings
 import dev.msartore.ares.server.KtorService.KtorServer.PORT
 import dev.msartore.ares.server.ServerInfo
-import dev.msartore.ares.models.Settings
 import java.net.InetSocketAddress
 import java.net.Socket
-
+@ExperimentalGetImage
 fun Context.findServers(
-    settings: Settings?
+    settings: Settings?,
+    networkInfo: NetworkInfo,
+    ipSearchData: IPSearchData
 ) {
 
     if (ipSearchData.isSearching.value == 0) {
@@ -42,9 +45,9 @@ fun Context.findServers(
 
                             if (!last.contains(i.toString()))
                                 runCatching {
-                                    val client = Socket()
-                                    client.connect(InetSocketAddress(ip, PORT), settings?.ipTimeout?.value ?: 150)
-                                        ipSearchData.ipList.add(ServerInfo(ip = firstThree + i))
+                                    ip.pingServer(settings)
+
+                                    ipSearchData.ipList.add(ServerInfo(ip = firstThree + i))
                                 }
                         }
 
@@ -57,3 +60,12 @@ fun Context.findServers(
     else
         Toast.makeText(this, getString(R.string.wait_still_searching), Toast.LENGTH_SHORT).show()
 }
+
+fun isValidServerIP(string: String) =
+    string.matches(
+        Regex("^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\$")
+    )
+
+@ExperimentalGetImage
+fun String.pingServer(settings: Settings?, timeout: Int? = settings?.ipTimeout?.value) =
+    Socket().connect(InetSocketAddress(this, PORT), timeout ?: 150)

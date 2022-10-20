@@ -16,3 +16,10 @@ fun work(block: suspend CoroutineScope.() -> Unit) =
             block()
         }
     }
+
+fun main(block: suspend CoroutineScope.() -> Unit) =
+    cor {
+        withContext(Dispatchers.Main) {
+            block()
+        }
+    }

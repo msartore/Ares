@@ -24,18 +24,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.msartore.ares.R
-import dev.msartore.ares.models.Settings
 import dev.msartore.ares.ui.compose.*
 import dev.msartore.ares.utils.isWideView
 import dev.msartore.ares.utils.work
+import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.viewmodels.SettingsViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun SettingsUI(
     maxWidth: Dp?,
-    openUrl: (String) -> Unit,
-    settings: Settings
+    mainViewModel: MainViewModel,
+    settingsViewModel: SettingsViewModel = viewModel()
 ) {
     var info: PackageInfo?
     val selectedItem = remember { mutableStateOf(SettingsPages.SETTINGS) }
@@ -58,7 +60,6 @@ fun SettingsUI(
                 .padding(top = 16.dp),
             id = R.string.settings,
             style = MaterialTheme.typography.displaySmall,
-            interactable = true
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -66,39 +67,39 @@ fun SettingsUI(
         TextAuto(
             id = R.string.wifi_scan,
             style = MaterialTheme.typography.labelLarge,
-            interactable = true
         )
 
-        SettingsItemSwitch(
-            title = stringResource(id = R.string.find_servers_start_app),
-            icon = painterResource(id = R.drawable.wifi_find_24px),
-            item = settings.findServersAtStart,
-        ) {
-            work { settings.save() }
-        }
-
-        SettingsItemInput(
-            title = stringResource(id = R.string.ip_timeout),
-            icon = painterResource(id = R.drawable.timer_24px),
-            item = settings.ipTimeout,
-        ) {
-            work { settings.save() }
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+        mainViewModel.settings?.apply {
             SettingsItemSwitch(
-                title = stringResource(id = R.string.material_you),
-                icon = painterResource(id = R.drawable.palette_24px),
-                item = settings.isMaterialYouEnabled,
+                title = stringResource(id = R.string.find_servers_start_app),
+                icon = painterResource(id = R.drawable.wifi_find_24px),
+                item = findServersAtStart,
             ) {
-                work { settings.save() }
+                work { save() }
             }
+
+            SettingsItemInput(
+                title = stringResource(id = R.string.ip_timeout),
+                icon = painterResource(id = R.drawable.timer_24px),
+                item = ipTimeout,
+            ) {
+                work { save() }
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                SettingsItemSwitch(
+                    title = stringResource(id = R.string.material_you),
+                    icon = painterResource(id = R.drawable.palette_24px),
+                    item = isMaterialYouEnabled,
+                ) {
+                    work { save() }
+                }
+        }
     }
     val settingsUIContent2: @Composable () -> Unit = {
         TextAuto(
             id = R.string.about,
             style = MaterialTheme.typography.labelLarge,
-            interactable = true
         )
 
         SettingsItem(
@@ -110,10 +111,18 @@ fun SettingsUI(
         )
 
         SettingsItem(
+            title = stringResource(R.string.open_source_licenses),
+            icon = painterResource(id = R.drawable.description_24px),
+            onClick = {
+                settingsViewModel.openThirdLicenses()
+            }
+        )
+
+        SettingsItem(
             title = stringResource(R.string.privacy_policy),
             icon = painterResource(id = R.drawable.policy_24px),
             onClick = {
-                openUrl("https://msartore.dev/ares/privacy/")
+                mainViewModel.openUrl("https://msartore.dev/ares/privacy/")
             }
         )
 
@@ -121,7 +130,7 @@ fun SettingsUI(
             title = stringResource(id = R.string.illustrations_credit),
             icon = painterResource(id = R.drawable.draw_24px),
             onClick = {
-                openUrl("http://storyset.com/")
+                mainViewModel.openUrl("http://storyset.com/")
             }
         )
 
@@ -129,7 +138,7 @@ fun SettingsUI(
             title = stringResource(R.string.contribute),
             icon = painterResource(id = R.drawable.handshake_24px),
             onClick = {
-                openUrl("https://github.com/msartore/Ares")
+                mainViewModel.openUrl("https://github.com/msartore/Ares")
             }
         )
 
@@ -137,7 +146,7 @@ fun SettingsUI(
             title = stringResource(R.string.donate),
             icon = painterResource(id = R.drawable.volunteer_activism_24px),
             onClick = {
-                openUrl("https://msartore.dev/donation/")
+                mainViewModel.openUrl("https://msartore.dev/donation/")
             }
         )
 
@@ -145,7 +154,7 @@ fun SettingsUI(
             title = stringResource(R.string.more_about_me),
             icon = painterResource(id = R.drawable.favorite_24px),
             onClick = {
-                openUrl("https://msartore.dev/#projects")
+                mainViewModel.openUrl("https://msartore.dev/#projects")
             }
         )
 

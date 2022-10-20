@@ -1,26 +1,37 @@
 package dev.msartore.ares.ui.views
 
+import androidx.camera.core.ExperimentalGetImage
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.msartore.ares.MainActivity.MActivity.networkInfo
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.msartore.ares.R
 import dev.msartore.ares.server.KtorService.KtorServer.PORT
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
@@ -28,19 +39,21 @@ import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.ui.compose.FileItem
 import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.utils.isWideView
+import dev.msartore.ares.viewmodels.HomeViewModel
+import dev.msartore.ares.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
+@ExperimentalGetImage
 @Composable
 fun HomeUI(
     maxWidth: Dp?,
-    isLoading: MutableState<Boolean>,
-    onImportFilesClick: () -> Unit,
-    onStartServerClick: () -> Unit,
-    onStopServerClick: () -> Unit
+    mainViewModel: MainViewModel,
+    viewModel: HomeViewModel = viewModel()
 ) {
-
     val state = rememberLazyGridState()
     val scope = rememberCoroutineScope()
+    val isLoading = viewModel.isLoading.collectAsState()
+
     val homeUIContent1: @Composable (Modifier) -> Unit = { modifier ->
         Column(
             modifier = modifier,
@@ -54,37 +67,69 @@ fun HomeUI(
                     )
                     .padding(16.dp)
             ) {
-                TextAuto(
-                    id = R.string.server,
-                    style = MaterialTheme.typography.headlineSmall
-                )
+                Column {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        TextAuto(
+                            id = R.string.server,
+                            style = MaterialTheme.typography.headlineSmall
+                        )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row {
-                    TextAuto(text = "${stringResource(id = R.string.running)}: ")
-
-                    TextAuto(
-                        text = isServerOn.value.toString(),
-                        color = if (isServerOn.value) Color.Green else Color.Red
-                    )
-                }
-
-
-                networkInfo.apply {
-                    TextAuto(
-                        text =
-                        when {
-                            isNetworkAvailable.value && isWifiNetwork.value ->
-                                "${stringResource(id = R.string.ip_address)}:" +
-                                        " ${ipAddress.value}" +
-                                        if (isServerOn.value) ":${PORT}" else ""
-                            !isWifiNetwork.value && isNetworkAvailable.value ->
-                                stringResource(id = R.string.wrong_network)
-                            else ->
-                                stringResource(id = R.string.no_network_available)
+                        AnimatedVisibility(visible = isServerOn.value) {
+                            Column {
+                                if (mainViewModel.networkInfo.bitmap.value != null)
+                                    Image(
+                                        modifier = Modifier
+                                            .size(30.dp)
+                                            .background(
+                                                MaterialTheme.colorScheme.onBackground,
+                                                RoundedCornerShape(8.dp)
+                                            )
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .clickable {
+                                                mainViewModel.qrCodeDialog.value = true
+                                            },
+                                        bitmap = mainViewModel.networkInfo.bitmap.value!!,
+                                        contentDescription = "ip"
+                                    )
+                                else
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(50.dp),
+                                    )
+                            }
                         }
-                    )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row {
+                        TextAuto(text = "${stringResource(id = R.string.running)}: ")
+
+                        TextAuto(
+                            text = isServerOn.value.toString(),
+                            color = if (isServerOn.value) Color.Green else Color.Red
+                        )
+                    }
+
+
+                    mainViewModel.networkInfo.apply {
+                        TextAuto(
+                            text =
+                            when {
+                                isNetworkAvailable.value && isWifiNetwork.value ->
+                                    "${stringResource(id = R.string.ip_address)}:" +
+                                            " ${ipAddress.value}" +
+                                            if (isServerOn.value) ":${PORT}" else ""
+                                !isWifiNetwork.value && isNetworkAvailable.value ->
+                                    stringResource(id = R.string.wrong_network)
+                                else ->
+                                    stringResource(id = R.string.no_network_available)
+                            }
+                        )
+                    }
                 }
 
                 Row(
@@ -95,21 +140,19 @@ fun HomeUI(
                     if (isServerOn.value) {
                         TextButton(onClick = {
                             if (isServerOn.value)
-                                onStopServerClick()
+                                viewModel.onStopServerClick()
                         }) {
                             TextAuto(
                                 id = R.string.stop_server,
-                                interactable = true
                             )
                         }
                     }
                     else {
-                        networkInfo.apply {
+                        mainViewModel.networkInfo.apply {
                             if (isNetworkAvailable.value && isWifiNetwork.value)
-                                TextButton(onClick = { onStartServerClick() }) {
+                                TextButton(onClick = { viewModel.onStartServerClick() }) {
                                     TextAuto(
                                         id = R.string.start_server,
-                                        interactable = true
                                     )
                                 }
                         }
@@ -117,7 +160,7 @@ fun HomeUI(
                 }
             }
 
-            Divider()
+            Spacer(modifier = Modifier.height(8.dp))
 
             Column {
                 TextAuto(
@@ -156,7 +199,6 @@ fun HomeUI(
                                 TextAuto(
                                     id = R.string.delete_selected,
                                     textAlign = TextAlign.Center,
-                                    interactable = true
                                 )
                             }
                         if (concurrentMutableList.size.value > 0) {
@@ -179,17 +221,17 @@ fun HomeUI(
                                     else
                                         R.string.select_all,
                                     textAlign = TextAlign.Center,
-                                    interactable = true
                                 )
                             }
                         }
                         TextButton(
-                            onClick = { onImportFilesClick() }
+                            onClick = {
+                                viewModel.onImportFilesClick()
+                            }
                         ) {
                             TextAuto(
                                 id = R.string.import_files,
                                 textAlign = TextAlign.Center,
-                                interactable = true
                             )
                         }
                     }

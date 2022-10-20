@@ -5,13 +5,22 @@ import android.net.LinkProperties
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.TRANSPORT_WIFI
+import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import dev.msartore.ares.MainActivity.MActivity.networkInfo
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import dev.msartore.ares.utils.cor
+import dev.msartore.ares.utils.encodeAsBitmap
+import io.ktor.server.application.ApplicationCall
+import io.ktor.util.pipeline.PipelineContext
 
+@ExperimentalGetImage
 class NetworkCallback(
     val onNetworkLost: () -> Unit,
-    val onNetworkAvailable: (() -> Unit)? = null,
+    private val onNetworkAvailable: (() -> Unit)? = null,
+    val networkInfo: NetworkInfo
 ) : ConnectivityManager.NetworkCallback() {
 
     override fun onAvailable(network: Network) {
@@ -28,7 +37,13 @@ class NetworkCallback(
     override fun onLinkPropertiesChanged(network: Network, linkProperties: LinkProperties) {
         super.onLinkPropertiesChanged(network, linkProperties)
         networkInfo.ipAddress.value = runCatching {
-            findIPV4(linkProperties) ?: ""
+            val ip = findIPV4(linkProperties) ?: ""
+
+            cor {
+                networkInfo.bitmap.value = encodeAsBitmap("http://$ip:$PORT", 500, 500)?.asImageBitmap()
+            }
+
+            ip
         }.getOrElse {
             networkInfo.isNetworkAvailable.value = false
             ""
@@ -57,6 +72,14 @@ class NetworkCallback(
 data class NetworkInfo(
     val isNetworkAvailable: MutableState<Boolean> = mutableStateOf(false),
     val isWifiNetwork: MutableState<Boolean> = mutableStateOf(false),
-    val ipAddress: MutableState<String> = mutableStateOf("")
+    val ipAddress: MutableState<String> = mutableStateOf(""),
+    var bitmap: MutableState<ImageBitmap?> = mutableStateOf(null)
 )
 
+data class FileTransfer(
+    var pipelineContext: PipelineContext<Unit, ApplicationCall>? = null,
+    val isActive: MutableState<Boolean> = mutableStateOf(false),
+    var sizeTransferred: MutableState<Float> = mutableStateOf(0f),
+    var size: Int? = null,
+    var name: String? = null,
+)

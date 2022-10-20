@@ -46,20 +46,17 @@
     <string name="wifi_scan">Wifi scan</string>
     <string name="servers">Servers</string>
     <string name="license">License</string>
-    <string name="apache_license" translatable="false">"\n\nLicensed under the Apache License, Version 2.0 (the \"License\"); you may not use this file except in compliance with the License. You may obtain a copy of the License at\n\nhttp://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \"AS IS\" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License."</string>
-    <string name="kotlin_title" translatable="false">Kotlin (programming language)</string>
-    <string name="kotlin_descriptionTitle" translatable="false">Copyright 2010–2020 JetBrains s.r.o. and Kotlin Programming Language contributors.</string>
-    <string name="accompanist_title" translatable="false">Accompanist (System UI Controller, App Compact Theme Adapter, Swipe Refresh and Permissions)</string>
-    <string name="accompanist_descriptionTitle" translatable="false">"Copyright 2020 The Android Open Source Project "</string>
     <string name="ares_description" translatable="false">Copyright © 2022 Massimiliano Sartore\n\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/</string>
-    <string name="third_party_licenses">Third party licenses</string>
+    <string name="open_source_licenses">Open source licenses</string>
     <string name="ares_title">Ares license</string>
     <string name="back">Back</string>
     <string name="app">App</string>
     <string name="permission_request">Permission request</string>
-    <string name="permission_request_text">This app must have permission to send you notifications. Please grant the permission.</string>
     <string name="permission_rejected">Permission rejected</string>
-    <string name="permission_rejected_text">Notifications permission denied. Please, grant us access to the Settings screen.</string>
+    <string name="notification_permission_request_text">This app must have permission to send you notifications. Please grant the permission.</string>
+    <string name="notification_permission_rejected_text">Notifications permission denied. Please, grant us access to the Settings screen.</string>
+    <string name="camera_permission_request_text">This app must have permission to access your camera to scan the QR code. Please grant the permission.</string>
+    <string name="camera_permission_rejected_text">Camera permission denied. Please, grant us access to the Settings screen.</string>
     <string name="open_settings">Open settings</string>
     <string name="about">About</string>
     <string name="licenses">Licences</string>
@@ -71,9 +68,6 @@
     <string name="illustrations_credit">Illustrations by Storyset</string>
     <string name="media">Media</string>
     <string name="download_description">Downloading: </string>
-    <string name="ktor_descriptionTitle" translatable="false">Copyright 2000–2022 JetBrains s.r.o.</string>
-    <string name="gson_title" translatable="false">Gson</string>
-    <string name="gson_descriptionTitle" translatable="false">Copyright 2008 Google Inc.</string>
     <string name="error_during_connection">Error during connection</string>
     <string name="error_during_connection_try_again">Error during connection, try again!</string>
     <string name="refresh">Refresh</string>
@@ -81,4 +75,7 @@
     <string name="material_you" translatable="false">Material You</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="close">Close</string>
+    <string name="scan_qrcode">Scan QR code</string>
+    <string name="server_not_found">Server not found, try again!</string>
 </resources>

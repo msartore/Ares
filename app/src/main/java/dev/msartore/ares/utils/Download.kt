@@ -24,7 +24,6 @@ fun DownloadManager.downloadFile(url: String, fileName: String, mimeType: String
     return enqueue(request)
 }
 
-
 fun checkStatus(downloadManager: DownloadManager?, downloadReference: Long?): Int {
 
     if (downloadManager == null || downloadReference == null) return 0

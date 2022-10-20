@@ -1,10 +1,18 @@
 buildscript {
     ext {
-        compose_version = '1.3.0-beta03'
+        compose_version = '1.3.0-rc01'
     }
-}// Top-level build file where you can add configuration options common to all sub-projects/modules.
+    repositories {
+        google()
+    }
+    dependencies {
+        classpath 'com.google.android.gms:oss-licenses-plugin:0.10.5'
+    }
+
+}
+
 plugins {
-    id 'com.android.application' version '8.0.0-alpha01' apply false
-    id 'com.android.library' version '8.0.0-alpha01' apply false
+    id 'com.android.application' version '8.0.0-alpha05' apply false
+    id 'com.android.library' version '8.0.0-alpha05' apply false
     id 'org.jetbrains.kotlin.android' version '1.7.0' apply false
 }
