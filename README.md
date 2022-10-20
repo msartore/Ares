@@ -13,6 +13,8 @@ A tool to help you transfer files via local network
 - Easy client access via App or Browser
 - Local server on your device
 - Scan for other servers
+- Scan QR code with Ares or a QR scanner to easy access the server
+- Easy file upload to server from browser
 
 ## License
 
