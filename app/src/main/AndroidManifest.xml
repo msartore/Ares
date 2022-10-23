@@ -13,8 +13,9 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"
-        android:minSdkVersion="33"/>
+    <uses-permission
+        android:name="android.permission.POST_NOTIFICATIONS"
+        android:minSdkVersion="33" />
 
     <application
         android:allowBackup="true"
@@ -26,7 +27,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        tools:targetApi="33">
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
@@ -41,10 +42,10 @@
                 android:value="" />
         </activity>
         <service
-            android:enabled="true"
             android:name=".server.KtorService"
+            android:enabled="true"
             android:exported="false"
-            android:stopWithTask="true"/>
+            android:stopWithTask="true" />
         <activity
             android:name="com.google.android.gms.oss.licenses.OssLicensesMenuActivity"
             android:theme="@style/AppTheme" />

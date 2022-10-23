@@ -39,21 +39,22 @@ fun SettingsUI(
     mainViewModel: MainViewModel,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
-    var info: PackageInfo?
+
+    val context = LocalContext.current
+    @Suppress("DEPRECATION")
+    val info: PackageInfo = remember {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.packageManager.getPackageInfo(context.packageName, PackageManager.PackageInfoFlags.of(0L))
+        } else {
+            context.packageManager.getPackageInfo(context.packageName, 0)
+        }
+    }
     val selectedItem = remember { mutableStateOf(SettingsPages.SETTINGS) }
     val transition = updateTransition(selectedItem.value, label = "")
     val backAction = {
         selectedItem.value = SettingsPages.SETTINGS
     }
-    LocalContext.current.apply {
-        info =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0L))
-            } else {
-                @Suppress("DEPRECATION")
-                packageManager.getPackageInfo(packageName, 0)
-            }
-    }
+
     val settingsUIContent1: @Composable () -> Unit = {
         TextAuto(
             modifier = Modifier
@@ -164,7 +165,7 @@ fun SettingsUI(
             horizontalArrangement = Arrangement.Center
         ) {
             TextAuto(
-                text = "Ares v${info?.versionName}",
+                text = "Ares v${info.versionName}",
                 fontSize = 10.sp
             )
         }
