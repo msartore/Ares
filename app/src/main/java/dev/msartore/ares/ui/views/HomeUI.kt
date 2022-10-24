@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
@@ -50,13 +52,14 @@ fun HomeUI(
     mainViewModel: MainViewModel,
     viewModel: HomeViewModel = viewModel()
 ) {
-    val state = rememberLazyGridState()
+    val lazyGridState = rememberLazyGridState()
     val scope = rememberCoroutineScope()
     val isLoading = viewModel.isLoading.collectAsState()
+    val home1State = rememberScrollState()
 
     val homeUIContent1: @Composable (Modifier) -> Unit = { modifier ->
         Column(
-            modifier = modifier,
+            modifier = modifier.verticalScroll(home1State),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Column(
@@ -190,6 +193,7 @@ fun HomeUI(
                     Row {
                         if (concurrentMutableList.list.any { it.selected.value })
                             TextButton(
+                                modifier = Modifier.weight(1f, false),
                                 onClick = {
                                     scope.launch {
                                         concurrentMutableList.removeIf { it.selected.value }
@@ -205,6 +209,7 @@ fun HomeUI(
                             val allSelected =concurrentMutableList.list.all { it.selected.value }
 
                             TextButton(
+                                modifier = Modifier.weight(1f, false),
                                 onClick = {
                                     scope.launch {
                                         if (allSelected)
@@ -225,6 +230,7 @@ fun HomeUI(
                             }
                         }
                         TextButton(
+                            modifier = Modifier.weight(1f, false),
                             onClick = {
                                 viewModel.onImportFilesClick()
                             }
@@ -245,7 +251,7 @@ fun HomeUI(
             columns = GridCells.Adaptive(200.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            state = state
+            state = lazyGridState
         ) {
             items(
                 count = concurrentMutableList.size.value,

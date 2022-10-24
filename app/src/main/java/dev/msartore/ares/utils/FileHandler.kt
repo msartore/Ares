@@ -1,10 +1,14 @@
 package dev.msartore.ares.utils
 
 import android.content.ContentResolver
+import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.graphics.drawable.toBitmap
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonPrimitive
@@ -12,7 +16,9 @@ import dev.msartore.ares.R
 import dev.msartore.ares.models.FileData
 import dev.msartore.ares.models.FileDataJson
 import dev.msartore.ares.models.FileType
-import java.util.*
+import java.io.ByteArrayOutputStream
+import java.util.Locale
+
 
 fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
 
@@ -96,3 +102,11 @@ fun Collection<FileDataJson>.toJsonArray(): JsonArray {
 
     return array
 }
+
+fun getFile(context: Context, id: Int) =
+    getDrawable(context, id)?.let {
+        val bitmap = it.toBitmap()
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        stream.toByteArray()
+    }

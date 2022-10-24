@@ -21,6 +21,7 @@ import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.fileTransfer
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.server
+import dev.msartore.ares.utils.getFile
 import dev.msartore.ares.utils.printableSize
 import dev.msartore.ares.utils.toFileDataJson
 import dev.msartore.ares.utils.toJsonArray
@@ -39,6 +40,7 @@ import io.ktor.server.request.header
 import io.ktor.server.request.receiveMultipart
 import io.ktor.server.response.header
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondBytes
 import io.ktor.server.response.respondBytesWriter
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
@@ -63,9 +65,12 @@ import kotlinx.html.h2
 import kotlinx.html.head
 import kotlinx.html.input
 import kotlinx.html.li
+import kotlinx.html.link
 import kotlinx.html.ol
 import kotlinx.html.style
+import kotlinx.html.title
 import java.io.File
+
 
 @ExperimentalGetImage
 class KtorService: Service() {
@@ -148,6 +153,11 @@ class KtorService: Service() {
                         fileData.toFileDataJson(index)
                     }.toJsonArray().toString())
                 }
+                get("/favicon.png") {
+                    getFile(applicationContext, R.drawable.logo_ares)?.let { it1 ->
+                        call.respondBytes(it1)
+                    }
+                }
                 post("/upload") {
 
                     fileTransfer.pipelineContext = this
@@ -225,6 +235,8 @@ class KtorService: Service() {
 
                     call.respondHtml {
                         head {
+                            title(content = applicationContext.getString(R.string.ares_title_website))
+                            link(rel = "icon", href = "/favicon.png")
                             style {
                                 +"a { color:black; } .file { margin:10px; } .form { height: 250px; border: 2px solid white; border-radius: 50px ; background-color: coral; } .form form, .form b { position: relative; left: 5%; top: 25%; }"
                             }

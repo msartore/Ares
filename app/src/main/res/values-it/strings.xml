@@ -77,4 +77,5 @@
     <string name="close">Chiudi</string>
     <string name="scan_qrcode">Scansiona QR code</string>
     <string name="server_not_found">Server non trovato, prova di nuovo!</string>
+    <string name="ares_title_website">Ares - Trasferimento file</string>
 </resources>
