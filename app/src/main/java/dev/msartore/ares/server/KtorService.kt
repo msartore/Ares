@@ -21,7 +21,7 @@ import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.fileTransfer
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.server
-import dev.msartore.ares.utils.getFile
+import dev.msartore.ares.utils.getByteArrayFromDrawable
 import dev.msartore.ares.utils.printableSize
 import dev.msartore.ares.utils.toFileDataJson
 import dev.msartore.ares.utils.toJsonArray
@@ -154,7 +154,7 @@ class KtorService: Service() {
                     }.toJsonArray().toString())
                 }
                 get("/favicon.png") {
-                    getFile(applicationContext, R.drawable.logo_ares)?.let { it1 ->
+                    getByteArrayFromDrawable(applicationContext, R.drawable.logo_ares)?.let { it1 ->
                         call.respondBytes(it1)
                     }
                 }

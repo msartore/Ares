@@ -68,101 +68,118 @@ fun ServerFinderUI(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (it) {
-                ServerFinderPages.SCAN_WIFI -> if (mainViewModel.networkInfo.isNetworkAvailable.value && mainViewModel.networkInfo.isWifiNetwork.value) {
-
+                ServerFinderPages.SCAN_WIFI ->
                     Column(
                         modifier = Modifier
                             .padding(vertical = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (serverFinderViewModel.ipSearchData.ipList.size.value > 0) {
+                        if (mainViewModel.networkInfo.isNetworkAvailable.value && mainViewModel.networkInfo.isWifiNetwork.value) {
+                            if (serverFinderViewModel.ipSearchData.ipList.size.value > 0) {
 
-                            Column(
-                                modifier = Modifier.weight(8f),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                TextAuto(id = R.string.servers)
-
-                                LazyVerticalGrid(
-                                    modifier = Modifier
-                                        .padding(top = 16.dp),
-                                    columns = GridCells.Adaptive(250.dp),
-                                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    state = state
+                                Column(
+                                    modifier = Modifier.weight(8f),
+                                    horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
-                                    serverFinderViewModel.apply {
-                                        items(
-                                            count = ipSearchData.ipList.size.value,
-                                            key = { ipSearchData.ipList.list.elementAt(it).hashCode() }
-                                        ) {
-                                            IPItem(
-                                                IP = ipSearchData.ipList.list.elementAt(it).ip,
-                                                url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$PORT",
-                                                openUrl = { url ->
-                                                    mainViewModel.openUrl(url)
-                                                }
+                                    TextAuto(id = R.string.servers)
+
+                                    LazyVerticalGrid(
+                                        modifier = Modifier
+                                            .padding(top = 16.dp),
+                                        columns = GridCells.Adaptive(250.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        state = state
+                                    ) {
+                                        serverFinderViewModel.apply {
+                                            items(
+                                                count = ipSearchData.ipList.size.value,
+                                                key = { ipSearchData.ipList.list.elementAt(it).hashCode() }
                                             ) {
-                                                selectedItem.value = ServerFinderPages.SERVER
-                                                serverSelected.value = ipSearchData.ipList.list.elementAt(it)
+                                                IPItem(
+                                                    IP = ipSearchData.ipList.list.elementAt(it).ip,
+                                                    url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$PORT",
+                                                    openUrl = { url ->
+                                                        mainViewModel.openUrl(url)
+                                                    }
+                                                ) {
+                                                    selectedItem.value = ServerFinderPages.SERVER
+                                                    serverSelected.value = ipSearchData.ipList.list.elementAt(it)
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+                            else {
+                                Column(
+                                    modifier = Modifier.weight(9f, false),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Image(
+                                        modifier = Modifier.weight(9f, false),
+                                        painter = painterResource(id = R.drawable.all_the_data_rafiki),
+                                        contentDescription = stringResource(id = R.string.no_server_found)
+                                    )
+
+                                    TextAuto(
+                                        modifier = Modifier.weight(1f, false),
+                                        id = R.string.no_server_found
+                                    )
+                                }
+                            }
+
+                            if (serverFinderViewModel.ipSearchData.isSearching.value == 0)
+                                Column(
+                                    modifier = Modifier
+                                        .weight(2f, false)
+                                        .fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            context.findServers(
+                                                settings = mainViewModel.settings,
+                                                networkInfo = mainViewModel.networkInfo,
+                                                ipSearchData = serverFinderViewModel.ipSearchData
+                                            )
+                                        }
+                                    ) {
+                                        TextAuto(
+                                            id = R.string.scan_network_for_servers,
+                                        )
+                                    }
+                                    if (mainViewModel.hasCamera())
+                                        Button(
+                                            onClick = { serverFinderViewModel.scanQRCode() }
+                                        ) {
+                                            TextAuto(
+                                                id = R.string.scan_qrcode,
+                                            )
+                                        }
+                                }
                         }
                         else {
                             Column(
-                                modifier = Modifier.weight(9f, false),
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Image(
                                     modifier = Modifier.weight(9f, false),
-                                    painter = painterResource(id = R.drawable.server_error_rafiki),
-                                    contentDescription = stringResource(id = R.string.no_server_found)
+                                    painter = painterResource(id = R.drawable.no_connection_rafiki),
+                                    contentDescription = stringResource(id = R.string.wrong_network)
                                 )
 
                                 TextAuto(
                                     modifier = Modifier.weight(1f, false),
-                                    id = R.string.no_server_found
+                                    id = R.string.wrong_network
                                 )
                             }
                         }
-
-                        if (serverFinderViewModel.ipSearchData.isSearching.value == 0)
-                            Column(
-                                modifier = Modifier
-                                    .weight(2f, false)
-                                    .fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Button(
-                                    onClick = {
-                                        context.findServers(
-                                            settings = mainViewModel.settings,
-                                            networkInfo = mainViewModel.networkInfo,
-                                            ipSearchData = serverFinderViewModel.ipSearchData
-                                        )
-                                    }
-                                ) {
-                                    TextAuto(
-                                        id = R.string.scan_network_for_servers,
-                                    )
-                                }
-                                if (mainViewModel.hasCamera())
-                                    Button(
-                                        onClick = { serverFinderViewModel.scanQRCode() }
-                                    ) {
-                                        TextAuto(
-                                            id = R.string.scan_qrcode,
-                                        )
-                                    }
-                            }
                     }
-                }
                 ServerFinderPages.SERVER -> {
                     ServerUI(
                         serverInfo = serverSelected.value,

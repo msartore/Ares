@@ -24,7 +24,7 @@ fun SnackBar(
         modifier = modifier,
         visible = visible,
         enter = slideInVertically { it },
-        exit = slideOutVertically { it }
+        exit = slideOutVertically { it + it/2 }
     ) {
         Row(
             modifier = Modifier

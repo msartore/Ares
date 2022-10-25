@@ -103,7 +103,7 @@ fun Collection<FileDataJson>.toJsonArray(): JsonArray {
     return array
 }
 
-fun getFile(context: Context, id: Int) =
+fun getByteArrayFromDrawable(context: Context, id: Int) =
     getDrawable(context, id)?.let {
         val bitmap = it.toBitmap()
         val stream = ByteArrayOutputStream()

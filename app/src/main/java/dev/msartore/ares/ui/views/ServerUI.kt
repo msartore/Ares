@@ -155,7 +155,7 @@ fun ServerUI(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.computer_troubleshooting_rafiki),
+                    painter = painterResource(id = R.drawable.server_error_rafiki),
                     contentDescription = stringResource(id = R.string.error_during_connection)
                 )
 
