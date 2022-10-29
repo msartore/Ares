@@ -27,6 +27,7 @@ data class FileDataJson(
     var index: Int? = null
 )
 
+@Keep
 enum class FileType {
     VIDEO,
     IMAGE,

@@ -135,6 +135,7 @@ fun MainUI(
                         }
                         MainPages.SERVER_FINDER -> {
                             ServerFinderUI(
+                                maxWidth = maxWidth,
                                 mainViewModel = mainViewModel,
                                 serverFinderViewModel = serverFinderViewModel
                             )
