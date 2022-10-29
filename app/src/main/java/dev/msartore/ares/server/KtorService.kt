@@ -200,7 +200,7 @@ class KtorService: Service() {
 
                                                     fileSizeRemaining += buffer.capacity()
 
-                                                    sizeTransferred.value = (fileSizeRemaining/(contentLength?.toFloatOrNull() ?: 1f))
+                                                    sizeTransferred.value = fileSizeRemaining/(contentLength?.toFloatOrNull() ?: 1f)
 
                                                     !last
                                                 }
