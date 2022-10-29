@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
 import dev.msartore.ares.server.KtorService.KtorServer.PORT
 import dev.msartore.ares.ui.compose.CardIcon
-import dev.msartore.ares.ui.compose.IPItem
+import dev.msartore.ares.ui.compose.ServerItem
 import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.utils.findServers
 import dev.msartore.ares.utils.isWideView
@@ -86,7 +86,7 @@ fun ServerFinderUI(
                                     count = ipSearchData.ipList.size.value,
                                     key = { ipSearchData.ipList.list.elementAt(it).hashCode() }
                                 ) {
-                                    IPItem(
+                                    ServerItem(
                                         IP = ipSearchData.ipList.list.elementAt(it).ip,
                                         url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$PORT",
                                         openUrl = { url ->

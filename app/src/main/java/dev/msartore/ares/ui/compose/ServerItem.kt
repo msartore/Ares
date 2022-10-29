@@ -12,9 +12,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
 
-
 @Composable
-fun IPItem(
+fun ServerItem(
     IP: String,
     url: String,
     openUrl: (String) -> Unit,
@@ -40,7 +39,7 @@ fun IPItem(
             modifier = Modifier
                 .size(50.dp)
                 .padding(end = 8.dp),
-            id = R.drawable.devices_other_24px
+            id = R.drawable.devices_24px
         )
 
         Row(
@@ -50,7 +49,7 @@ fun IPItem(
         ) {
             TextAuto(text = IP)
 
-            Icon(id = R.drawable.open_in_new_24px) {
+            Icon(id = R.drawable.open_in_browser_24px) {
                 openUrl(url)
             }
         }
