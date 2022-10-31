@@ -68,11 +68,13 @@ fun SettingsUI(
         TextAuto(
             id = R.string.wifi_scan,
             style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary
         )
 
         mainViewModel.settings?.apply {
             SettingsItemSwitch(
-                title = stringResource(id = R.string.find_servers_start_app),
+                title = stringResource(id = R.string.find_servers),
+                description = stringResource(id = R.string.find_servers_description),
                 icon = painterResource(id = R.drawable.wifi_find_24px),
                 item = findServersAtStart,
             ) {
@@ -81,26 +83,42 @@ fun SettingsUI(
 
             SettingsItemInput(
                 title = stringResource(id = R.string.ip_timeout),
+                description = stringResource(id = R.string.ip_timeout_description),
                 icon = painterResource(id = R.drawable.timer_24px),
                 item = ipTimeout,
             ) {
                 work { save() }
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                Divider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                )
+
+                TextAuto(
+                    id = R.string.appearance,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
                 SettingsItemSwitch(
                     title = stringResource(id = R.string.material_you),
+                    description = stringResource(id = R.string.material_you_description),
                     icon = painterResource(id = R.drawable.palette_24px),
                     item = isMaterialYouEnabled,
                 ) {
                     work { save() }
                 }
+            }
         }
     }
     val settingsUIContent2: @Composable () -> Unit = {
         TextAuto(
             id = R.string.about,
             style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary
         )
 
         SettingsItem(

@@ -39,7 +39,7 @@
     <string name="ip_left_check">IP left to check</string>
     <string name="server_found">Server found</string>
     <string name="scan_network_for_servers">Scan network for servers</string>
-    <string name="find_servers_start_app">Find servers during app start up</string>
+    <string name="find_servers_description">Find servers during app start up</string>
     <string name="no_ip_available">No IP available</string>
     <string name="ip_timeout">IP timeout</string>
     <string name="no_server_found">No server found</string>
@@ -79,4 +79,8 @@
     <string name="scan_qrcode">Scan QR code</string>
     <string name="server_not_found">Server not found, try again!</string>
     <string name="ares_title_website">Ares - File transfer</string>
+    <string name="appearance">Appearance</string>
+    <string name="find_servers">Find servers</string>
+    <string name="ip_timeout_description">IP timeout that will be used when pinging a server</string>
+    <string name="material_you_description">Enjoy an experience closer to your device</string>
 </resources>

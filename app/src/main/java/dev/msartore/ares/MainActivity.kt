@@ -157,6 +157,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
+            val isNavBarColorSet = remember { mutableStateOf(false) }
             val resetStatusBarColor = remember { mutableStateOf({}) }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
@@ -164,6 +165,7 @@ class MainActivity : ComponentActivity() {
 
             AresTheme(
                 changeStatusBarColor = resetStatusBarColor,
+                isNavBarColorSet = isNavBarColorSet,
                 mainViewModel = mainViewModel
             ) {
                 Surface(
@@ -179,6 +181,8 @@ class MainActivity : ComponentActivity() {
                             finishAffinity()
                         },
                         onPermissionGranted = {
+                            isNavBarColorSet.value = true
+
                             MainUI(
                                 navigateToSettingsScreen = navigateToSettingsScreen,
                                 mainViewModel = mainViewModel

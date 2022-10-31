@@ -40,7 +40,7 @@
     <string name="ip_left_check">IP da controllare</string>
     <string name="server_found">Server trovato</string>
     <string name="scan_network_for_servers">Scansiona rete per server</string>
-    <string name="find_servers_start_app">Trova server durante l\'avvio dell\'applicazione</string>
+    <string name="find_servers_description">Trova server durante l\'avvio dell\'applicazione</string>
     <string name="no_ip_available">No IP disponibile</string>
     <string name="ip_timeout">Timeout IP</string>
     <string name="no_server_found">Nessun server trovato</string>
@@ -78,4 +78,8 @@
     <string name="scan_qrcode">Scansiona QR code</string>
     <string name="server_not_found">Server non trovato, prova di nuovo!</string>
     <string name="ares_title_website">Ares - Trasferimento file</string>
+    <string name="appearance">Aspetto</string>
+    <string name="find_servers">Trova server</string>
+    <string name="ip_timeout_description">Timeout IP che verrà utilizzato durante il ping di un server</string>
+    <string name="material_you_description">Vivi un\'esperienza più vicino al tuo dispositivo</string>
 </resources>

@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SettingsItem(
     title: String,
+    description: String? = null,
     icon: Painter,
     onClick: (() -> Unit)? = null,
     content: (@Composable () -> Unit)? = null,
@@ -50,12 +51,25 @@ fun SettingsItem(
                 contentDescription = title,
             )
 
-            TextAuto(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp),
-                text = title,
-                maxLines = Int.MAX_VALUE
-            )
+            Column {
+                TextAuto(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp),
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1
+                )
+
+                if (description != null)
+                    TextAuto(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp),
+                        text = description,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.labelLarge,
+                        maxLines = Int.MAX_VALUE,
+                    )
+            }
         }
 
         if (content != null) {
@@ -74,6 +88,7 @@ fun SettingsItem(
 @Composable
 fun SettingsItemSwitch(
     title: String,
+    description: String? = null,
     icon: Painter,
     item: MutableState<Boolean>,
     onClick: (() -> Unit)? = null
@@ -81,6 +96,7 @@ fun SettingsItemSwitch(
 
     SettingsItem(
         title = title,
+        description = description,
         icon = icon,
         onClick = {
             item.value = !item.value
@@ -101,6 +117,7 @@ fun SettingsItemSwitch(
 @Composable
 fun SettingsItemInput(
     title: String,
+    description: String? = null,
     icon: Painter,
     item: MutableState<Int>,
     onClick: (() -> Unit)? = null
@@ -111,6 +128,7 @@ fun SettingsItemInput(
 
     SettingsItem(
         title = title,
+        description = description,
         icon = icon,
     ) {
         TextField(

@@ -6,9 +6,11 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.msartore.ares.utils.cor
 import dev.msartore.ares.viewmodels.MainViewModel
@@ -79,6 +81,7 @@ private val DarkColors = darkColorScheme(
 fun AresTheme(
     mainViewModel: MainViewModel,
     changeStatusBarColor: MutableState<() -> Unit>,
+    isNavBarColorSet: MutableState<Boolean>,
     content: @Composable () -> Unit
 ) {
     val darkTheme = isSystemInDarkTheme()
@@ -107,6 +110,12 @@ fun AresTheme(
         color = colorScheme.background,
         darkIcons = !darkTheme
     )
+
+    if (isNavBarColorSet.value)
+        systemUiController.setNavigationBarColor(
+            color = colorScheme.surfaceColorAtElevation(3.dp),
+            darkIcons = !darkTheme
+        )
 
     MaterialTheme(
         colorScheme = colorScheme,
