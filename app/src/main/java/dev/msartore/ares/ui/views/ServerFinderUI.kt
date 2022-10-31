@@ -100,14 +100,10 @@ fun ServerFinderUI(
                         }
                     }
                     serverFinderViewModel.ipSearchData.isSearching.value == 1 -> {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(50.dp)
-                        )
+                        CircularProgressIndicator(modifier = Modifier.size(50.dp))
                     }
                     else -> {
-                        TextAuto(
-                            id = R.string.no_server_found
-                        )
+                        TextAuto(id = R.string.no_server_found)
                     }
                 }
             }

@@ -2,10 +2,12 @@ package dev.msartore.ares.viewmodels
 
 import android.app.DownloadManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
+import dev.msartore.ares.R
 import dev.msartore.ares.models.NetworkInfo
 import dev.msartore.ares.models.Settings
 import dev.msartore.ares.utils.work
@@ -46,6 +48,19 @@ class MainViewModel : ViewModel() {
             if (settings?.findServersAtStart?.value == true)
                 onFindServers?.invoke(networkInfo, settings)
         }
+    }
+
+    fun Context.shareText(string: String) {
+        startActivity(
+            Intent.createChooser(
+                Intent().apply {
+                    action = Intent.ACTION_SEND
+                    type = "text/plain"
+                    putExtra(Intent.EXTRA_TEXT, string)
+                },
+                getString(R.string.send_to)
+            )
+        )
     }
 
     fun openUrl(url: String) {

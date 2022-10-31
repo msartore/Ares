@@ -83,4 +83,5 @@
     <string name="find_servers">Find servers</string>
     <string name="ip_timeout_description">IP timeout that will be used when pinging a server</string>
     <string name="material_you_description">Enjoy an experience closer to your device</string>
+    <string name="send_to">Send to</string>
 </resources>

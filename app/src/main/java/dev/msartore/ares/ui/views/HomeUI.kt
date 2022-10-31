@@ -1,7 +1,6 @@
 package dev.msartore.ares.ui.views
 
 import androidx.camera.core.ExperimentalGetImage
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -39,6 +39,7 @@ import dev.msartore.ares.server.KtorService.KtorServer.PORT
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.ui.compose.FileItem
+import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.utils.isWideView
 import dev.msartore.ares.viewmodels.HomeViewModel
@@ -54,6 +55,7 @@ fun HomeUI(
 ) {
     val lazyGridState = rememberLazyGridState()
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val isLoading = viewModel.isLoading.collectAsState()
     val home1State = rememberScrollState()
 
@@ -81,7 +83,7 @@ fun HomeUI(
                             style = MaterialTheme.typography.headlineSmall
                         )
 
-                        AnimatedVisibility(visible = isServerOn.value) {
+                        if (isServerOn.value)
                             Column {
                                 if (mainViewModel.networkInfo.bitmap.value != null)
                                     Image(
@@ -103,7 +105,6 @@ fun HomeUI(
                                         modifier = Modifier.size(50.dp),
                                     )
                             }
-                        }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -137,10 +138,22 @@ fun HomeUI(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement =
+                        if (isServerOn.value) Arrangement.SpaceBetween
+                        else Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
                     if (isServerOn.value) {
+
+                        Icon(
+                            id = R.drawable.share_24px
+                        ) {
+                            mainViewModel.apply {
+                                context.shareText("http://${networkInfo.ipAddress.value}:$PORT")
+                            }
+                        }
+
                         TextButton(onClick = {
                             if (isServerOn.value)
                                 viewModel.onStopServerClick()
