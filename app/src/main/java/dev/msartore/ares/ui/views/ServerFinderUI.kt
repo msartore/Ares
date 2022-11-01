@@ -147,7 +147,11 @@ fun ServerFinderUI(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            mainContent(Modifier.weight(8f))
+                            mainContent(
+                                Modifier
+                                    .fillMaxHeight()
+                                    .weight(8f)
+                            )
 
                             if (mainViewModel.networkInfo.isNetworkAvailable.value && mainViewModel.networkInfo.isWifiNetwork.value)
                                 Column(

@@ -1,5 +1,6 @@
 package dev.msartore.ares.ui.compose
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,7 +58,7 @@ fun SettingsItem(
                         .padding(horizontal = 16.dp),
                     text = title,
                     style = MaterialTheme.typography.titleLarge,
-                    maxLines = 1
+                    maxLines = Int.MAX_VALUE
                 )
 
                 if (description != null)
@@ -124,7 +125,12 @@ fun SettingsItemInput(
 ) {
 
     val focusManager = LocalFocusManager.current
-    val timeout = remember { mutableStateOf(item.value.toString()) }
+    val itemUI = remember { mutableStateOf(item.value.toString()) }
+
+    BackHandler(true) {
+        itemUI.value = item.value.toString()
+        focusManager.clearFocus()
+    }
 
     SettingsItem(
         title = title,
@@ -132,9 +138,9 @@ fun SettingsItemInput(
         icon = icon,
     ) {
         TextField(
-            value = timeout.value,
+            value = itemUI.value,
             onValueChange = {
-                timeout.value = it
+                itemUI.value = it
             },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
@@ -142,7 +148,8 @@ fun SettingsItemInput(
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    item.value = timeout.value.toIntOrNull() ?: 0
+                    item.value = itemUI.value.toIntOrNull() ?: 0
+                    itemUI.value = item.value.toString()
                     onClick?.invoke()
                     focusManager.clearFocus()
                 },
