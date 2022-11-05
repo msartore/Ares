@@ -14,6 +14,7 @@ import dev.msartore.ares.R
 import dev.msartore.ares.models.ConcurrentMutableList
 import dev.msartore.ares.models.FileData
 import dev.msartore.ares.models.FileTransfer
+import dev.msartore.ares.models.FileType
 import dev.msartore.ares.server.KtorService.KtorServer.CHANNEL_ID
 import dev.msartore.ares.server.KtorService.KtorServer.ONGOING_NOTIFICATION_ID
 import dev.msartore.ares.server.KtorService.KtorServer.PORT
@@ -125,6 +126,7 @@ class KtorService: Service() {
         server = embeddedServer(Netty, port = PORT) {
             routing {
                 get ("/{name}") {
+                    val streaming = call.parameters["streaming"]
 
                     when(val fileIndex = call.parameters["name"]?.toInt()) {
                         null, !in 0 .. concurrentMutableList.size.value -> call.respond(HttpStatusCode.NotFound)
@@ -132,7 +134,16 @@ class KtorService: Service() {
                             val file = concurrentMutableList.list.elementAt(fileIndex)
                             val inputStream = contentResolver.openInputStream(file.uri)
 
-                            call.response.header("Content-Disposition", "attachment; filename=\"${file.name}\"")
+
+                            call.response.header(
+                                "Content-Disposition",
+                                "${
+                                    if (streaming != "true" || (file.fileType != FileType.IMAGE && file.fileType != FileType.VIDEO)) 
+                                        "attachment"
+                                    else 
+                                        "inline"
+                                }; filename=\"${file.name}\""
+                            )
 
                             call.respondBytesWriter (
                                 contentType = ContentType.Any,
@@ -229,9 +240,7 @@ class KtorService: Service() {
                     call.respondRedirect("/?success=$result")
                 }
                 get("/") {
-                    val result = runCatching {
-                        call.parameters["success"]
-                    }.getOrNull()
+                    val result = call.parameters["success"]
 
                     call.respondHtml {
                         head {
@@ -270,20 +279,30 @@ class KtorService: Service() {
                             }
                             ol {
                                 for(i in 0 until concurrentMutableList.size.value) {
-                                    li(classes = "file") {
-                                        dl {
-                                            dt {
-                                                +"${getString(R.string.name)}: ${concurrentMutableList.list.elementAt(i).name}"
-                                            }
-                                            dd {
-                                                +"${getString(R.string.size)}: ${(concurrentMutableList.list.elementAt(i).size?:1).printableSize()}"
-                                            }
-                                            dd {
-                                                a(href = "/$i") {
-                                                    b {
-                                                        +getString(R.string.download)
+                                    concurrentMutableList.list.elementAt(i).run {
+                                        li(classes = "file") {
+                                            dl {
+                                                dt {
+                                                    +"${getString(R.string.name)}: $name"
+                                                }
+                                                dd {
+                                                    +"${getString(R.string.size)}: ${(size?:1).printableSize()}"
+                                                }
+                                                dd {
+                                                    a(href = "/$i") {
+                                                        b {
+                                                            +getString(R.string.download)
+                                                        }
                                                     }
                                                 }
+                                                if (fileType == FileType.IMAGE || fileType == FileType.VIDEO)
+                                                    dd {
+                                                        a(href = "/$i?streaming=true") {
+                                                            b {
+                                                                +getString(R.string.streaming)
+                                                            }
+                                                        }
+                                                    }
                                             }
                                         }
                                     }
