@@ -46,7 +46,7 @@ import dev.msartore.ares.viewmodels.ServerFinderViewModel
 @ExperimentalGetImage
 @Composable
 fun ServerFinderUI(
-    maxWidth: Dp?,
+    maxWidth: Dp,
     mainViewModel: MainViewModel,
     serverFinderViewModel: ServerFinderViewModel
 ) {
@@ -143,7 +143,7 @@ fun ServerFinderUI(
             when (it) {
                 ServerFinderPages.SCAN_WIFI -> {
 
-                    if(maxWidth?.isWideView() == true)
+                    if(maxWidth.isWideView())
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {

@@ -96,7 +96,6 @@ fun AresTheme(
         else -> LightColors
     }
 
-
     changeStatusBarColor.value = {
         systemUiController.setSystemBarsColor(
             color = colorScheme.background,

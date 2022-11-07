@@ -9,7 +9,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -68,7 +67,8 @@ import kotlinx.coroutines.launch
 fun MainUI(
     navigateToSettingsScreen: () -> Unit,
     mainViewModel: MainViewModel,
-    serverFinderViewModel: ServerFinderViewModel = viewModel()
+    serverFinderViewModel: ServerFinderViewModel = viewModel(),
+    maxWidth: Dp
 ) {
     val selectedItem = remember { mutableStateOf(MainPages.HOME) }
     val items = remember { listOf(MainPages.HOME, MainPages.SERVER_FINDER, MainPages.SETTINGS) }
@@ -110,7 +110,6 @@ fun MainUI(
         if (selectedItem.value != page)
             selectedItem.value = page
     }
-    var maxWidth: Dp? = null
     val mainUI: @Composable (PaddingValues?) -> Unit = { paddingValues ->
         val scope = rememberCoroutineScope()
 
@@ -142,7 +141,6 @@ fun MainUI(
                         }
                         MainPages.SETTINGS -> {
                             SettingsUI(
-                                maxWidth = maxWidth,
                                 mainViewModel = mainViewModel,
                             )
                         }
@@ -225,19 +223,32 @@ fun MainUI(
         }
     }
 
-    BoxWithConstraints {
+    if (maxWidth.isWideView())
+        Row {
+            NavigationRail(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .wrapContentWidth()
+            ) {
+                items.forEach { item ->
+                    NavigationRailItem(
+                        icon = { icon(item) },
+                        label = { label(item) },
+                        onClick = { onClick(item) },
+                        selected = selectedItem.value == item
+                    )
+                }
+            }
 
-        maxWidth = this.maxWidth
-
-        if (maxWidth?.isWideView() == true)
-            Row {
-                NavigationRail(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .wrapContentWidth()
-                ) {
+            mainUI(null)
+        }
+    else
+        Scaffold(
+            modifier = Modifier.fillMaxHeight(),
+            bottomBar = {
+                NavigationBar {
                     items.forEach { item ->
-                        NavigationRailItem(
+                        NavigationBarItem(
                             icon = { icon(item) },
                             label = { label(item) },
                             onClick = { onClick(item) },
@@ -245,91 +256,73 @@ fun MainUI(
                         )
                     }
                 }
-
-                mainUI(null)
             }
-        else
-            Scaffold(
-                modifier = Modifier.fillMaxHeight(),
-                bottomBar = {
-                    NavigationBar {
-                        items.forEach { item ->
-                            NavigationBarItem(
-                                icon = { icon(item) },
-                                label = { label(item) },
-                                onClick = { onClick(item) },
-                                selected = selectedItem.value == item
-                            )
-                        }
-                    }
-                }
-            ) {
-                mainUI(it)
-            }
+        ) {
+            mainUI(it)
+        }
 
-        serverFinderViewModel.qrReadingProcess.apply {
+    serverFinderViewModel.qrReadingProcess.apply {
 
-            if (isReadingQR.value) {
-                val permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.CAMERA))
+        if (isReadingQR.value) {
+            val permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.CAMERA))
 
-                Permissions(
-                    permissionState = permissionState,
-                    requestStringId = R.string.camera_permission_request_text,
-                    settingsStringId = R.string.camera_permission_rejected_text,
-                    navigateToSettingsScreen = navigateToSettingsScreen,
-                    onPermissionDenied = {
+            Permissions(
+                permissionState = permissionState,
+                requestStringId = R.string.camera_permission_request_text,
+                settingsStringId = R.string.camera_permission_rejected_text,
+                navigateToSettingsScreen = navigateToSettingsScreen,
+                onPermissionDenied = {
+                    isReadingQR.value = false
+                },
+                onPermissionGranted = {
+                    CameraUI(
+                        visibility = isReadingQR
+                    ) { ip ->
                         isReadingQR.value = false
-                    },
-                    onPermissionGranted = {
-                        CameraUI(
-                            visibility = isReadingQR
-                        ) { ip ->
-                            isReadingQR.value = false
-                            isPingingServer.value = true
-                            isQRDialog.value = true
+                        isPingingServer.value = true
+                        isQRDialog.value = true
 
-                            work {
-                                runCatching {
-                                    ip.pingServer(
-                                        settings = mainViewModel.settings,
-                                        2000
-                                    )
+                        work {
+                            runCatching {
+                                ip.pingServer(
+                                    settings = mainViewModel.settings,
+                                    2000
+                                )
 
-                                    serverFinderViewModel.ipSearchData.ipList.apply {
-                                        if(list.none { it.ip == ip })
-                                            add(ServerInfo(ip = ip))
-                                    }
-                                }.onSuccess {
-                                    isQRDialog.value = false
-                                }.onFailure {
-                                    isPingingServer.value = false
+                                serverFinderViewModel.ipSearchData.ipList.apply {
+                                    if(list.none { it.ip == ip })
+                                        add(ServerInfo(ip = ip))
                                 }
+                            }.onSuccess {
+                                isQRDialog.value = false
+                            }.onFailure {
+                                isPingingServer.value = false
                             }
                         }
                     }
-                )
-            }
+                }
+            )
+        }
 
-            DialogContainer(status = isQRDialog) {
-                Column(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    if (isPingingServer.value)
-                        CircularProgressIndicator(Modifier.size(35.dp))
-                    else {
-                        TextAuto(
-                            id = R.string.server_not_found,
-                            maxLines = Int.MAX_VALUE
-                        )
+        DialogContainer(status = isQRDialog) {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                if (isPingingServer.value)
+                    CircularProgressIndicator(Modifier.size(35.dp))
+                else {
+                    TextAuto(
+                        id = R.string.server_not_found,
+                        maxLines = Int.MAX_VALUE
+                    )
 
-                        TextButton(onClick = { isQRDialog.value = false }) {
-                            TextAuto(id = R.string.close)
-                        }
+                    TextButton(onClick = { isQRDialog.value = false }) {
+                        TextAuto(id = R.string.close)
                     }
                 }
             }

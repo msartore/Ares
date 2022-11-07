@@ -49,7 +49,7 @@ import kotlinx.coroutines.launch
 @ExperimentalGetImage
 @Composable
 fun HomeUI(
-    maxWidth: Dp?,
+    maxWidth: Dp,
     mainViewModel: MainViewModel,
     viewModel: HomeViewModel = viewModel()
 ) {
@@ -275,7 +275,7 @@ fun HomeUI(
         }
     }
 
-    if(maxWidth?.isWideView() == true)
+    if(maxWidth.isWideView())
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {

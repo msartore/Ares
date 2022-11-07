@@ -13,6 +13,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.camera.core.ExperimentalGetImage
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -32,6 +33,7 @@ import dev.msartore.ares.utils.Permissions
 import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.extractFileInformation
 import dev.msartore.ares.utils.findServers
+import dev.msartore.ares.utils.isWideView
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.HomeViewModel
 import dev.msartore.ares.viewmodels.MainViewModel
@@ -181,12 +183,17 @@ class MainActivity : ComponentActivity() {
                             finishAffinity()
                         },
                         onPermissionGranted = {
-                            isNavBarColorSet.value = true
+                            BoxWithConstraints {
+                                val maxWidth = this.maxWidth
 
-                            MainUI(
-                                navigateToSettingsScreen = navigateToSettingsScreen,
-                                mainViewModel = mainViewModel
-                            )
+                                isNavBarColorSet.value = !maxWidth.isWideView()
+
+                                MainUI(
+                                    navigateToSettingsScreen = navigateToSettingsScreen,
+                                    mainViewModel = mainViewModel,
+                                    maxWidth = maxWidth
+                                )
+                            }
                         }
                     )
                 }
