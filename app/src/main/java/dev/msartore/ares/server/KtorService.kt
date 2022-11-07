@@ -137,9 +137,9 @@ class KtorService: Service() {
                             call.response.header(
                                 "Content-Disposition",
                                 "${
-                                    if (streaming != "true" || (file.fileType != FileType.IMAGE && file.fileType != FileType.VIDEO)) 
+                                    if (streaming != "true" || (file.fileType != FileType.IMAGE && file.fileType != FileType.VIDEO))
                                         "attachment"
-                                    else 
+                                    else
                                         "inline"
                                 }; filename=\"${file.name}\""
                             )
