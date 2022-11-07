@@ -176,16 +176,28 @@ fun ServerUI(
                         count = serverFiles.size,
                         key = { serverFiles.elementAt(it).index.hashCode() }
                     ) {
-                        serverFiles.elementAt(it).apply {
+                        serverFiles.elementAt(it).run {
 
-                            FileItem(this) {
-                                mainViewModel.downloadManager?.downloadFile(
-                                    url = "http://${serverInfo.ip}:$PORT/$index",
-                                    mimeType = mimeType,
-                                    fileName = "$name",
-                                    context = context
-                                )
-                            }
+                            val url = "http://${serverInfo.ip}:$PORT/$index"
+
+                            FileItem(
+                                fileDataJson = this,
+                                onDownload = {
+                                    mainViewModel.downloadManager?.downloadFile(
+                                        url = url,
+                                        mimeType = mimeType,
+                                        fileName = "$name",
+                                        context = context
+                                    )
+                                },
+                                onStreaming = {
+                                    mainViewModel.openStreaming(
+                                        context = context,
+                                        url = "$url?streaming=true",
+                                        fileType = fileType
+                                    )
+                                }
+                            )
                         }
                     }
                 }

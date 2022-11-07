@@ -14,13 +14,15 @@ import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
 import dev.msartore.ares.models.FileData
 import dev.msartore.ares.models.FileDataJson
+import dev.msartore.ares.models.FileType
 import dev.msartore.ares.utils.printableSize
 
 
 @Composable
 fun FileItem(
     fileDataJson: FileDataJson,
-    onClick: (() -> Unit)
+    onDownload: (() -> Unit),
+    onStreaming: (() -> Unit)
 ) {
     fileDataJson.apply {
         FileItem(
@@ -31,7 +33,15 @@ fun FileItem(
                 Icon(
                     id = R.drawable.file_download_48px
                 ) {
-                    onClick()
+                    onDownload()
+                }
+                if (fileDataJson.fileType == FileType.VIDEO || fileDataJson.fileType == FileType.IMAGE) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        id = R.drawable.open_in_new_24px
+                    ) {
+                        onStreaming()
+                    }
                 }
             }
         )
@@ -82,28 +92,39 @@ fun FileItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row(
-            modifier = Modifier.weight(9F, false),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(
-                modifier = Modifier
-                    .size(50.dp)
-                    .padding(end = 8.dp),
-                id = icon
-            )
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(end = 8.dp),
+                    id = icon
+                )
 
-            Column {
-                TextAuto(text = "${stringResource(id = R.string.name)}: $name")
+                Column {
+                    TextAuto(
+                        text = "${stringResource(id = R.string.name)}: $name",
+                        maxLines = 1
+                    )
 
-                TextAuto(text = "${stringResource(id = R.string.size)}: ${(size?:1).printableSize()}")
+                    TextAuto(
+                        text = "${stringResource(id = R.string.size)}: ${(size?:1).printableSize()}",
+                        maxLines = 1
+                    )
+                }
             }
-        }
 
-        Row(
-            modifier = Modifier.weight(2F, false),
-        ) {
-            content?.invoke()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                content?.invoke()
+            }
         }
     }
 }

@@ -46,7 +46,10 @@ fun SettingsItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Row(modifier = Modifier.weight(5f)) {
+        Row(
+            modifier = Modifier.weight(5f),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Icon(
                 painter = icon,
                 contentDescription = title,

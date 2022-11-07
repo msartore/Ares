@@ -134,7 +134,6 @@ class KtorService: Service() {
                             val file = concurrentMutableList.list.elementAt(fileIndex)
                             val inputStream = contentResolver.openInputStream(file.uri)
 
-
                             call.response.header(
                                 "Content-Disposition",
                                 "${

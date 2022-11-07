@@ -4,10 +4,12 @@ import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import dev.msartore.ares.R
+import dev.msartore.ares.models.FileType
 import dev.msartore.ares.models.NetworkInfo
 import dev.msartore.ares.models.Settings
 import dev.msartore.ares.utils.work
@@ -16,6 +18,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import kotlinx.coroutines.flow.MutableStateFlow
+
 
 class MainViewModel : ViewModel() {
 
@@ -60,6 +63,27 @@ class MainViewModel : ViewModel() {
                 },
                 getString(R.string.send_to)
             )
+        )
+    }
+
+    fun openStreaming(context: Context, url: String, fileType: FileType?) {
+        context.startActivity(
+            Intent(Intent.ACTION_VIEW).apply {
+                setDataAndType(
+                    Uri.parse(url),
+                    when(fileType) {
+                        FileType.VIDEO -> {
+                            "video/*"
+                        }
+                        FileType.IMAGE -> {
+                            "image/*"
+                        }
+                        else -> {
+                            "*/*"
+                        }
+                    }
+                )
+            }
         )
     }
 
