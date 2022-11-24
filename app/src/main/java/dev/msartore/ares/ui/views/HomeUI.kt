@@ -38,6 +38,7 @@ import dev.msartore.ares.R
 import dev.msartore.ares.server.KtorService.KtorServer.PORT
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
+import dev.msartore.ares.ui.compose.ExpandableCard
 import dev.msartore.ares.ui.compose.FileItem
 import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.TextAuto
@@ -64,6 +65,7 @@ fun HomeUI(
             modifier = modifier.verticalScroll(home1State),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+
             Column(
                 modifier = Modifier
                     .background(
@@ -269,13 +271,28 @@ fun HomeUI(
             items(
                 count = concurrentMutableList.size.value,
                 key = { concurrentMutableList.list.elementAt(it).uri }
-            ) {
-                FileItem(concurrentMutableList.list.elementAt(it))
+            ) { index ->
+
+                concurrentMutableList.list.elementAt(index).run {
+                    ExpandableCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(if (selected.value) MaterialTheme.colorScheme.primaryContainer else Color.Transparent),
+                        onLongClick = {
+                            selected.value = !selected.value
+                        }
+                    ) {
+                        FileItem(
+                            fileData = this,
+                            maxLines = if (it) Int.MAX_VALUE else 1
+                        )
+                    }
+                }
             }
         }
     }
 
-    if(maxWidth.isWideView())
+    if (maxWidth.isWideView())
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -283,7 +300,9 @@ fun HomeUI(
             homeUIContent2(Modifier.weight(1f))
         }
     else
-        Column {
+        Column(
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
             homeUIContent1(Modifier)
             homeUIContent2(Modifier)
         }

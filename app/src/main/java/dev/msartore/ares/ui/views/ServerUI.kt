@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
 import dev.msartore.ares.server.KtorService.KtorServer.PORT
 import dev.msartore.ares.server.ServerInfo
+import dev.msartore.ares.ui.compose.ExpandableCard
 import dev.msartore.ares.ui.compose.FileItem
 import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.TextAuto
@@ -113,7 +114,8 @@ fun ServerUI(
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -180,24 +182,27 @@ fun ServerUI(
 
                             val url = "http://${serverInfo.ip}:$PORT/$index"
 
-                            FileItem(
-                                fileDataJson = this,
-                                onDownload = {
-                                    mainViewModel.downloadManager?.downloadFile(
-                                        url = url,
-                                        mimeType = mimeType,
-                                        fileName = "$name",
-                                        context = context
-                                    )
-                                },
-                                onStreaming = {
-                                    mainViewModel.openStreaming(
-                                        context = context,
-                                        url = "$url?streaming=true",
-                                        fileType = fileType
-                                    )
-                                }
-                            )
+                            ExpandableCard { expanded ->
+                                FileItem(
+                                    fileDataJson = this,
+                                    onDownload = {
+                                        mainViewModel.downloadManager?.downloadFile(
+                                            url = url,
+                                            mimeType = mimeType,
+                                            fileName = "$name",
+                                            context = context
+                                        )
+                                    },
+                                    maxLines = if (expanded) Int.MAX_VALUE else 1,
+                                    onStreaming = {
+                                        mainViewModel.openStreaming(
+                                            context = context,
+                                            url = "$url?streaming=true",
+                                            fileType = fileType
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }

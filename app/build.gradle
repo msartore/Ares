@@ -80,13 +80,14 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1,INDEX.LIST,io.netty.versions.properties}'
         }
     }
+    buildToolsVersion '30.0.3'
 }
 
 dependencies {
 
-    def accompanist_version = '0.26.2-beta'
-    def camerax_version = '1.2.0-rc01'
-    def ktor_version = '2.1.0'
+    def accompanist_version = '0.27.1'
+    def camerax_version = '1.3.0-alpha01'
+    def ktor_version = '2.1.3'
 
     // Accompanist
     implementation "com.google.accompanist:accompanist-systemuicontroller:$accompanist_version"
@@ -105,11 +106,11 @@ dependencies {
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
     // Gson
-    implementation 'com.google.code.gson:gson:2.9.1'
+    implementation 'com.google.code.gson:gson:2.10'
 
     // Zxing
-    implementation 'com.google.zxing:core:3.3.2'
-    implementation 'com.google.zxing:javase:3.3.2'
+    implementation 'com.google.zxing:core:3.5.1'
+    implementation 'com.google.zxing:javase:3.5.1'
 
     // MLKit Barcode
     implementation 'com.google.mlkit:barcode-scanning:17.0.2'
@@ -124,7 +125,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
 
     // Material theme
-    implementation 'com.google.android.material:material:1.8.0-alpha02'
+    implementation 'com.google.android.material:material:1.8.0-alpha03'
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
 
@@ -133,12 +134,12 @@ dependencies {
     implementation 'androidx.activity:activity-compose:1.6.1'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.1.0-alpha01'
+    implementation 'androidx.compose.material3:material3:1.1.0-alpha02'
 
     testImplementation 'junit:junit:4.13.2'
 
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
 
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"

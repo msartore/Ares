@@ -17,7 +17,6 @@ fun LicenseUI() {
 
     Column(
         modifier = Modifier
-            .padding(top = 16.dp)
             .verticalScroll(verticalScrollState)
     ) {
         LicenseItem(

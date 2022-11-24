@@ -22,7 +22,7 @@ fun LicenseItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .border(
                 border = BorderStroke(
                     1.dp,
