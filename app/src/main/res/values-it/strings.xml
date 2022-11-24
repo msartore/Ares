@@ -81,7 +81,7 @@
     <string name="appearance">Aspetto</string>
     <string name="find_servers">Trova server</string>
     <string name="ip_timeout_description">Timeout IP che verrà utilizzato durante il ping di un server</string>
-    <string name="material_you_description">Vivi un\'esperienza più vicino al tuo dispositivo</string>
+    <string name="material_you_description">Vivi un\'esperienza più vicina al tuo dispositivo</string>
     <string name="send_to">Invia a</string>
     <string name="streaming">Streaming\n</string>
 </resources>
