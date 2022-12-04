@@ -34,15 +34,6 @@ fun SettingsUI(
 
     val context = LocalContext.current
     val transition = updateTransition(settingsViewModel.selectedItem.value, label = "")
-    val backAction = {
-        settingsViewModel.selectedItem.value = SettingsPages.SETTINGS
-    }
-
-    BackHandler(
-        enabled = settingsViewModel.selectedItem.value == SettingsPages.ABOUT
-    ) {
-        backAction()
-    }
 
     transition.AnimatedContent {
         when(it) {
@@ -191,6 +182,13 @@ fun SettingsUI(
                 }
             }
             SettingsPages.ABOUT -> {
+
+                BackHandler(
+                    enabled = true
+                ) {
+                    settingsViewModel.selectedItem.value = SettingsPages.SETTINGS
+                }
+
                 Column {
                     Row(
                         modifier = Modifier
@@ -203,7 +201,7 @@ fun SettingsUI(
                             painter = painterResource(id = R.drawable.arrow_back_24px),
                             contentDescription = stringResource(id = R.string.back),
                         ) {
-                            backAction()
+                            settingsViewModel.selectedItem.value = SettingsPages.SETTINGS
                         }
 
                         TextAuto(

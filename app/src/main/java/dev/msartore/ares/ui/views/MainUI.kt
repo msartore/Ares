@@ -1,6 +1,7 @@
 package dev.msartore.ares.ui.views
 
 import android.Manifest
+import androidx.activity.compose.BackHandler
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -264,6 +265,10 @@ fun MainUI(
 
         if (isReadingQR.value) {
             val permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.CAMERA))
+
+            BackHandler(true) {
+                isReadingQR.value = false
+            }
 
             Permissions(
                 permissionState = permissionState,

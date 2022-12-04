@@ -1,6 +1,5 @@
 package dev.msartore.ares.ui.views
 
-import androidx.activity.compose.BackHandler
 import androidx.camera.core.CameraControl
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.foundation.background
@@ -34,10 +33,6 @@ fun CameraUI(
 
     val isFlashEnabled = remember { mutableStateOf(false) }
     val cameraControl = remember { mutableStateOf<CameraControl?>(null) }
-
-    BackHandler(true) {
-        visibility.value = false
-    }
 
     Box {
         CameraPreview(

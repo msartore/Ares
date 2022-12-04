@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
@@ -129,8 +130,9 @@ fun SettingsItemInput(
 
     val focusManager = LocalFocusManager.current
     val itemUI = remember { mutableStateOf(item.value.toString()) }
+    val isFocused = remember { mutableStateOf(false) }
 
-    BackHandler(true) {
+    BackHandler(isFocused.value) {
         itemUI.value = item.value.toString()
         focusManager.clearFocus()
     }
@@ -141,6 +143,10 @@ fun SettingsItemInput(
         icon = icon,
     ) {
         TextField(
+            modifier = Modifier
+                .onFocusEvent { focusState ->
+                    isFocused.value = focusState.isFocused
+                },
             value = itemUI.value,
             onValueChange = {
                 itemUI.value = it
