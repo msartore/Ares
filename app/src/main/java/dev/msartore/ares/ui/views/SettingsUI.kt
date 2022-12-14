@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.msartore.ares.R
+import dev.msartore.ares.models.Settings
 import dev.msartore.ares.ui.compose.*
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
@@ -65,7 +66,7 @@ fun SettingsUI(
                             icon = painterResource(id = R.drawable.wifi_find_24px),
                             item = findServersAtStart,
                         ) {
-                            work { save() }
+                            work { save(Settings.Keys.FindServersAtStart, findServersAtStart) }
                         }
 
                         SettingsItemInput(
@@ -74,7 +75,7 @@ fun SettingsUI(
                             icon = painterResource(id = R.drawable.timer_24px),
                             item = ipTimeout,
                         ) {
-                            work { save() }
+                            work { save(Settings.Keys.IPTimeout, ipTimeout) }
                         }
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -96,7 +97,7 @@ fun SettingsUI(
                                 icon = painterResource(id = R.drawable.palette_24px),
                                 item = isMaterialYouEnabled,
                             ) {
-                                work { save() }
+                                work { save(Settings.Keys.MaterialYou, isMaterialYouEnabled) }
                             }
                         }
                     }
