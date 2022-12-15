@@ -1,12 +1,12 @@
 buildscript {
     ext {
-        compose_version = '1.4.0-alpha02'
+        compose_version = '1.4.0-alpha03'
     }
     repositories {
         google()
     }
     dependencies {
-        classpath 'com.google.android.gms:oss-licenses-plugin:0.10.5'
+        classpath 'com.google.android.gms:oss-licenses-plugin:0.10.6'
     }
 }
 
