@@ -24,6 +24,7 @@ import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.server
 import dev.msartore.ares.utils.getByteArrayFromDrawable
 import dev.msartore.ares.utils.printableSize
+import dev.msartore.ares.utils.splitFileTypeFromName
 import dev.msartore.ares.utils.toFileDataJson
 import dev.msartore.ares.utils.toJsonArray
 import io.ktor.http.ContentType
@@ -191,29 +192,35 @@ class KtorService: Service() {
 
                                     fileName = part.originalFileName as String
 
+                                    val (n, e) = splitFileTypeFromName(fileName)
+                                    var counter = 1
+
                                     file = File("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$fileName")
 
-                                    if (file?.exists() != true) {
-                                        file?.createNewFile()
+                                    while (file?.exists() == true) {
+                                        file = File("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$n($counter)$e")
+                                        counter++
+                                    }
 
-                                        fileTransfer.apply {
+                                    file?.createNewFile()
 
-                                            if (name == null) {
-                                                name = fileName
-                                                size = contentLength?.toInt()
-                                            }
+                                    fileTransfer.apply {
 
-                                            file?.outputStream()?.channel.use {
-                                                part.streamProvider().toByteReadChannel().consumeEachBufferRange { buffer, last ->
+                                        if (name == null) {
+                                            name = fileName
+                                            size = contentLength?.toInt()
+                                        }
 
-                                                    it?.write(buffer)
+                                        file?.outputStream()?.channel.use {
+                                            part.streamProvider().toByteReadChannel().consumeEachBufferRange { buffer, last ->
 
-                                                    fileSizeRemaining += buffer.capacity()
+                                                it?.write(buffer)
 
-                                                    sizeTransferred.value = fileSizeRemaining/(contentLength?.toFloatOrNull() ?: 1f)
+                                                fileSizeRemaining += buffer.capacity()
 
-                                                    !last
-                                                }
+                                                sizeTransferred.value = fileSizeRemaining/(contentLength?.toFloatOrNull() ?: 1f)
+
+                                                !last
                                             }
                                         }
                                     }

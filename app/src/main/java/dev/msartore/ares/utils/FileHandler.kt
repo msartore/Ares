@@ -69,6 +69,10 @@ fun fileType(name: String): FileType {
     }
 }
 
+fun splitFileTypeFromName(text: String): Pair<String, String> {
+    return Pair(text.substring(0, text.indexOfLast { it == '.' }), text.substring(text.indexOfLast { it == '.' }, text.length))
+}
+
 fun String.contains(collection: Collection<String>) =
     collection.any { this.contains(it) }
 
