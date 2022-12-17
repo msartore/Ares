@@ -85,4 +85,6 @@
     <string name="material_you_description">Enjoy an experience closer to your device</string>
     <string name="send_to">Send to</string>
     <string name="streaming">Streaming\n</string>
+    <string name="upload">Upload</string>
+    <string name="file_sent">file sent</string>
 </resources>

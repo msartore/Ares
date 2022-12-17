@@ -53,6 +53,7 @@ import io.ktor.utils.io.jvm.javaio.toByteReadChannel
 import kotlinx.html.ButtonType
 import kotlinx.html.FormEncType
 import kotlinx.html.FormMethod
+import kotlinx.html.InputFormEncType
 import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.b
@@ -253,7 +254,7 @@ class KtorService: Service() {
                             title(content = applicationContext.getString(R.string.ares_title_website))
                             link(rel = "icon", href = "/favicon.png")
                             style {
-                                +"a { color:black; } .file { margin:10px; } .form { height: 250px; border: 2px solid white; border-radius: 50px ; background-color: coral; } .form form, .form b { position: relative; left: 5%; top: 25%; }"
+                                +"a { color:black; } .file { margin:10px; } .form { height: 250px; border: 2px solid white; border-radius: 50px ; background-color: coral; } .form form, .form b { position: relative; left: 5%; top: 25%; } .form div { padding-bottom: 1%; }"
                             }
                         }
                         body {
@@ -263,16 +264,17 @@ class KtorService: Service() {
                                     method = FormMethod.post,
                                     encType = FormEncType.multipartFormData
                                 ) {
-                                    input(type=InputType.file, name="upload")
-                                    button(name = "upload", type = ButtonType.submit) {
-                                        a {
-                                            +"Upload"
-                                        }
+                                    div {
+                                        input(type=InputType.file, name="upload", formEncType = InputFormEncType.multipartFormData)
+                                    }
+                                    button(type = ButtonType.submit) {
+                                        +getString(R.string.upload)
                                     }
                                 }
+
                                 if (result != null)
                                     b {
-                                        +"file sent: $result"
+                                        +(getString(R.string.file_sent) + ": $result")
                                     }
                             }
                             h2 {
