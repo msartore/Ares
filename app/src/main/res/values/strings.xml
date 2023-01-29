@@ -46,7 +46,7 @@
     <string name="wifi_scan">Wifi scan</string>
     <string name="servers">Servers</string>
     <string name="license">License</string>
-    <string name="ares_description" translatable="false">Copyright © 2022 Massimiliano Sartore\n\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/</string>
+    <string name="ares_description" translatable="false">Ares - File transfer\n\nCopyright © 2023 Massimiliano Sartore\n\nThis program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/</string>
     <string name="open_source_licenses">Open source licenses</string>
     <string name="ares_title">Ares license</string>
     <string name="back">Back</string>
@@ -87,4 +87,7 @@
     <string name="streaming">Streaming\n</string>
     <string name="upload">Upload</string>
     <string name="file_sent">file sent</string>
+    <string name="server_port">Server port</string>
+    <string name="server_port_description">Set a custom port number in a range: 1024–49151</string>
+    <string name="server_port_error">The port number must be in the range stated</string>
 </resources>

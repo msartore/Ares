@@ -29,7 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
-import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.ServerInfo
 import dev.msartore.ares.ui.compose.ExpandableCard
 import dev.msartore.ares.ui.compose.FileItem
@@ -180,7 +180,7 @@ fun ServerUI(
                     ) {
                         serverFiles.elementAt(it).run {
 
-                            val url = "http://${serverInfo.ip}:$PORT/$index"
+                            val url = "http://${serverInfo.ip}:$port/$index"
 
                             ExpandableCard { expanded ->
                                 FileItem(

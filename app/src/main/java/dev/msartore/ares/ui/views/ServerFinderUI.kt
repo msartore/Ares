@@ -33,7 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
-import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.ui.compose.CardIcon
 import dev.msartore.ares.ui.compose.ServerItem
 import dev.msartore.ares.ui.compose.TextAuto
@@ -88,7 +88,7 @@ fun ServerFinderUI(
                                 ) {
                                     ServerItem(
                                         IP = ipSearchData.ipList.list.elementAt(it).ip,
-                                        url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$PORT",
+                                        url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$port",
                                         openUrl = { url ->
                                             mainViewModel.openUrl(url)
                                         }

@@ -86,4 +86,7 @@
     <string name="streaming">Streaming\n</string>
     <string name="upload">Carica</string>
     <string name="file_sent">file inviato</string>
+    <string name="server_port">Porta del server</string>
+    <string name="server_port_description">Imposta un numero di porta personalizzato in un intervallo: 1024–49151</string>
+    <string name="server_port_error">Il numero di porta deve essere compreso nell\'intervallo indicato</string>
 </resources>

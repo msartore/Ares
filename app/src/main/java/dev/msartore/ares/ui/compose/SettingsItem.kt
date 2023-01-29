@@ -125,6 +125,7 @@ fun SettingsItemInput(
     description: String? = null,
     icon: Painter,
     item: MutableState<Int>,
+    onCheck: ((String) -> Boolean)? = null,
     onClick: (() -> Unit)? = null
 ) {
 
@@ -157,10 +158,16 @@ fun SettingsItemInput(
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    item.value = itemUI.value.toIntOrNull() ?: 0
-                    itemUI.value = item.value.toString()
-                    onClick?.invoke()
-                    focusManager.clearFocus()
+                    if (onCheck?.invoke(itemUI.value) != false) {
+                        item.value = itemUI.value.toIntOrNull() ?: 0
+                        itemUI.value = item.value.toString()
+                        onClick?.invoke()
+                        focusManager.clearFocus()
+                    } else {
+                        itemUI.value = item.value.toString()
+                        onClick?.invoke()
+                        focusManager.clearFocus()
+                    }
                 },
             )
         )

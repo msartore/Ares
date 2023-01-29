@@ -10,7 +10,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.encodeAsBitmap
 import io.ktor.server.application.ApplicationCall
@@ -40,7 +40,7 @@ class NetworkCallback(
             val ip = findIPV4(linkProperties) ?: ""
 
             cor {
-                networkInfo.bitmap.value = encodeAsBitmap("http://$ip:$PORT", 500, 500)?.asImageBitmap()
+                networkInfo.bitmap.value = encodeAsBitmap("http://$ip:$port", 500, 500)?.asImageBitmap()
             }
 
             ip

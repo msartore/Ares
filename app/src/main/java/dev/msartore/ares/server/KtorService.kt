@@ -17,7 +17,7 @@ import dev.msartore.ares.models.FileTransfer
 import dev.msartore.ares.models.FileType
 import dev.msartore.ares.server.KtorService.KtorServer.CHANNEL_ID
 import dev.msartore.ares.server.KtorService.KtorServer.ONGOING_NOTIFICATION_ID
-import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.fileTransfer
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
@@ -81,7 +81,7 @@ class KtorService: Service() {
     object KtorServer {
         const val ONGOING_NOTIFICATION_ID = 123
         const val CHANNEL_ID = "server_id"
-        const val PORT = 7070
+        var port = 7070
 
         val concurrentMutableList = ConcurrentMutableList<FileData>()
         val isServerOn = mutableStateOf(false)
@@ -125,7 +125,7 @@ class KtorService: Service() {
     override fun onCreate() {
         super.onCreate()
 
-        server = embeddedServer(Netty, port = PORT) {
+        server = embeddedServer(Netty, port = port) {
             routing {
                 get ("/{name}") {
                     val streaming = call.parameters["streaming"]

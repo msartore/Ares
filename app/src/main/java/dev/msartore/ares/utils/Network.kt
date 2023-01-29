@@ -7,7 +7,7 @@ import dev.msartore.ares.R
 import dev.msartore.ares.models.IPSearchData
 import dev.msartore.ares.models.NetworkInfo
 import dev.msartore.ares.models.Settings
-import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.ServerInfo
 import java.net.InetSocketAddress
 import java.net.Socket
@@ -68,4 +68,4 @@ fun isValidServerIP(string: String) =
 
 @ExperimentalGetImage
 fun String.pingServer(settings: Settings?, timeout: Int? = settings?.ipTimeout?.value) =
-    Socket().connect(InetSocketAddress(this, PORT), timeout ?: 150)
+    Socket().connect(InetSocketAddress(this, port), timeout ?: 150)

@@ -1,6 +1,7 @@
 package dev.msartore.ares.ui.views
 
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.msartore.ares.R
 import dev.msartore.ares.models.Settings
+import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.ui.compose.*
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
@@ -28,6 +30,7 @@ import dev.msartore.ares.viewmodels.SettingsViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
+@androidx.camera.core.ExperimentalGetImage
 fun SettingsUI(
     mainViewModel: MainViewModel,
     settingsViewModel: SettingsViewModel = viewModel()
@@ -36,8 +39,8 @@ fun SettingsUI(
     val context = LocalContext.current
     val transition = updateTransition(settingsViewModel.selectedItem.value, label = "")
 
-    transition.AnimatedContent {
-        when(it) {
+    transition.AnimatedContent { settingsPages ->
+        when(settingsPages) {
             SettingsPages.SETTINGS -> {
                 Column(
                     modifier = Modifier
@@ -77,6 +80,24 @@ fun SettingsUI(
                         ) {
                             work { save(Settings.Keys.IPTimeout, ipTimeout) }
                         }
+
+                        if (!KtorService.KtorServer.isServerOn.value)
+                            SettingsItemInput(
+                                title = stringResource(id = R.string.server_port),
+                                description = stringResource(id = R.string.server_port_description),
+                                icon = painterResource(id = R.drawable.dns_24px),
+                                item = serverPortNumber,
+                                onCheck = {
+                                    if ((it.toIntOrNull() ?: 0) in 1024..49151) true
+                                    else {
+                                        Toast.makeText(context, context.getString(R.string.server_port_error), Toast.LENGTH_SHORT).show()
+                                        false
+                                    }
+                                }
+                            ) {
+                                work { save(Settings.Keys.ServerPortNumber, serverPortNumber) }
+                                KtorService.KtorServer.port = serverPortNumber.value
+                            }
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             Divider(

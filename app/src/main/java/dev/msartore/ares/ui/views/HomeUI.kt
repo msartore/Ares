@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.msartore.ares.R
-import dev.msartore.ares.server.KtorService.KtorServer.PORT
+import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.ui.compose.ExpandableCard
@@ -128,7 +128,7 @@ fun HomeUI(
                                 isNetworkAvailable.value && isWifiNetwork.value ->
                                     "${stringResource(id = R.string.ip_address)}:" +
                                             " ${ipAddress.value}" +
-                                            if (isServerOn.value) ":${PORT}" else ""
+                                            if (isServerOn.value) ":${port}" else ""
                                 !isWifiNetwork.value && isNetworkAvailable.value ->
                                     stringResource(id = R.string.wrong_network)
                                 else ->
@@ -152,7 +152,7 @@ fun HomeUI(
                             id = R.drawable.share_24px
                         ) {
                             mainViewModel.apply {
-                                context.shareText("http://${networkInfo.ipAddress.value}:$PORT")
+                                context.shareText("http://${networkInfo.ipAddress.value}:$port")
                             }
                         }
 

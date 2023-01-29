@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.utils.readBool
 import dev.msartore.ares.utils.readInt
 import dev.msartore.ares.utils.write
@@ -14,15 +15,20 @@ class Settings(
 ) {
 
     private val timeout = 150
+    private val port = 7070
 
     var findServersAtStart: MutableState<Boolean> = mutableStateOf(false)
     var ipTimeout: MutableState<Int> = mutableStateOf(timeout)
     var isMaterialYouEnabled: MutableState<Boolean> = mutableStateOf(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+    var serverPortNumber: MutableState<Int> = mutableStateOf(port)
 
+    @androidx.camera.core.ExperimentalGetImage
     suspend fun update() {
         findServersAtStart.value = dataStore.readBool(Keys.FindServersAtStart.key) == true
         ipTimeout.value = dataStore.readInt(Keys.IPTimeout.key) ?: timeout
         isMaterialYouEnabled.value = dataStore.readBool(Keys.MaterialYou.key) == true
+        serverPortNumber.value = dataStore.readInt(Keys.ServerPortNumber.key) ?: port
+        KtorService.KtorServer.port = serverPortNumber.value
     }
 
     suspend fun <T> save(key: Keys, value: MutableState<T>) {
@@ -31,6 +37,7 @@ class Settings(
 
     enum class Keys(val key: String) {
         FindServersAtStart("find_servers_at_start"),
+        ServerPortNumber("server_port_number"),
         IPTimeout("ip_timeout"),
         MaterialYou("material_you")
     }
