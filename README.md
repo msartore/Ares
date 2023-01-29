@@ -21,7 +21,7 @@ A tool to help you transfer files via local network
 Ares is released under the [GNU General Public License v3.0](LICENSE.md).
 
 ```
-Copyright (C) 2022  Massimiliano Sartore
+Copyright (C) 2023 Massimiliano Sartore
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
