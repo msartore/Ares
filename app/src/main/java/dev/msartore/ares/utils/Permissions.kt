@@ -39,9 +39,7 @@ fun Permissions(
             },
             onConfirm = {
                 dialogStatus.value = false
-                permissionState.permissions.forEach {
-                    it.launchPermissionRequest()
-                }
+                permissionState.launchMultiplePermissionRequest()
             }
         )
     }
