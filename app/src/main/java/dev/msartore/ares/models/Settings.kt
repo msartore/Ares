@@ -21,12 +21,14 @@ class Settings(
     var ipTimeout: MutableState<Int> = mutableStateOf(timeout)
     var isMaterialYouEnabled: MutableState<Boolean> = mutableStateOf(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
     var serverPortNumber: MutableState<Int> = mutableStateOf(port)
+    var removeWifiRestriction: MutableState<Boolean> = mutableStateOf(false)
 
     @androidx.camera.core.ExperimentalGetImage
     suspend fun update() {
         findServersAtStart.value = dataStore.readBool(Keys.FindServersAtStart.key) == true
         ipTimeout.value = dataStore.readInt(Keys.IPTimeout.key) ?: timeout
         isMaterialYouEnabled.value = dataStore.readBool(Keys.MaterialYou.key) == true
+        removeWifiRestriction.value = dataStore.readBool(Keys.RemoveWifiRestriction.key) == true
         serverPortNumber.value = dataStore.readInt(Keys.ServerPortNumber.key) ?: port
         KtorService.KtorServer.port = serverPortNumber.value
     }
@@ -39,6 +41,7 @@ class Settings(
         FindServersAtStart("find_servers_at_start"),
         ServerPortNumber("server_port_number"),
         IPTimeout("ip_timeout"),
+        RemoveWifiRestriction("remove_wifi_restriction"),
         MaterialYou("material_you")
     }
 }

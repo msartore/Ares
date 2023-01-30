@@ -56,75 +56,77 @@ fun ServerFinderUI(
     val transition = updateTransition(serverFinderViewModel.selectedItem.value, label = serverFinderViewModel.selectedItem.value.name)
     val mainContent: @Composable (Modifier) -> Unit = { modifier ->
 
-        if (mainViewModel.networkInfo.isNetworkAvailable.value && mainViewModel.networkInfo.isWifiNetwork.value) {
+        mainViewModel.networkInfo.run {
+            if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)) {
 
-            Column(
-                modifier = modifier,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement =
-                if (serverFinderViewModel.ipSearchData.ipList.size.value == 0)
-                    Arrangement.Center
-                else
-                    Arrangement.Top
-            ) {
+                Column(
+                    modifier = modifier,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement =
+                    if (serverFinderViewModel.ipSearchData.ipList.size.value == 0)
+                        Arrangement.Center
+                    else
+                        Arrangement.Top
+                ) {
 
-                when {
-                    serverFinderViewModel.ipSearchData.ipList.size.value > 0 -> {
-                        TextAuto(id = R.string.servers)
+                    when {
+                        serverFinderViewModel.ipSearchData.ipList.size.value > 0 -> {
+                            TextAuto(id = R.string.servers)
 
-                        LazyVerticalGrid(
-                            modifier = Modifier
-                                .padding(top = 16.dp)
-                                .clip(RoundedCornerShape(16.dp)),
-                            columns = GridCells.Adaptive(250.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            state = state
-                        ) {
-                            serverFinderViewModel.apply {
-                                items(
-                                    count = ipSearchData.ipList.size.value,
-                                    key = { ipSearchData.ipList.list.elementAt(it).hashCode() }
-                                ) {
-                                    ServerItem(
-                                        IP = ipSearchData.ipList.list.elementAt(it).ip,
-                                        url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$port",
-                                        openUrl = { url ->
-                                            mainViewModel.openUrl(url)
-                                        }
+                            LazyVerticalGrid(
+                                modifier = Modifier
+                                    .padding(top = 16.dp)
+                                    .clip(RoundedCornerShape(16.dp)),
+                                columns = GridCells.Adaptive(250.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                state = state
+                            ) {
+                                serverFinderViewModel.apply {
+                                    items(
+                                        count = ipSearchData.ipList.size.value,
+                                        key = { ipSearchData.ipList.list.elementAt(it).hashCode() }
                                     ) {
-                                        setServer(ipSearchData.ipList.list.elementAt(it))
+                                        ServerItem(
+                                            IP = ipSearchData.ipList.list.elementAt(it).ip,
+                                            url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$port",
+                                            openUrl = { url ->
+                                                mainViewModel.openUrl(url)
+                                            }
+                                        ) {
+                                            setServer(ipSearchData.ipList.list.elementAt(it))
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                    serverFinderViewModel.ipSearchData.isSearching.value == 1 -> {
-                        CircularProgressIndicator(modifier = Modifier.size(50.dp))
-                    }
-                    else -> {
-                        TextAuto(id = R.string.no_server_found)
+                        serverFinderViewModel.ipSearchData.isSearching.value == 1 -> {
+                            CircularProgressIndicator(modifier = Modifier.size(50.dp))
+                        }
+                        else -> {
+                            TextAuto(id = R.string.no_server_found)
+                        }
                     }
                 }
             }
-        }
-        else {
+            else {
 
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                Image(
-                    modifier = Modifier.weight(9f, false),
-                    painter = painterResource(id = R.drawable.no_connection_rafiki),
-                    contentDescription = stringResource(id = R.string.wrong_network)
-                )
+                    Image(
+                        modifier = Modifier.weight(9f, false),
+                        painter = painterResource(id = R.drawable.no_connection_rafiki),
+                        contentDescription = stringResource(id = R.string.wrong_network)
+                    )
 
-                TextAuto(
-                    modifier = Modifier.weight(1f, false),
-                    id = R.string.wrong_network
-                )
+                    TextAuto(
+                        modifier = Modifier.weight(1f, false),
+                        id = R.string.wrong_network
+                    )
+                }
             }
         }
     }
@@ -153,40 +155,42 @@ fun ServerFinderUI(
                                     .weight(8f)
                             )
 
-                            if (mainViewModel.networkInfo.isNetworkAvailable.value && mainViewModel.networkInfo.isWifiNetwork.value)
-                                Column(
-                                    modifier = Modifier
-                                        .weight(2f)
-                                        .fillMaxHeight(),
-                                    verticalArrangement = Arrangement.Center,
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
+                            mainViewModel.networkInfo.run {
+                                if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true))
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(2f)
+                                            .fillMaxHeight(),
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
 
-                                    if (serverFinderViewModel.ipSearchData.isSearching.value == 0) {
-                                        CardIcon(
-                                            iconId = R.drawable.wifi_find_24px,
-                                            textId = R.string.scan_network_for_servers,
-                                            contentDescription = stringResource(id = R.string.scan_network_for_servers),
-                                        ) {
-                                            context.findServers(
-                                                settings = mainViewModel.settings,
-                                                networkInfo = mainViewModel.networkInfo,
-                                                ipSearchData = serverFinderViewModel.ipSearchData
-                                            )
+                                        if (serverFinderViewModel.ipSearchData.isSearching.value == 0) {
+                                            CardIcon(
+                                                iconId = R.drawable.wifi_find_24px,
+                                                textId = R.string.scan_network_for_servers,
+                                                contentDescription = stringResource(id = R.string.scan_network_for_servers),
+                                            ) {
+                                                context.findServers(
+                                                    settings = mainViewModel.settings,
+                                                    networkInfo = mainViewModel.networkInfo,
+                                                    ipSearchData = serverFinderViewModel.ipSearchData
+                                                )
+                                            }
+
+                                            Spacer(modifier = Modifier.height(8.dp))
                                         }
 
-                                        Spacer(modifier = Modifier.height(8.dp))
+                                        if (mainViewModel.hasCamera())
+                                            CardIcon(
+                                                iconId = R.drawable.qr_code_scanner_24px,
+                                                textId = R.string.scan_qrcode,
+                                                contentDescription = stringResource(id = R.string.scan_qrcode),
+                                            ) {
+                                                serverFinderViewModel.scanQRCode()
+                                            }
                                     }
-
-                                    if (mainViewModel.hasCamera())
-                                        CardIcon(
-                                            iconId = R.drawable.qr_code_scanner_24px,
-                                            textId = R.string.scan_qrcode,
-                                            contentDescription = stringResource(id = R.string.scan_qrcode),
-                                        ) {
-                                            serverFinderViewModel.scanQRCode()
-                                        }
-                                }
+                            }
                         }
                     else
                         Column(
@@ -200,43 +204,45 @@ fun ServerFinderUI(
 
                             mainContent(Modifier.weight(8f))
 
-                            if (
-                                serverFinderViewModel.ipSearchData.isSearching.value == 0 &&
-                                mainViewModel.networkInfo.isNetworkAvailable.value &&
-                                mainViewModel.networkInfo.isWifiNetwork.value
-                            ) {
-
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .verticalScroll(scrollState)
-                                        .weight(2f),
-                                    horizontalArrangement = Arrangement.SpaceEvenly,
-                                    verticalAlignment = Alignment.CenterVertically
+                            mainViewModel.networkInfo.run {
+                                if (
+                                    serverFinderViewModel.ipSearchData.isSearching.value == 0 &&
+                                    isNetworkAvailable.value &&
+                                    (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)
                                 ) {
 
-                                    CardIcon(
-                                        iconId = R.drawable.wifi_find_24px,
-                                        textId = R.string.scan_network_for_servers,
-                                        contentDescription = stringResource(id = R.string.scan_network_for_servers),
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .verticalScroll(scrollState)
+                                            .weight(2f),
+                                        horizontalArrangement = Arrangement.SpaceEvenly,
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        context.findServers(
-                                            settings = mainViewModel.settings,
-                                            networkInfo = mainViewModel.networkInfo,
-                                            ipSearchData = serverFinderViewModel.ipSearchData
-                                        )
-                                    }
 
-                                    Spacer(modifier = Modifier.width(8.dp))
-
-                                    if (mainViewModel.hasCamera())
                                         CardIcon(
-                                            iconId = R.drawable.qr_code_scanner_24px,
-                                            textId = R.string.scan_qrcode,
-                                            contentDescription = stringResource(id = R.string.scan_qrcode),
+                                            iconId = R.drawable.wifi_find_24px,
+                                            textId = R.string.scan_network_for_servers,
+                                            contentDescription = stringResource(id = R.string.scan_network_for_servers),
                                         ) {
-                                            serverFinderViewModel.scanQRCode()
+                                            context.findServers(
+                                                settings = mainViewModel.settings,
+                                                networkInfo = mainViewModel.networkInfo,
+                                                ipSearchData = serverFinderViewModel.ipSearchData
+                                            )
                                         }
+
+                                        Spacer(modifier = Modifier.width(8.dp))
+
+                                        if (mainViewModel.hasCamera())
+                                            CardIcon(
+                                                iconId = R.drawable.qr_code_scanner_24px,
+                                                textId = R.string.scan_qrcode,
+                                                contentDescription = stringResource(id = R.string.scan_qrcode),
+                                            ) {
+                                                serverFinderViewModel.scanQRCode()
+                                            }
+                                    }
                                 }
                             }
                         }

@@ -89,4 +89,7 @@
     <string name="server_port">Porta del server</string>
     <string name="server_port_description">Imposta un numero di porta personalizzato in un intervallo: 1024–49151</string>
     <string name="server_port_error">Il numero di porta deve essere compreso nell\'intervallo indicato</string>
+    <string name="experimental">Sperimentale</string>
+    <string name="remove_wifi_restriction_title">Rimuovi la restrizione WIFI</string>
+    <string name="remove_wifi_restriction_description">Rimuovi la restrizione WIFI e accedi a tutte le funzionalità senza utilizzare un WIFI</string>
 </resources>

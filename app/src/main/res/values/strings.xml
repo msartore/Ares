@@ -90,4 +90,7 @@
     <string name="server_port">Server port</string>
     <string name="server_port_description">Set a custom port number in a range: 1024–49151</string>
     <string name="server_port_error">The port number must be in the range stated</string>
+    <string name="experimental">Experimental</string>
+    <string name="remove_wifi_restriction_title">Remove WIFI restriction</string>
+    <string name="remove_wifi_restriction_description">Remove WIFI restriction and access all the feature without using a WIFI</string>
 </resources>

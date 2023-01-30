@@ -52,12 +52,12 @@ import kotlinx.coroutines.launch
 fun HomeUI(
     maxWidth: Dp,
     mainViewModel: MainViewModel,
-    viewModel: HomeViewModel = viewModel()
+    homeViewModel: HomeViewModel = viewModel()
 ) {
     val lazyGridState = rememberLazyGridState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val isLoading = viewModel.isLoading.collectAsState()
+    val isLoading = homeViewModel.isLoading.collectAsState()
     val home1State = rememberScrollState()
 
     val homeUIContent1: @Composable (Modifier) -> Unit = { modifier ->
@@ -120,16 +120,15 @@ fun HomeUI(
                         )
                     }
 
-
-                    mainViewModel.networkInfo.apply {
+                    mainViewModel.networkInfo.run {
                         TextAuto(
                             text =
                             when {
-                                isNetworkAvailable.value && isWifiNetwork.value ->
+                                isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true) ->
                                     "${stringResource(id = R.string.ip_address)}:" +
                                             " ${ipAddress.value}" +
                                             if (isServerOn.value) ":${port}" else ""
-                                !isWifiNetwork.value && isNetworkAvailable.value ->
+                                !(isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true) && isNetworkAvailable.value ->
                                     stringResource(id = R.string.wrong_network)
                                 else ->
                                     stringResource(id = R.string.no_network_available)
@@ -158,7 +157,7 @@ fun HomeUI(
 
                         TextButton(onClick = {
                             if (isServerOn.value)
-                                viewModel.onStopServerClick()
+                                homeViewModel.onStopServerClick()
                         }) {
                             TextAuto(
                                 id = R.string.stop_server,
@@ -166,9 +165,9 @@ fun HomeUI(
                         }
                     }
                     else {
-                        mainViewModel.networkInfo.apply {
-                            if (isNetworkAvailable.value && isWifiNetwork.value)
-                                TextButton(onClick = { viewModel.onStartServerClick() }) {
+                        mainViewModel.networkInfo.run {
+                            if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true))
+                                TextButton(onClick = { homeViewModel.onStartServerClick() }) {
                                     TextAuto(
                                         id = R.string.start_server,
                                     )
@@ -247,7 +246,7 @@ fun HomeUI(
                         TextButton(
                             modifier = Modifier.weight(1f, false),
                             onClick = {
-                                viewModel.onImportFilesClick()
+                                homeViewModel.onImportFilesClick()
                             }
                         ) {
                             TextAuto(

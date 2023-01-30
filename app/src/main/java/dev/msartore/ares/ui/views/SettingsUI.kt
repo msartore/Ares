@@ -121,6 +121,27 @@ fun SettingsUI(
                                 work { save(Settings.Keys.MaterialYou, isMaterialYouEnabled) }
                             }
                         }
+
+                        Divider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        )
+
+                        TextAuto(
+                            id = R.string.experimental,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
+                        SettingsItemSwitch(
+                            title = stringResource(id = R.string.remove_wifi_restriction_title),
+                            description = stringResource(id = R.string.remove_wifi_restriction_description),
+                            icon = painterResource(id = R.drawable.wifi_off_24px),
+                            item = removeWifiRestriction,
+                        ) {
+                            work { save(Settings.Keys.RemoveWifiRestriction, removeWifiRestriction) }
+                        }
                     }
 
                     Divider(

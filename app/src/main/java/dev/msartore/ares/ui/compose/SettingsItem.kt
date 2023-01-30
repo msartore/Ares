@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun SettingsItem(
@@ -62,7 +63,8 @@ fun SettingsItem(
                         .padding(horizontal = 16.dp),
                     text = title,
                     style = MaterialTheme.typography.titleLarge,
-                    maxLines = Int.MAX_VALUE
+                    maxLines = Int.MAX_VALUE,
+                    lineHeight = 22.sp
                 )
 
                 if (description != null)
