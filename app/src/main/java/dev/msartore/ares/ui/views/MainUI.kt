@@ -107,7 +107,6 @@ fun MainUI(
         )
     }
     val onClick: (MainPages) -> Unit = { page ->
-
         if (selectedItem.value != page)
             selectedItem.value = page
     }

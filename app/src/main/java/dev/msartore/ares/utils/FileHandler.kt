@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.graphics.drawable.toBitmap
 import com.google.gson.Gson
@@ -16,6 +17,10 @@ import dev.msartore.ares.R
 import dev.msartore.ares.models.FileData
 import dev.msartore.ares.models.FileDataJson
 import dev.msartore.ares.models.FileType
+import dev.msartore.ares.server.KtorService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.util.Locale
 
@@ -114,3 +119,36 @@ fun getByteArrayFromDrawable(context: Context, id: Int) =
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
         stream.toByteArray()
     }
+
+fun Context.filesDataHandler(isLoading: MutableStateFlow<Boolean>, uris: List<Uri>?) {
+    val listFileSizeB = KtorService.KtorServer.concurrentMutableList.size.value
+
+    work {
+        if (!uris.isNullOrEmpty()) {
+            isLoading.value = true
+
+            KtorService.KtorServer.concurrentMutableList.apply {
+                addAll(
+                    uris.filter { uri ->
+                        this.list.none { it.uri == uri }
+                    }.mapNotNull {
+                        contentResolver.extractFileInformation(it)
+                    }
+                )
+            }
+
+            if (listFileSizeB == KtorService.KtorServer.concurrentMutableList.size.value)
+                cor {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            applicationContext,
+                            getString(R.string.removed_duplicates),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+            isLoading.value = false
+        }
+    }
+}

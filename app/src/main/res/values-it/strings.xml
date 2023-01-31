@@ -24,7 +24,7 @@
     <string name="status">Stato</string>
     <string name="server_running">Server in esecuzione</string>
     <string name="running">In esecuzione</string>
-    <string name="removed_duplicates">Rimosso un file duplicato</string>
+    <string name="removed_duplicates">Rimossi dei file duplicati</string>
     <string name="file_selected">File selezionato</string>
     <string name="delete_selected">Elimina selezionato</string>
     <string name="file">File</string>

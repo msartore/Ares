@@ -23,7 +23,7 @@
     <string name="status">Status</string>
     <string name="server_running">Server running</string>
     <string name="running">Running</string>
-    <string name="removed_duplicates">Removed some duplicate file</string>
+    <string name="removed_duplicates">Removed some duplicate files</string>
     <string name="file_selected">File selected</string>
     <string name="delete_selected">Delete selected</string>
     <string name="file">File</string>

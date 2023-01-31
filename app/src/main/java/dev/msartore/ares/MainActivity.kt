@@ -7,7 +7,6 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -26,21 +25,17 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import dev.msartore.ares.models.NetworkCallback
 import dev.msartore.ares.server.KtorService
-import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.ui.theme.AresTheme
 import dev.msartore.ares.ui.views.MainUI
 import dev.msartore.ares.utils.Permissions
 import dev.msartore.ares.utils.cor
-import dev.msartore.ares.utils.extractFileInformation
+import dev.msartore.ares.utils.filesDataHandler
 import dev.msartore.ares.utils.findServers
 import dev.msartore.ares.utils.isWideView
-import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.HomeViewModel
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.ServerFinderViewModel
 import dev.msartore.ares.viewmodels.SettingsViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @ExperimentalGetImage
 class MainActivity : ComponentActivity() {
@@ -58,37 +53,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val getContent = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
-
-            val listFileSizeB = concurrentMutableList.size.value
-
-            work {
-                if (!uris.isNullOrEmpty()) {
-                    homeViewModel.isLoading.value = true
-
-                    concurrentMutableList.apply {
-                        addAll(
-                            uris.filter { uri ->
-                                this.list.none { it.uri == uri }
-                            }.mapNotNull {
-                                contentResolver.extractFileInformation(it)
-                            }
-                        )
-                    }
-
-                    if (listFileSizeB == concurrentMutableList.size.value)
-                        cor {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    applicationContext,
-                                    getString(R.string.removed_duplicates),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }
-
-                    homeViewModel.isLoading.value = false
-                }
-            }
+            filesDataHandler(homeViewModel.isLoading, uris)
         }
         var permissionState: MultiplePermissionsState? = null
         val getContentPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -100,6 +65,19 @@ class MainActivity : ComponentActivity() {
         )
         val navigateToSettingsScreen = {
             getContentPermission.launch(intentSettings)
+        }
+
+        if (intent.clipData != null) {
+            val listUri = mutableListOf<Uri>()
+
+            for (i in 0 until (intent.clipData?.itemCount ?: 0))  {
+                intent.clipData?.getItemAt(i)?.uri?.let {
+                    listUri.add(it)
+                }
+            }
+
+            if (listUri.isNotEmpty())
+                filesDataHandler(homeViewModel.isLoading, listUri)
         }
 
         service = Intent(this, KtorService::class.java)
