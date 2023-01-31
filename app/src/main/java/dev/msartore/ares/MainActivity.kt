@@ -76,8 +76,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            if (listUri.isNotEmpty())
+            if (listUri.isNotEmpty()) {
                 filesDataHandler(homeViewModel.isLoading, listUri)
+
+                if (!KtorService.KtorServer.isServerOn.value)
+                    homeViewModel.onStartServerClick()
+            }
         }
 
         service = Intent(this, KtorService::class.java)

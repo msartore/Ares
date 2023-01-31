@@ -57,7 +57,7 @@ fun SettingsUI(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     TextAuto(
-                        id = R.string.wifi_scan,
+                        id = R.string.find_servers,
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -81,6 +81,18 @@ fun SettingsUI(
                             work { save(Settings.Keys.IPTimeout, ipTimeout) }
                         }
 
+                        Divider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 16.dp)
+                        )
+
+                        TextAuto(
+                            id = R.string.server,
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+
                         if (!KtorService.KtorServer.isServerOn.value)
                             SettingsItemInput(
                                 title = stringResource(id = R.string.server_port),
@@ -98,6 +110,15 @@ fun SettingsUI(
                                 work { save(Settings.Keys.ServerPortNumber, serverPortNumber) }
                                 KtorService.KtorServer.port = serverPortNumber.value
                             }
+
+                        SettingsItemSwitch(
+                            title = stringResource(id = R.string.server_auto_startup),
+                            description = stringResource(id = R.string.server_auto_startup_description),
+                            icon = painterResource(id = R.drawable.start_24px),
+                            item = serverAutoStartup,
+                        ) {
+                            work { save(Settings.Keys.ServerAutoStartup, serverAutoStartup) }
+                        }
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             Divider(

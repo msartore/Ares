@@ -72,6 +72,7 @@ import kotlinx.html.link
 import kotlinx.html.ol
 import kotlinx.html.style
 import kotlinx.html.title
+import kotlinx.html.unsafe
 import java.io.File
 
 
@@ -254,7 +255,7 @@ class KtorService: Service() {
                             title(content = applicationContext.getString(R.string.ares_title_website))
                             link(rel = "icon", href = "/favicon.png")
                             style {
-                                +"a { color:black; } .file { margin:10px; } .form { height: 250px; border: 2px solid white; border-radius: 50px ; background-color: coral; } .form form, .form b { position: relative; left: 5%; top: 25%; } .form div { padding-bottom: 1%; }"
+                                unsafe { +"a { color:black; } .file { margin:10px; } .form { height: 250px; border: 2px solid white; border-radius: 50px ; background-color: #85DB68; } .form form, .form b { position: relative; left: 5%; top: 25%; } .form div { padding-bottom: 1%; }" }
                             }
                         }
                         body {
@@ -282,7 +283,7 @@ class KtorService: Service() {
                                     if (concurrentMutableList.list.isEmpty())
                                         R.string.no_file_available
                                     else
-                                        R.string.file_available
+                                        R.string.files
                                 )
                             }
                             ol {

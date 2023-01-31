@@ -92,4 +92,7 @@
     <string name="experimental">Sperimentale</string>
     <string name="remove_wifi_restriction_title">Rimuovi la restrizione WIFI</string>
     <string name="remove_wifi_restriction_description">Rimuovi la restrizione WIFI e accedi a tutte le funzionalità senza utilizzare un WIFI</string>
+    <string name="files">File</string>
+    <string name="server_auto_startup">Avvio automatico del server</string>
+    <string name="server_auto_startup_description">Avvia il server quando l\'app riceve un file</string>
 </resources>

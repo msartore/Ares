@@ -93,4 +93,7 @@
     <string name="experimental">Experimental</string>
     <string name="remove_wifi_restriction_title">Remove WIFI restriction</string>
     <string name="remove_wifi_restriction_description">Remove WIFI restriction and access all the feature without using a WIFI</string>
+    <string name="files">Files</string>
+    <string name="server_auto_startup">Server auto startup</string>
+    <string name="server_auto_startup_description">Start the server when the app receive a file</string>
 </resources>
