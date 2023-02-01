@@ -32,6 +32,7 @@ import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.filesDataHandler
 import dev.msartore.ares.utils.findServers
 import dev.msartore.ares.utils.isWideView
+import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.HomeViewModel
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.ServerFinderViewModel
@@ -53,7 +54,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val getContent = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
-            filesDataHandler(homeViewModel.isLoading, uris)
+            work {
+                filesDataHandler(homeViewModel.isLoading, uris)
+            }
         }
         var permissionState: MultiplePermissionsState? = null
         val getContentPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -77,10 +80,12 @@ class MainActivity : ComponentActivity() {
             }
 
             if (listUri.isNotEmpty()) {
-                filesDataHandler(homeViewModel.isLoading, listUri)
+                work {
+                    filesDataHandler(homeViewModel.isLoading, listUri)
 
-                if (!KtorService.KtorServer.isServerOn.value)
-                    homeViewModel.onStartServerClick()
+                    if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true)
+                        homeViewModel.onStartServerClick()
+                }
             }
         }
 

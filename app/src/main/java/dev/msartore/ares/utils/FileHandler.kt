@@ -47,7 +47,11 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
                 size = it.getInt(sizeIndex)
                 name = displayName
                 fileType = fileType(displayName.lowercase(Locale.ROOT))
-                mimeType = it.getString(typeIndex)
+                runCatching {
+                    mimeType = it.getString(typeIndex)
+                }.onFailure { throwable ->
+                    throwable.printStackTrace()
+                }
                 icon = when (fileType) {
                     FileType.VIDEO -> R.drawable.video_file_24px
                     FileType.IMAGE -> R.drawable.image_24px
@@ -120,35 +124,33 @@ fun getByteArrayFromDrawable(context: Context, id: Int) =
         stream.toByteArray()
     }
 
-fun Context.filesDataHandler(isLoading: MutableStateFlow<Boolean>, uris: List<Uri>?) {
+suspend fun Context.filesDataHandler(isLoading: MutableStateFlow<Boolean>, uris: List<Uri>?) {
     val listFileSizeB = KtorService.KtorServer.concurrentMutableList.size.value
 
-    work {
-        if (!uris.isNullOrEmpty()) {
-            isLoading.value = true
+    if (!uris.isNullOrEmpty()) {
+        isLoading.value = true
 
-            KtorService.KtorServer.concurrentMutableList.apply {
-                addAll(
-                    uris.filter { uri ->
-                        this.list.none { it.uri == uri }
-                    }.mapNotNull {
-                        contentResolver.extractFileInformation(it)
-                    }
-                )
+        KtorService.KtorServer.concurrentMutableList.apply {
+            addAll(
+                uris.filter { uri ->
+                    this.list.none { it.uri == uri }
+                }.mapNotNull {
+                    runCatching { contentResolver.extractFileInformation(it) }.getOrNull()
+                }
+            )
+        }
+
+        if (listFileSizeB == KtorService.KtorServer.concurrentMutableList.size.value)
+            cor {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        applicationContext,
+                        getString(R.string.removed_duplicates),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
 
-            if (listFileSizeB == KtorService.KtorServer.concurrentMutableList.size.value)
-                cor {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            applicationContext,
-                            getString(R.string.removed_duplicates),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-
-            isLoading.value = false
-        }
+        isLoading.value = false
     }
 }
