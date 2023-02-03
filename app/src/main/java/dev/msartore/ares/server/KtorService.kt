@@ -113,7 +113,7 @@ class KtorService: Service() {
         val notification: Notification = Notification.Builder(this, CHANNEL_ID)
             .setContentTitle(getText(R.string.server))
             .setContentText(getText(R.string.notification_message))
-            .setSmallIcon(R.drawable.logo_ares)
+            .setSmallIcon(R.drawable.logo)
             .setContentIntent(pendingIntent)
             .setTicker(getText(R.string.ticker_text))
             .build()
@@ -167,7 +167,7 @@ class KtorService: Service() {
                     }.toJsonArray().toString())
                 }
                 get("/favicon.png") {
-                    getByteArrayFromDrawable(applicationContext, R.drawable.logo_ares)?.let { it1 ->
+                    getByteArrayFromDrawable(applicationContext, R.drawable.logo)?.let { it1 ->
                         call.respondBytes(it1)
                     }
                 }

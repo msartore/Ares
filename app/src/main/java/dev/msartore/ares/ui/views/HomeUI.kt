@@ -276,7 +276,7 @@ fun HomeUI(
                     ExpandableCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(if (selected.value) MaterialTheme.colorScheme.primaryContainer else Color.Transparent),
+                            .background(if (selected.value) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer),
                         onLongClick = {
                             selected.value = !selected.value
                         }

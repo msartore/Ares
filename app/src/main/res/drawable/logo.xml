@@ -7,12 +7,12 @@
     android:viewportHeight="108">
     <path
         android:name="path"
-        android:pathData="M 38.712 42 L 41.173 44.505 L 37.553 48.243 L 60 48.243 L 60 51.757 L 37.517 51.757 L 41.173 55.495 L 38.748 58 L 31 50 L 38.712 42 Z"
+        android:pathData="M 30.7 35 L 34.436 38.914 L 28.943 44.755 L 63 44.755 L 63 50.245 L 28.888 50.245 L 34.436 56.086 L 30.755 60 L 19 47.5 L 30.7 35 Z"
         android:fillColor="#ffc7a2"
         android:strokeWidth="1"/>
     <path
         android:name="path_1"
-        android:pathData="M 68.288 66 L 65.826 63.495 L 69.447 59.757 L 47 59.757 L 47 56.243 L 69.483 56.243 L 65.826 52.505 L 68.252 50 L 76 58 L 68.288 66 Z"
+        android:pathData="M 76.3 72 L 72.564 68.086 L 78.057 62.245 L 44 62.245 L 44 56.755 L 78.112 56.755 L 72.564 50.914 L 76.245 47 L 88 59.5 L 76.3 72 Z"
         android:fillColor="#a091fd"
         android:strokeWidth="1"/>
 </vector>
