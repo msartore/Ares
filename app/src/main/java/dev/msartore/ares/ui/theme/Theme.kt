@@ -12,6 +12,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dev.msartore.ares.models.Rgb
+import dev.msartore.ares.ui.theme.Theme.background
+import dev.msartore.ares.ui.theme.Theme.primaryContainer
+import dev.msartore.ares.ui.theme.Theme.darkTheme
 import dev.msartore.ares.utils.cor
 import dev.msartore.ares.viewmodels.MainViewModel
 
@@ -80,6 +84,12 @@ private val DarkColors = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+object Theme {
+    var darkTheme = false
+    var primaryContainer = Rgb()
+    var background = Rgb()
+}
+
 @Composable
 fun AresTheme(
     mainViewModel: MainViewModel,
@@ -87,7 +97,7 @@ fun AresTheme(
     isNavBarColorSet: MutableState<Boolean>,
     content: @Composable () -> Unit
 ) {
-    val darkTheme = isSystemInDarkTheme()
+    darkTheme = isSystemInDarkTheme()
     val systemUiController = rememberSystemUiController()
 
     val colorScheme = when {
@@ -97,6 +107,17 @@ fun AresTheme(
             dynamicLightColorScheme(LocalContext.current)
         darkTheme -> DarkColors
         else -> LightColors
+    }
+
+    primaryContainer.apply {
+        g = (colorScheme.secondaryContainer.green) * 255
+        b = (colorScheme.secondaryContainer.blue) * 255
+        r = (colorScheme.secondaryContainer.red) * 255
+    }
+    background.apply {
+        g = (colorScheme.background.green) * 255
+        b = (colorScheme.background.blue) * 255
+        r = (colorScheme.background.red) * 255
     }
 
     changeStatusBarColor.value = {

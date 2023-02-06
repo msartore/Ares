@@ -17,11 +17,14 @@ import dev.msartore.ares.models.FileTransfer
 import dev.msartore.ares.models.FileType
 import dev.msartore.ares.server.KtorService.KtorServer.CHANNEL_ID
 import dev.msartore.ares.server.KtorService.KtorServer.ONGOING_NOTIFICATION_ID
-import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.fileTransfer
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
+import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.KtorService.KtorServer.server
+import dev.msartore.ares.ui.theme.Theme.background
+import dev.msartore.ares.ui.theme.Theme.primaryContainer
+import dev.msartore.ares.ui.theme.Theme.darkTheme
 import dev.msartore.ares.utils.getByteArrayFromDrawable
 import dev.msartore.ares.utils.printableSize
 import dev.msartore.ares.utils.splitFileTypeFromName
@@ -249,13 +252,14 @@ class KtorService: Service() {
                 }
                 get("/") {
                     val result = call.parameters["success"]
+                    val textColor = if (darkTheme) "white" else "black"
 
                     call.respondHtml {
                         head {
                             title(content = applicationContext.getString(R.string.ares_title_website))
                             link(rel = "icon", href = "/favicon.png")
                             style {
-                                unsafe { +"a { color:black; } .file { margin:10px; } .form { height: 250px; border: 2px solid white; border-radius: 50px ; background-color: #85DB68; } .form form, .form b { position: relative; left: 5%; top: 25%; } .form div { padding-bottom: 1%; }" }
+                                unsafe { +"body { background-color:${background.cssGenerator()}; color:$textColor; font-family: Arial, Helvetica, sans-serif; } a { color:$textColor; } .file { margin:10px; } .form { height: 250px; border: 2px solid white; border-radius: 50px ; background-color: ${primaryContainer.cssGenerator()}; } .form form, .form b { position: relative; left: 5%; top: 25%; } .form div { padding-bottom: 1%; }" }
                             }
                         }
                         body {
