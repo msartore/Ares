@@ -37,6 +37,7 @@ import dev.msartore.ares.viewmodels.HomeViewModel
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.ServerFinderViewModel
 import dev.msartore.ares.viewmodels.SettingsViewModel
+import kotlinx.coroutines.runBlocking
 
 @ExperimentalGetImage
 class MainActivity : ComponentActivity() {
@@ -70,25 +71,6 @@ class MainActivity : ComponentActivity() {
             getContentPermission.launch(intentSettings)
         }
 
-        if (intent.clipData != null) {
-            val listUri = mutableListOf<Uri>()
-
-            for (i in 0 until (intent.clipData?.itemCount ?: 0))  {
-                intent.clipData?.getItemAt(i)?.uri?.let {
-                    listUri.add(it)
-                }
-            }
-
-            if (listUri.isNotEmpty()) {
-                work {
-                    filesDataHandler(homeViewModel.isLoading, listUri)
-
-                    if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true)
-                        homeViewModel.onStartServerClick()
-                }
-            }
-        }
-
         service = Intent(this, KtorService::class.java)
         connectivityManager = getSystemService(ConnectivityManager::class.java)
         networkCallback = NetworkCallback(
@@ -104,43 +86,64 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        mainViewModel.apply {
-            startSettings()
-            pm = packageManager
-            onFindServers = { _settings, _networkInfo ->
-                findServers(
-                    _networkInfo,
-                    _settings,
-                    serverFinderViewModel.ipSearchData
-                )
-            }
-            downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
-            onOpenUrl = { url ->
-                runCatching {
-                    startActivity(
-                        Intent(Intent.ACTION_VIEW).apply {
-                            data = Uri.parse(url)
-                        }
+        runBlocking {
+            mainViewModel.apply {
+                startSettings()
+                pm = packageManager
+                onFindServers = { _settings, _networkInfo ->
+                    findServers(
+                        _networkInfo,
+                        _settings,
+                        serverFinderViewModel.ipSearchData
                     )
-                }.getOrElse {
-                    it.printStackTrace()
+                }
+                downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
+                onOpenUrl = { url ->
+                    runCatching {
+                        startActivity(
+                            Intent(Intent.ACTION_VIEW).apply {
+                                data = Uri.parse(url)
+                            }
+                        )
+                    }.getOrElse {
+                        it.printStackTrace()
+                    }
                 }
             }
-        }
 
-        settingsViewModel.onOpenThirdLicenses = {
-            startActivity(Intent(applicationContext, OssLicensesMenuActivity::class.java))
-        }
+            settingsViewModel.onOpenThirdLicenses = {
+                startActivity(Intent(applicationContext, OssLicensesMenuActivity::class.java))
+            }
 
-        homeViewModel.apply {
-            onImportFiles = {
-                getContent.launch(arrayOf("*/*"))
+            homeViewModel.apply {
+                onImportFiles = {
+                    getContent.launch(arrayOf("*/*"))
+                }
+                onStopServer = {
+                    stopService(service)
+                }
+                onStartServer = {
+                    startForegroundService(service)
+                }
             }
-            onStopServer = {
-                stopService(service)
-            }
-            onStartServer = {
-                startForegroundService(service)
+
+            if (intent.clipData != null) {
+                runBlocking {
+                    val listUri = mutableListOf<Uri>()
+
+                    for (i in 0 until (intent.clipData?.itemCount ?: 0))  {
+                        intent.clipData?.getItemAt(i)?.uri?.let {
+                            listUri.add(it)
+                        }
+                    }
+
+                    if (listUri.isNotEmpty()) {
+                        filesDataHandler(homeViewModel.isLoading, listUri)
+
+                        if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true)
+                            homeViewModel.onStartServerClick()
+                    }
+                }
             }
         }
 

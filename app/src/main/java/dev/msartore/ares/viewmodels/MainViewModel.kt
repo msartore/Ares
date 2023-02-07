@@ -12,13 +12,11 @@ import dev.msartore.ares.R
 import dev.msartore.ares.models.FileType
 import dev.msartore.ares.models.NetworkInfo
 import dev.msartore.ares.models.Settings
-import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel.MVM.dataStore
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import kotlinx.coroutines.flow.MutableStateFlow
-
 
 class MainViewModel : ViewModel() {
 
@@ -39,18 +37,17 @@ class MainViewModel : ViewModel() {
     var downloadManager: DownloadManager? = null
     var onFindServers: ((NetworkInfo, Settings?) -> Unit)? = null
 
-    fun Context.startSettings() {
+    @androidx.camera.core.ExperimentalGetImage
+    suspend fun Context.startSettings() {
 
         if (settings == null) {
             settings = Settings(dataStore = dataStore)
         }
 
-        work {
-            settings?.update()
+        settings?.update()
 
-            if (settings?.findServersAtStart?.value == true)
-                onFindServers?.invoke(networkInfo, settings)
-        }
+        if (settings?.findServersAtStart?.value == true)
+            onFindServers?.invoke(networkInfo, settings)
     }
 
     fun Context.shareText(string: String) {
