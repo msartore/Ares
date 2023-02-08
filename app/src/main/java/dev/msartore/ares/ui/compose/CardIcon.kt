@@ -27,7 +27,7 @@ fun CardIcon(
         modifier = Modifier
             .size(100.dp)
             .background(
-                MaterialTheme.colorScheme.secondaryContainer,
+                MaterialTheme.colorScheme.primaryContainer,
                 RoundedCornerShape(16.dp)
             )
             .clip(RoundedCornerShape(16.dp))

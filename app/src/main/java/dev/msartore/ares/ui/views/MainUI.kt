@@ -251,7 +251,7 @@ fun MainUI(
                             icon = { icon(item) },
                             label = { label(item) },
                             onClick = { onClick(item) },
-                            selected = selectedItem.value == item
+                            selected = selectedItem.value == item,
                         )
                     }
                 }

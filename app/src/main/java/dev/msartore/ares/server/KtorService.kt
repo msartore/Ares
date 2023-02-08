@@ -23,8 +23,8 @@ import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.KtorService.KtorServer.server
 import dev.msartore.ares.ui.theme.Theme.background
-import dev.msartore.ares.ui.theme.Theme.primaryContainer
 import dev.msartore.ares.ui.theme.Theme.darkTheme
+import dev.msartore.ares.ui.theme.Theme.primaryContainer
 import dev.msartore.ares.utils.getByteArrayFromDrawable
 import dev.msartore.ares.utils.printableSize
 import dev.msartore.ares.utils.splitFileTypeFromName
@@ -74,6 +74,7 @@ import kotlinx.html.li
 import kotlinx.html.link
 import kotlinx.html.ol
 import kotlinx.html.style
+import kotlinx.html.styleLink
 import kotlinx.html.title
 import kotlinx.html.unsafe
 import java.io.File
@@ -250,6 +251,21 @@ class KtorService: Service() {
 
                     call.respondRedirect("/?success=$result")
                 }
+                get("/style.css") {
+
+                    val asset = assets.open("style.css")
+
+                    call.respondBytesWriter (
+                        contentType = ContentType.Any,
+                    ) {
+                        asset.toByteReadChannel().consumeEachBufferRange { buffer, last ->
+                            writeFully(buffer)
+                            !last
+                        }.also {
+                            asset.close()
+                        }
+                    }
+                }
                 get("/") {
                     val result = call.parameters["success"]
                     val textColor = if (darkTheme) "white" else "black"
@@ -258,8 +274,11 @@ class KtorService: Service() {
                         head {
                             title(content = applicationContext.getString(R.string.ares_title_website))
                             link(rel = "icon", href = "/favicon.png")
+                            styleLink("/style.css")
                             style {
-                                unsafe { +"body { background-color:${background.cssGenerator()}; color:$textColor; font-family: Arial, Helvetica, sans-serif; } a { color:$textColor; } .file { margin:10px; } .form { height: 250px; border: 2px solid white; border-radius: 50px ; background-color: ${primaryContainer.cssGenerator()}; } .form form, .form b { position: relative; left: 5%; top: 25%; } .form div { padding-bottom: 1%; }" }
+                                unsafe {
+                                    +"body { background-color:${background.cssGenerator()}; color:$textColor; } .form { background-color: ${primaryContainer.cssGenerator()}; } a { color:$textColor; }"
+                                }
                             }
                         }
                         body {
@@ -272,6 +291,7 @@ class KtorService: Service() {
                                     div {
                                         input(type=InputType.file, name="upload", formEncType = InputFormEncType.multipartFormData)
                                     }
+
                                     button(type = ButtonType.submit) {
                                         +getString(R.string.upload)
                                     }
