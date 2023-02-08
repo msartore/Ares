@@ -24,7 +24,7 @@ import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.KtorService.KtorServer.server
 import dev.msartore.ares.ui.theme.Theme.background
 import dev.msartore.ares.ui.theme.Theme.darkTheme
-import dev.msartore.ares.ui.theme.Theme.primaryContainer
+import dev.msartore.ares.ui.theme.Theme.container
 import dev.msartore.ares.utils.getByteArrayFromDrawable
 import dev.msartore.ares.utils.printableSize
 import dev.msartore.ares.utils.splitFileTypeFromName
@@ -277,7 +277,7 @@ class KtorService: Service() {
                             styleLink("/style.css")
                             style {
                                 unsafe {
-                                    +"body { background-color:${background.cssGenerator()}; color:$textColor; } .form { background-color: ${primaryContainer.cssGenerator()}; } a { color:$textColor; }"
+                                    +"body { background-color:${background.cssGenerator()}; color:$textColor; } .form { background-color: ${container.cssGenerator()}; } a { color:$textColor; }"
                                 }
                             }
                         }

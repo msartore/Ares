@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dev.msartore.ares.models.Rgb
 import dev.msartore.ares.ui.theme.Theme.background
-import dev.msartore.ares.ui.theme.Theme.primaryContainer
+import dev.msartore.ares.ui.theme.Theme.container
 import dev.msartore.ares.ui.theme.Theme.darkTheme
 import dev.msartore.ares.utils.cor
 import dev.msartore.ares.viewmodels.MainViewModel
@@ -86,7 +86,7 @@ private val DarkColors = darkColorScheme(
 
 object Theme {
     var darkTheme = false
-    var primaryContainer = Rgb()
+    var container = Rgb()
     var background = Rgb()
 }
 
@@ -109,10 +109,12 @@ fun AresTheme(
         else -> LightColors
     }
 
-    primaryContainer.apply {
-        g = (colorScheme.secondaryContainer.green) * 255
-        b = (colorScheme.secondaryContainer.blue) * 255
-        r = (colorScheme.secondaryContainer.red) * 255
+    val surfaceColor = colorScheme.surfaceColorAtElevation(3.dp)
+
+    container.apply {
+        g = (surfaceColor.green) * 255
+        b = (surfaceColor.blue) * 255
+        r = (surfaceColor.red) * 255
     }
     background.apply {
         g = (colorScheme.background.green) * 255
