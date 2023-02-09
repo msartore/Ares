@@ -256,7 +256,7 @@ class KtorService: Service() {
                     val asset = assets.open("style.css")
 
                     call.respondBytesWriter (
-                        contentType = ContentType.Any,
+                        contentType = ContentType.Text.CSS,
                     ) {
                         asset.toByteReadChannel().consumeEachBufferRange { buffer, last ->
                             writeFully(buffer)
