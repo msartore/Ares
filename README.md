@@ -5,7 +5,7 @@
 [![CodeFactor](https://www.codefactor.io/repository/github/msartore/ares/badge)](https://www.codefactor.io/repository/github/msartore/ares) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/msartore/Ares) 
 
 ## 💡 Introduction
-A tool to help you transfer files via local network 
+Ares is an app that makes file sharing fast and convenient. You can use Ares to send and receive files from any device on your local network without using the internet. You can create your own server or join others with a simple scan. You can also access the server from your app or browser and upload files with ease. Ares is the app for file sharing via local network.
 
 ## 🌟 Features
 
