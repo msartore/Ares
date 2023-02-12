@@ -43,7 +43,7 @@ footer {
     grid-area: footer; 
 }
 
-ul[id="sidenavul"] {
+ul[id="sidenavul"], header nav ul {
     list-style: none;
 }
 
@@ -51,6 +51,7 @@ header nav ul {
     display: flex;
     padding: 0;
     text-align: center;
+    
 }
 
 ul[id="sidenavul"] li {
