@@ -1,6 +1,6 @@
 # Ares
 
-<img src="resources/banner.png">
+<img src="docs/resources/banner.png">
 
 [![CodeFactor](https://www.codefactor.io/repository/github/msartore/ares/badge)](https://www.codefactor.io/repository/github/msartore/ares) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/msartore/Ares) 
 
