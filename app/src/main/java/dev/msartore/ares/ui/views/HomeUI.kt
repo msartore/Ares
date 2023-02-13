@@ -67,6 +67,21 @@ fun HomeUI(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.size(30.dp),
+                    id = R.drawable.logo,
+                )
+                TextAuto(
+                    id = R.string.ares,
+                    style = MaterialTheme.typography.titleLarge,
+                )
+            }
+
             Column(
                 modifier = Modifier
                     .background(
@@ -75,6 +90,7 @@ fun HomeUI(
                     )
                     .padding(16.dp)
             ) {
+
                 Column {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -83,7 +99,7 @@ fun HomeUI(
                     ) {
                         TextAuto(
                             id = R.string.server,
-                            style = MaterialTheme.typography.headlineSmall
+                            style = MaterialTheme.typography.titleMedium
                         )
 
                         if (isServerOn.value)
@@ -183,7 +199,7 @@ fun HomeUI(
             Column {
                 TextAuto(
                     id = R.string.file,
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.titleMedium
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))

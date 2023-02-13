@@ -233,11 +233,26 @@ fun SettingsUI(
                         }
                     )
 
-                    Row(
+                    Column(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center
+                            .fillMaxWidth()
+                            .padding(vertical = 25.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
                     ) {
+                        TextAuto(
+                            text = stringResource(id = R.string.made_by),
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        Row {
+                            TextAuto(
+                                text = stringResource(id = R.string.massimiliano_sartore),
+                                style = MaterialTheme.typography.labelLarge
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
                         TextAuto(
                             text = "Ares v${settingsViewModel.packageInfo(context).versionName}",
                             fontSize = 10.sp

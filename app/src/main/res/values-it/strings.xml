@@ -95,4 +95,5 @@
     <string name="files">File</string>
     <string name="server_auto_startup">Avvio automatico del server</string>
     <string name="server_auto_startup_description">Avvia il server quando l\'app riceve un file</string>
+    <string name="made_by">Creato da</string>
 </resources>

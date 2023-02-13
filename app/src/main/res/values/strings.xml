@@ -96,4 +96,7 @@
     <string name="files">Files</string>
     <string name="server_auto_startup">Server auto startup</string>
     <string name="server_auto_startup_description">Start the server when the app receive a file</string>
+    <string name="ares" translatable="false">Ares</string>
+    <string name="made_by">Made by</string>
+    <string name="massimiliano_sartore" translatable="false">Massimiliano Sartore</string>
 </resources>
