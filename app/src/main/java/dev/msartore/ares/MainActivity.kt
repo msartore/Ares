@@ -28,7 +28,6 @@ import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.ui.theme.AresTheme
 import dev.msartore.ares.ui.views.MainUI
 import dev.msartore.ares.utils.Permissions
-import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.filesDataHandler
 import dev.msartore.ares.utils.findServers
 import dev.msartore.ares.utils.isWideView
@@ -72,23 +71,21 @@ class MainActivity : ComponentActivity() {
         }
 
         service = Intent(this, KtorService::class.java)
-        connectivityManager = getSystemService(ConnectivityManager::class.java)
-        networkCallback = NetworkCallback(
-            networkInfo = mainViewModel.networkInfo,
-            onNetworkLost = {
-                stopService(service)
-            }
-        )
 
-        cor {
+        runBlocking {
+
+            connectivityManager = getSystemService(ConnectivityManager::class.java)
+            networkCallback = NetworkCallback(
+                networkInfo = mainViewModel.networkInfo,
+                onNetworkLost = {
+                    stopService(service)
+                }
+            )
             networkCallback?.let {
                 connectivityManager?.registerDefaultNetworkCallback(it)
             }
-        }
 
-        runBlocking {
             mainViewModel.apply {
-                startSettings()
                 pm = packageManager
                 onFindServers = { _settings, _networkInfo ->
                     findServers(
@@ -109,6 +106,7 @@ class MainActivity : ComponentActivity() {
                         it.printStackTrace()
                     }
                 }
+                startSettings()
             }
 
             settingsViewModel.onOpenThirdLicenses = {

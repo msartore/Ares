@@ -11,6 +11,7 @@ import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.ServerInfo
 import java.net.InetSocketAddress
 import java.net.Socket
+
 @ExperimentalGetImage
 fun Context.findServers(
     settings: Settings?,

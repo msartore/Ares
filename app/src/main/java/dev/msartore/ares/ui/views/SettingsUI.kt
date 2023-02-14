@@ -57,7 +57,7 @@ fun SettingsUI(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     TextAuto(
-                        id = R.string.find_servers,
+                        id = R.string.server_finder,
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
