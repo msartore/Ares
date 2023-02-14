@@ -31,9 +31,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.msartore.ares.R
 import dev.msartore.ares.server.KtorService.KtorServer.port
@@ -67,20 +69,11 @@ fun HomeUI(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.size(30.dp),
-                    id = R.drawable.logo,
-                )
-                TextAuto(
-                    id = R.string.ares,
-                    style = MaterialTheme.typography.titleLarge,
-                )
-            }
+            TextAuto(
+                id = R.string.ares,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
 
             Column(
                 modifier = Modifier
@@ -99,7 +92,8 @@ fun HomeUI(
                     ) {
                         TextAuto(
                             id = R.string.server,
-                            style = MaterialTheme.typography.titleMedium
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium
                         )
 
                         if (isServerOn.value)
@@ -199,7 +193,8 @@ fun HomeUI(
             Column {
                 TextAuto(
                     id = R.string.file,
-                    style = MaterialTheme.typography.titleMedium
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))

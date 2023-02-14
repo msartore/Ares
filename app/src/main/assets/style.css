@@ -10,7 +10,7 @@ body {
 }
 .form form, .form b {
     position: relative;
-    width: inherit;
+    width: fit-content;
     left: 5%;
     top: 25%;
 }

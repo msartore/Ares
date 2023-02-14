@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
@@ -104,7 +105,10 @@ fun ServerFinderUI(
                             CircularProgressIndicator(modifier = Modifier.size(50.dp))
                         }
                         else -> {
-                            TextAuto(id = R.string.no_server_found)
+                            TextAuto(
+                                id = R.string.no_server_found,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
