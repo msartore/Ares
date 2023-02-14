@@ -23,8 +23,8 @@ import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.KtorService.KtorServer.server
 import dev.msartore.ares.ui.theme.Theme.background
-import dev.msartore.ares.ui.theme.Theme.darkTheme
 import dev.msartore.ares.ui.theme.Theme.container
+import dev.msartore.ares.ui.theme.Theme.darkTheme
 import dev.msartore.ares.utils.getByteArrayFromDrawable
 import dev.msartore.ares.utils.printableSize
 import dev.msartore.ares.utils.splitFileTypeFromName
@@ -37,10 +37,12 @@ import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
 import io.ktor.server.application.call
+import io.ktor.server.application.install
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.html.respondHtml
 import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.autohead.AutoHeadResponse
 import io.ktor.server.request.header
 import io.ktor.server.request.receiveMultipart
 import io.ktor.server.response.header
@@ -78,7 +80,6 @@ import kotlinx.html.styleLink
 import kotlinx.html.title
 import kotlinx.html.unsafe
 import java.io.File
-
 
 @ExperimentalGetImage
 class KtorService: Service() {
@@ -131,6 +132,7 @@ class KtorService: Service() {
         super.onCreate()
 
         server = embeddedServer(Netty, port = port) {
+            install(AutoHeadResponse)
             routing {
                 get ("/{name}") {
                     val streaming = call.parameters["streaming"]
@@ -142,7 +144,7 @@ class KtorService: Service() {
                             val inputStream = contentResolver.openInputStream(file.uri)
 
                             call.response.header(
-                                "Content-Disposition",
+                                HttpHeaders.ContentDisposition,
                                 "${
                                     if (streaming != "true" || (file.fileType != FileType.IMAGE && file.fileType != FileType.VIDEO))
                                         "attachment"

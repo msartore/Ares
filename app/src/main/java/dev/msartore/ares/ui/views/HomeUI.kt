@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -20,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,15 +33,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.msartore.ares.R
-import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
+import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.ui.compose.ExpandableCard
 import dev.msartore.ares.ui.compose.FileItem
 import dev.msartore.ares.ui.compose.Icon
@@ -65,7 +65,8 @@ fun HomeUI(
 
     val homeUIContent1: @Composable (Modifier) -> Unit = { modifier ->
         Column(
-            modifier = modifier.verticalScroll(home1State),
+            modifier = modifier
+                .verticalScroll(home1State),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
@@ -166,31 +167,32 @@ fun HomeUI(
                             }
                         }
 
-                        TextButton(onClick = {
+                        Icon(
+                            id = R.drawable.stop_circle_24px,
+                            contentDescription = stringResource(id = R.string.stop_server),
+                        ) {
                             if (isServerOn.value)
                                 homeViewModel.onStopServerClick()
-                        }) {
-                            TextAuto(
-                                id = R.string.stop_server,
-                            )
                         }
                     }
                     else {
                         mainViewModel.networkInfo.run {
                             if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true))
-                                TextButton(onClick = { homeViewModel.onStartServerClick() }) {
-                                    TextAuto(
-                                        id = R.string.start_server,
-                                    )
+                                Icon(
+                                    id = R.drawable.power_rounded_24px,
+                                    contentDescription = stringResource(id = R.string.start_server),
+                                ) {
+                                    homeViewModel.onStartServerClick()
                                 }
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Column {
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+            ) {
                 TextAuto(
                     id = R.string.file,
                     fontSize = 18.sp,
@@ -204,67 +206,56 @@ fun HomeUI(
                 TextAuto(text = "${stringResource(id = R.string.selected)}: ${concurrentMutableList.list.filter { it.selected.value }.size}")
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 5.dp),
                     horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isLoading.value)
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(16.dp)
-                                .weight(1f, false),
-                            strokeWidth = 2.dp
-                        )
-
-                    Row {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (isLoading.value)
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .weight(1f, false),
+                                strokeWidth = 2.dp
+                            )
                         if (concurrentMutableList.list.any { it.selected.value })
-                            TextButton(
-                                modifier = Modifier.weight(1f, false),
-                                onClick = {
-                                    scope.launch {
-                                        concurrentMutableList.removeIf { it.selected.value }
-                                    }
-                                }
+                            Icon(
+                                id = R.drawable.delete_24px,
+                                contentDescription = stringResource(id = R.string.delete_selected),
                             ) {
-                                TextAuto(
-                                    id = R.string.delete_selected,
-                                    textAlign = TextAlign.Center,
-                                )
+                                scope.launch {
+                                    concurrentMutableList.removeIf { it.selected.value }
+                                }
                             }
                         if (concurrentMutableList.size.value > 0) {
-                            val allSelected =concurrentMutableList.list.all { it.selected.value }
+                            val countSelected = concurrentMutableList.list.count { it.selected.value }
 
-                            TextButton(
-                                modifier = Modifier.weight(1f, false),
-                                onClick = {
-                                    scope.launch {
-                                        if (allSelected)
-                                            concurrentMutableList.list.forEach { it.selected.value = false }
-                                        else
-                                            concurrentMutableList.list.forEach { it.selected.value = true }
+                            Icon(
+                                id =
+                                when (countSelected) {
+                                    concurrentMutableList.size.value -> R.drawable.check_box_24px
+                                    in 1..concurrentMutableList.size.value -> R.drawable.indeterminate_check_box_24px
+                                    else -> R.drawable.check_box_outline_blank_24px
+                                },
+                                contentDescription = stringResource(id = R.string.select_all),
+                            ) {
+                                scope.launch {
+                                    when (countSelected) {
+                                        0 -> concurrentMutableList.list.forEach { it.selected.value = true }
+                                        else -> concurrentMutableList.list.forEach { it.selected.value = false }
                                     }
                                 }
-                            ) {
-                                TextAuto(
-                                    id =
-                                    if (allSelected)
-                                        R.string.unselect_all
-                                    else
-                                        R.string.select_all,
-                                    textAlign = TextAlign.Center,
-                                )
                             }
                         }
-                        TextButton(
-                            modifier = Modifier.weight(1f, false),
-                            onClick = {
-                                homeViewModel.onImportFilesClick()
-                            }
+                        Icon(
+                            id = R.drawable.upload_24px,
+                            contentDescription = stringResource(id = R.string.import_files),
                         ) {
-                            TextAuto(
-                                id = R.string.import_files,
-                                textAlign = TextAlign.Center,
-                            )
+                            homeViewModel.onImportFilesClick()
                         }
                     }
                 }
@@ -307,14 +298,16 @@ fun HomeUI(
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            homeUIContent1(Modifier.weight(1f))
+            homeUIContent1(Modifier
+                .fillMaxHeight()
+                .weight(1f))
             homeUIContent2(Modifier.weight(1f))
         }
     else
         Column(
             modifier = Modifier.padding(top = 16.dp)
         ) {
-            homeUIContent1(Modifier)
+            homeUIContent1(Modifier.wrapContentHeight())
             homeUIContent2(Modifier)
         }
 }
