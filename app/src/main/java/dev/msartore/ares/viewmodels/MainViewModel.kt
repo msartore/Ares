@@ -1,6 +1,8 @@
 package dev.msartore.ares.viewmodels
 
 import android.app.DownloadManager
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,12 +20,14 @@ import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import kotlinx.coroutines.flow.MutableStateFlow
 
+
 class MainViewModel : ViewModel() {
 
     object MVM {
         val Context.dataStore by preferencesDataStore(name = "user_preferences_settings")
     }
 
+    var clipboard: ClipboardManager? = null
     val networkInfo = NetworkInfo()
     val qrCodeDialog = mutableStateOf(false)
     val isDarkTheme = MutableStateFlow(false)
@@ -48,6 +52,11 @@ class MainViewModel : ViewModel() {
 
         if (settings?.findServersAtStart?.value == true)
             onFindServers?.invoke(networkInfo, settings)
+    }
+
+    fun copyText(label: String, string: String) {
+        val clip = ClipData.newPlainText(label, string)
+        clipboard?.setPrimaryClip(clip)
     }
 
     fun Context.shareText(string: String) {

@@ -63,13 +63,14 @@ fun ServerUI(
                             serverInfo.ip,
                             client = mainViewModel.client
                         )?.let { list ->
-                            if (list.none { it.name == null })
+                            if (list.none { it.UUID == null })
                                 serverFiles.addAll(list)
                             else
                                 error.value = true
                         }
                         isRefreshing.value = false
                     }.onFailure {
+                        it.printStackTrace()
                         error.value = true
                         isRefreshing.value = false
                     }
@@ -77,7 +78,6 @@ fun ServerUI(
             }
 
             LaunchedEffect(key1 = true) {
-
                 if (isNewServer) {
                     isNewServer = false
                     loadData()
@@ -176,15 +176,16 @@ fun ServerUI(
                 ) {
                     items(
                         count = serverFiles.size,
-                        key = { serverFiles.elementAt(it).index.hashCode() }
+                        key = { serverFiles.elementAt(it).UUID.hashCode() }
                     ) {
                         serverFiles.elementAt(it).run {
 
-                            val url = "http://${serverInfo.ip}:$port/$index"
+                            val url = "http://${serverInfo.ip}:$port/$UUID"
 
                             ExpandableCard { expanded ->
                                 FileItem(
                                     fileDataJson = this,
+                                    maxLines = if (expanded) Int.MAX_VALUE else 1,
                                     onDownload = {
                                         mainViewModel.downloadManager?.downloadFile(
                                             url = url,
@@ -193,12 +194,22 @@ fun ServerUI(
                                             context = context
                                         )
                                     },
-                                    maxLines = if (expanded) Int.MAX_VALUE else 1,
                                     onStreaming = {
                                         mainViewModel.openStreaming(
                                             context = context,
                                             url = "$url?streaming=true",
                                             fileType = fileType
+                                        )
+                                    },
+                                    onShare = {
+                                        mainViewModel.run {
+                                            context.shareText("$text")
+                                        }
+                                    },
+                                    onCopy = {
+                                        mainViewModel.copyText(
+                                            context.getString(R.string.text_input),
+                                            "$text"
                                         )
                                     }
                                 )

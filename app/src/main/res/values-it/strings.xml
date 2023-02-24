@@ -96,4 +96,9 @@
     <string name="server_auto_startup">Avvio automatico del server</string>
     <string name="server_auto_startup_description">Avvia il server quando l\'app riceve un file</string>
     <string name="made_by">Creato da</string>
+    <string name="text_input">Immissione di testo</string>
+    <string name="save">Salva</string>
+    <string name="text">Testo</string>
+    <string name="loading">Caricamento</string>
+    <string name="error">Errore</string>
 </resources>

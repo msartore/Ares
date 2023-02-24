@@ -13,34 +13,45 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.msartore.ares.R
+import dev.msartore.ares.models.FileData
+import dev.msartore.ares.models.FileType
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.port
+import dev.msartore.ares.ui.compose.DialogContainer
 import dev.msartore.ares.ui.compose.ExpandableCard
 import dev.msartore.ares.ui.compose.FileItem
 import dev.msartore.ares.ui.compose.Icon
@@ -50,6 +61,7 @@ import dev.msartore.ares.viewmodels.HomeViewModel
 import dev.msartore.ares.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalGetImage
 @Composable
 fun HomeUI(
@@ -162,7 +174,7 @@ fun HomeUI(
                         Icon(
                             id = R.drawable.share_24px
                         ) {
-                            mainViewModel.apply {
+                            mainViewModel.run {
                                 context.shareText("http://${networkInfo.ipAddress.value}:$port")
                             }
                         }
@@ -257,6 +269,12 @@ fun HomeUI(
                         ) {
                             homeViewModel.onImportFilesClick()
                         }
+                        Icon(
+                            id = R.drawable.title_24px,
+                            contentDescription = stringResource(id = R.string.text_input),
+                        ) {
+                            homeViewModel.dialogInput.value = true
+                        }
                     }
                 }
             }
@@ -272,7 +290,9 @@ fun HomeUI(
         ) {
             items(
                 count = concurrentMutableList.size.value,
-                key = { concurrentMutableList.list.elementAt(it).uri }
+                key = {
+                    concurrentMutableList.list.elementAt(it).UUID
+                }
             ) { index ->
 
                 concurrentMutableList.list.elementAt(index).run {
@@ -298,9 +318,10 @@ fun HomeUI(
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            homeUIContent1(Modifier
-                .fillMaxHeight()
-                .weight(1f))
+            homeUIContent1(
+                Modifier
+                    .fillMaxHeight()
+                    .weight(1f))
             homeUIContent2(Modifier.weight(1f))
         }
     else
@@ -310,4 +331,71 @@ fun HomeUI(
             homeUIContent1(Modifier.wrapContentHeight())
             homeUIContent2(Modifier)
         }
+
+    homeViewModel.run {
+        DialogContainer(status = dialogInput) {
+            val keyboardController = LocalSoftwareKeyboardController.current
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TextAuto(
+                    id = R.string.text_input
+                )
+
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = inputText.value,
+                    onValueChange = { inputText.value = it },
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            keyboardController?.hide()
+                        }
+                    ),
+                    maxLines = 1
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(
+                        onClick = {
+                            dialogInput.value = false
+                            inputText.value = ""
+                        }
+                    ) {
+                        TextAuto(id = R.string.cancel)
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    TextButton(
+                        onClick = {
+                            if (inputText.value.isNotBlank())
+                                concurrentMutableList.add(FileData(
+                                    text = inputText.value,
+                                    fileType = FileType.TEXT
+                                ))
+
+                            dialogInput.value = false
+                            inputText.value = ""
+                        }
+                    ) {
+                        TextAuto(id = R.string.save)
+                    }
+                }
+            }
+        }
+    }
 }

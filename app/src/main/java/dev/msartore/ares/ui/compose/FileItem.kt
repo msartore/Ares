@@ -23,32 +23,52 @@ import dev.msartore.ares.utils.printableSize
 fun FileItem(
     fileDataJson: FileDataJson,
     maxLines: Int = 1,
-    onDownload: (() -> Unit),
-    onStreaming: (() -> Unit)
+    onDownload: () -> Unit,
+    onStreaming: () -> Unit,
+    onShare: () -> Unit,
+    onCopy: () -> Unit
 ) {
 
-    fileDataJson.apply {
+    fileDataJson.run {
         FileItem(
             name = name,
+            text = text,
             size = size,
             icon = icon,
             maxLines = maxLines,
             content = {
-                if (fileDataJson.fileType == FileType.VIDEO || fileDataJson.fileType == FileType.IMAGE) {
-                    Spacer(modifier = Modifier.width(8.dp))
+                if (fileType != FileType.TEXT) {
+                    if (fileDataJson.fileType == FileType.VIDEO || fileDataJson.fileType == FileType.IMAGE) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            modifier = Modifier.size(40.dp),
+                            id = R.drawable.open_in_new_24px
+                        ) {
+                            onStreaming()
+                        }
+                    }
+
                     Icon(
                         modifier = Modifier.size(40.dp),
-                        id = R.drawable.open_in_new_24px
+                        id = R.drawable.file_download_48px
                     ) {
-                        onStreaming()
+                        onDownload()
                     }
                 }
+                else {
+                    Icon(
+                        modifier = Modifier.size(40.dp),
+                        id = R.drawable.content_copy_24px
+                    ) {
+                        onCopy()
+                    }
 
-                Icon(
-                    modifier = Modifier.size(40.dp),
-                    id = R.drawable.file_download_48px
-                ) {
-                    onDownload()
+                    Icon(
+                        modifier = Modifier.size(40.dp),
+                        id = R.drawable.share_24px
+                    ) {
+                        onShare()
+                    }
                 }
             }
         )
@@ -64,6 +84,7 @@ fun FileItem(
     fileData.apply {
         FileItem(
             name = name,
+            text = text,
             size = size,
             icon = icon,
             maxLines = maxLines
@@ -74,7 +95,8 @@ fun FileItem(
 @Composable
 fun FileItem(
     maxLines: Int = 1,
-    name: String?,
+    name: String? = null,
+    text: String? = null,
     size: Int?,
     icon: Int?,
     content: @Composable (() -> Unit)? = null,
@@ -95,14 +117,16 @@ fun FileItem(
 
             Column {
                 TextAuto(
-                    text = "${stringResource(id = R.string.name)}: $name",
+                    text = text ?: "${stringResource(id = R.string.name)}: $name",
                     maxLines = maxLines
                 )
 
-                TextAuto(
-                    text = "${stringResource(id = R.string.size)}: ${(size?:1).printableSize()}",
-                    maxLines = 1
-                )
+                size?.let {
+                    TextAuto(
+                        text = "${stringResource(id = R.string.size)}: ${size.printableSize()}",
+                        maxLines = 1
+                    )
+                }
             }
         }
 

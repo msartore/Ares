@@ -2,6 +2,8 @@ package dev.msartore.ares
 
 import android.Manifest
 import android.app.DownloadManager
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
@@ -23,8 +25,11 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import dev.msartore.ares.models.FileData
+import dev.msartore.ares.models.FileType
 import dev.msartore.ares.models.NetworkCallback
 import dev.msartore.ares.server.KtorService
+import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.ui.theme.AresTheme
 import dev.msartore.ares.ui.views.MainUI
 import dev.msartore.ares.utils.Permissions
@@ -86,6 +91,7 @@ class MainActivity : ComponentActivity() {
             }
 
             mainViewModel.apply {
+                clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                 pm = packageManager
                 onFindServers = { _settings, _networkInfo ->
                     findServers(
@@ -125,7 +131,19 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            if (intent.clipData != null) {
+            if ("text/plain" == intent.type) {
+                intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+                    concurrentMutableList.add(
+                        FileData(
+                            fileType = FileType.TEXT,
+                            text = it
+                        )
+                    )
+                }
+
+                if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true)
+                    homeViewModel.onStartServerClick()
+            } else if (intent.clipData != null) {
                 runBlocking {
                     val listUri = mutableListOf<Uri>()
 

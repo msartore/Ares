@@ -93,14 +93,15 @@ fun Int.printableSize() =
         else -> "%.2f".format(this/1000000000.0) + " GB"
     }
 
-fun FileData.toFileDataJson(index: Int?) =
+fun FileData.toFileDataJson() =
     FileDataJson(
         name = this.name,
         size = this.size,
+        text = this.text,
         fileType = this.fileType,
         mimeType = mimeType,
         icon = this.icon,
-        index = index
+        UUID = this.UUID
     )
 
 fun FileDataJson.toJson(): String =

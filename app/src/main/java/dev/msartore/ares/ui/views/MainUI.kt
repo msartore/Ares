@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -31,6 +30,7 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -60,7 +60,7 @@ import dev.msartore.ares.viewmodels.ServerFinderViewModel
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterial3Api::class,
+@OptIn(ExperimentalAnimationApi::class,
     ExperimentalPermissionsApi::class
 )
 @ExperimentalGetImage
@@ -74,6 +74,7 @@ fun MainUI(
     val selectedItem = remember { mutableStateOf(MainPages.HOME) }
     val items = remember { listOf(MainPages.HOME, MainPages.SERVER_FINDER, MainPages.SETTINGS) }
     val transition = updateTransition(selectedItem.value, label = selectedItem.value.name)
+    val loadingStatusDialog = remember { mutableStateOf(false) }
 
     val icon: @Composable (MainPages) -> Unit = {
         Icon(
@@ -261,6 +262,9 @@ fun MainUI(
         }
 
     serverFinderViewModel.qrReadingProcess.apply {
+        LaunchedEffect(key1 = isPingingServer.value) {
+            loadingStatusDialog.value = isPingingServer.value
+        }
 
         if (isReadingQR.value) {
             val permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.CAMERA))
@@ -283,7 +287,6 @@ fun MainUI(
                     ) { ip ->
                         isReadingQR.value = false
                         isPingingServer.value = true
-                        isQRDialog.value = true
 
                         work {
                             runCatching {
@@ -297,9 +300,10 @@ fun MainUI(
                                         add(ServerInfo(ip = ip))
                                 }
                             }.onSuccess {
-                                isQRDialog.value = false
+                                loadingStatusDialog.value = false
                             }.onFailure {
                                 isPingingServer.value = false
+                                errorStatusDialog.value = true
                             }
                         }
                     }
@@ -307,7 +311,13 @@ fun MainUI(
             )
         }
 
-        DialogContainer(status = isQRDialog) {
+        DialogContainer(
+            status = errorStatusDialog,
+            dialogProperties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true
+            )
+        ) {
             Column(
                 modifier = Modifier
                     .wrapContentSize()
@@ -316,18 +326,33 @@ fun MainUI(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                if (isPingingServer.value)
-                    CircularProgressIndicator(Modifier.size(35.dp))
-                else {
-                    TextAuto(
-                        id = R.string.server_not_found,
-                        maxLines = Int.MAX_VALUE
-                    )
+                TextAuto(
+                    id = R.string.server_not_found,
+                    maxLines = Int.MAX_VALUE
+                )
 
-                    TextButton(onClick = { isQRDialog.value = false }) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    TextButton(onClick = { errorStatusDialog.value = false }) {
                         TextAuto(id = R.string.close)
                     }
                 }
+            }
+        }
+
+        DialogContainer(status = loadingStatusDialog) {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                CircularProgressIndicator(Modifier.size(35.dp))
             }
         }
     }

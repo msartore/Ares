@@ -136,40 +136,44 @@ class KtorService: Service() {
             routing {
                 get ("/{name}") {
                     val streaming = call.parameters["streaming"]
+                    val fileUUID = call.parameters["name"]
+                    val file = concurrentMutableList.list.find { fileUUID == it.UUID.toString() }
+                    val inputStream = file?.uri?.let { it1 ->
+                        contentResolver.openInputStream(
+                            it1
+                        )
+                    }
 
-                    when(val fileIndex = call.parameters["name"]?.toInt()) {
-                        null, !in 0 .. concurrentMutableList.size.value -> call.respond(HttpStatusCode.NotFound)
-                        else -> {
-                            val file = concurrentMutableList.list.elementAt(fileIndex)
-                            val inputStream = contentResolver.openInputStream(file.uri)
+                    if (file == null) {
+                        call.respond(HttpStatusCode.NotFound)
+                    }
+                    else {
+                        call.response.header(
+                            HttpHeaders.ContentDisposition,
+                            "${
+                                if (streaming != "true" || (file.fileType != FileType.IMAGE && file.fileType != FileType.VIDEO))
+                                    "attachment"
+                                else
+                                    "inline"
+                            }; filename=\"${file.name}\""
+                        )
 
-                            call.response.header(
-                                HttpHeaders.ContentDisposition,
-                                "${
-                                    if (streaming != "true" || (file.fileType != FileType.IMAGE && file.fileType != FileType.VIDEO))
-                                        "attachment"
-                                    else
-                                        "inline"
-                                }; filename=\"${file.name}\""
-                            )
-
-                            call.respondBytesWriter (
-                                contentType = ContentType.Any,
-                                contentLength = file.size?.toLong()
-                            ) {
-                                inputStream?.toByteReadChannel()?.consumeEachBufferRange { buffer, last ->
-                                    writeFully(buffer)
-                                    !last
-                                }.also {
-                                    inputStream?.close()
-                                }
+                        call.respondBytesWriter (
+                            contentType = ContentType.Any,
+                            contentLength = file.size?.toLong()
+                        ) {
+                            inputStream?.toByteReadChannel()?.consumeEachBufferRange { buffer, last ->
+                                writeFully(buffer)
+                                !last
+                            }.also {
+                                inputStream?.close()
                             }
                         }
                     }
                 }
                 get("/info") {
-                    call.respond(concurrentMutableList.list.mapIndexed { index, fileData ->
-                        fileData.toFileDataJson(index)
+                    call.respond(concurrentMutableList.list.map { fileData ->
+                        fileData.toFileDataJson()
                     }.toJsonArray().toString())
                 }
                 get("/favicon.png") {
@@ -317,27 +321,34 @@ class KtorService: Service() {
                                     concurrentMutableList.list.elementAt(i).run {
                                         li(classes = "file") {
                                             dl {
-                                                dt {
-                                                    +"${getString(R.string.name)}: $name"
-                                                }
-                                                dd {
-                                                    +"${getString(R.string.size)}: ${(size?:1).printableSize()}"
-                                                }
-                                                dd {
-                                                    a(href = "/$i") {
-                                                        b {
-                                                            +getString(R.string.download)
-                                                        }
+                                                if (fileType != FileType.TEXT) {
+                                                    dt {
+                                                        +"${getString(R.string.name)}: $name"
                                                     }
-                                                }
-                                                if (fileType == FileType.IMAGE || fileType == FileType.VIDEO)
                                                     dd {
-                                                        a(href = "/$i?streaming=true") {
+                                                        +"${getString(R.string.size)}: ${(size?:1).printableSize()}"
+                                                    }
+                                                    dd {
+                                                        a(href = "/$UUID") {
                                                             b {
-                                                                +getString(R.string.streaming)
+                                                                +getString(R.string.download)
                                                             }
                                                         }
                                                     }
+                                                    if (fileType == FileType.IMAGE || fileType == FileType.VIDEO)
+                                                        dd {
+                                                            a(href = "/$UUID?streaming=true") {
+                                                                b {
+                                                                    +getString(R.string.streaming)
+                                                                }
+                                                            }
+                                                        }
+                                                }
+                                                else {
+                                                    dt {
+                                                        +"$text"
+                                                    }
+                                                }
                                             }
                                         }
                                     }

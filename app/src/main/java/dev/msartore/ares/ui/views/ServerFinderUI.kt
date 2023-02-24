@@ -119,7 +119,6 @@ fun ServerFinderUI(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
                     Image(
                         modifier = Modifier.weight(9f, false),
                         painter = painterResource(id = R.drawable.no_connection_rafiki),
@@ -140,7 +139,6 @@ fun ServerFinderUI(
     }
 
     transition.AnimatedContent {
-
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
@@ -252,7 +250,6 @@ fun ServerFinderUI(
                         }
                 }
                 ServerFinderPages.SERVER -> {
-
                     ServerUI(
                         serverInfo = serverFinderViewModel.serverSelected.value,
                         mainViewModel = mainViewModel,

@@ -19,8 +19,8 @@ android {
         applicationId "dev.msartore.ares"
         minSdk 26
         targetSdk 33
-        versionCode 20
-        versionName "0.0.19"
+        versionCode 21
+        versionName "0.0.20"
         resConfigs "en", "it"
         setProperty("archivesBaseName", "ares-$versionName")
         vectorDrawables.useSupportLibrary = true
@@ -90,7 +90,7 @@ android {
 dependencies {
 
     def accompanist_version = '0.27.1'
-    def camerax_version = '1.3.0-alpha03'
+    def camerax_version = '1.3.0-alpha04'
     def ktor_version = '2.2.3'
 
     // Accompanist
@@ -130,15 +130,15 @@ dependencies {
     implementation 'com.google.android.gms:play-services-oss-licenses:17.0.0'
 
     // Material theme
-    implementation 'com.google.android.material:material:1.9.0-alpha01'
+    implementation 'com.google.android.material:material:1.9.0-alpha02'
 
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-beta01'
     implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.0-beta01'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.0-rc01'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.0-rc01'
     implementation 'androidx.activity:activity-compose:1.6.1'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation 'androidx.compose.material3:material3:1.1.0-alpha06'
+    implementation 'androidx.compose.material3:material3:1.1.0-alpha07'
 
     testImplementation 'junit:junit:4.13.2'
 
