@@ -9,7 +9,7 @@ Ares is an app that makes file sharing fast and convenient. You can use Ares to 
 
 ## 🌟 Features
 
-- Transfer files via local network
+- Transfer files and text via local network
 - Easy client access via App or Browser
 - Local server on your device
 - Scan for other servers
