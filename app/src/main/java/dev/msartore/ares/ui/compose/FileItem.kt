@@ -81,7 +81,7 @@ fun FileItem(
     maxLines: Int = 1,
 ) {
 
-    fileData.apply {
+    fileData.run {
         FileItem(
             name = name,
             text = text,

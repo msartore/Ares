@@ -50,7 +50,7 @@ fun ServerUI(
 ) {
     val context = LocalContext.current
 
-    serverFinderViewModel.apply {
+    serverFinderViewModel.run {
         if (serverInfo != null) {
 
             val loadData = {

@@ -11,7 +11,7 @@ fun DownloadManager.downloadFile(url: String, fileName: String, mimeType: String
 
     val request = DownloadManager.Request(Uri.parse(url))
 
-    request.apply {
+    request.run {
         setAllowedOverRoaming(false)
         setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
         setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)

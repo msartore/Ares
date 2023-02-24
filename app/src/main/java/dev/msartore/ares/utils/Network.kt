@@ -23,7 +23,7 @@ fun Context.findServers(
 
         val list = networkInfo.ipAddress.value.split(".")
 
-        ipSearchData.apply {
+        ipSearchData.run {
             ipList.clear()
             isSearching.value = 1
             ipLeft.value = 254

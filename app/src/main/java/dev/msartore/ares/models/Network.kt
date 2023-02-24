@@ -59,7 +59,7 @@ class NetworkCallback(
     private fun findIPV4(linkProperties: LinkProperties):String? {
 
         linkProperties.linkAddresses.forEach { linkAddress ->
-            linkAddress.apply {
+            linkAddress.run {
                 if (address.toString().contains('.'))
                     return address.toString().substring(1)
             }

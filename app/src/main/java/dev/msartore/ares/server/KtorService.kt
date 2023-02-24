@@ -216,7 +216,7 @@ class KtorService: Service() {
 
                                     file?.createNewFile()
 
-                                    fileTransfer.apply {
+                                    fileTransfer.run {
 
                                         if (name == null) {
                                             name = fileName
@@ -250,7 +250,7 @@ class KtorService: Service() {
                         file?.delete()
                     }
 
-                    fileTransfer.apply {
+                    fileTransfer.run {
                         isActive.value = false
                         sizeTransferred.value = 0f
                     }

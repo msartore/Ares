@@ -170,7 +170,7 @@ fun MainUI(
                         id = R.drawable.cancel_24px
                     ) {
                         scope.launch {
-                            serverFinderViewModel.apply {
+                            serverFinderViewModel.run {
                                 ipSearchData.job.cancelAndJoin()
                                 ipSearchData.isSearching.value = 0
                             }

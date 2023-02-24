@@ -83,7 +83,7 @@ fun ServerFinderUI(
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 state = state
                             ) {
-                                serverFinderViewModel.apply {
+                                serverFinderViewModel.run {
                                     items(
                                         count = ipSearchData.ipList.size.value,
                                         key = { ipSearchData.ipList.list.elementAt(it).hashCode() }

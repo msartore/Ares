@@ -43,7 +43,7 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
             val typeIndex =  it.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
             val sizeIndex: Int = it.getColumnIndex(OpenableColumns.SIZE)
 
-            fileData.apply {
+            fileData.run {
                 size = it.getInt(sizeIndex)
                 name = displayName
                 fileType = fileType(displayName.lowercase(Locale.ROOT))
@@ -131,7 +131,7 @@ suspend fun Context.filesDataHandler(isLoading: MutableStateFlow<Boolean>, uris:
     if (!uris.isNullOrEmpty()) {
         isLoading.value = true
 
-        KtorService.KtorServer.concurrentMutableList.apply {
+        KtorService.KtorServer.concurrentMutableList.run {
             addAll(
                 uris.filter { uri ->
                     this.list.none { it.uri == uri }

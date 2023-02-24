@@ -62,7 +62,7 @@ fun SettingsUI(
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    mainViewModel.settings?.apply {
+                    mainViewModel.settings?.run {
                         SettingsItemSwitch(
                             title = stringResource(id = R.string.find_servers),
                             description = stringResource(id = R.string.find_servers_description),
