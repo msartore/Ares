@@ -250,9 +250,9 @@ fun SettingsUI(
                                 style = MaterialTheme.typography.labelLarge
                             )
                         }
-                        
+
                         Spacer(modifier = Modifier.height(8.dp))
-                        
+
                         TextAuto(
                             text = "Ares v${settingsViewModel.packageInfo(context).versionName}",
                             fontSize = 10.sp
