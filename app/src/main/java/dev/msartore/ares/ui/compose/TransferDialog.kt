@@ -25,7 +25,6 @@ fun TransferDialog(
     status: MutableState<Boolean>,
     progress: MutableState<Float>
 ) {
-
     DialogContainer(status = status) {
         Column(
             modifier = Modifier

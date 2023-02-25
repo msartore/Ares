@@ -6,9 +6,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 suspend fun <T> DataStore<Preferences>.write(key: String, value: T) {
-
     edit { settings ->
-
         when (value) {
             is Boolean -> settings[booleanPreferencesKey(key)] = value
             is String -> settings[stringPreferencesKey(key)] = value

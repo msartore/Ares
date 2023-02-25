@@ -82,15 +82,12 @@ fun HomeUI(
     val isLoading = homeViewModel.isLoading.collectAsState()
     val home1State = rememberScrollState()
     val expanded = remember { mutableStateOf(false) }
-
-
     val homeUIContent1: @Composable (Modifier) -> Unit = { modifier ->
         Column(
             modifier = modifier
                 .verticalScroll(home1State),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             TextAuto(
                 id = R.string.ares,
                 style = MaterialTheme.typography.titleLarge,
@@ -105,7 +102,6 @@ fun HomeUI(
                     )
                     .padding(16.dp)
             ) {
-
                 Column {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -177,9 +173,7 @@ fun HomeUI(
                         else Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     if (isServerOn.value) {
-
                         Icon(
                             id = R.drawable.share_24px
                         ) {
@@ -243,6 +237,7 @@ fun HomeUI(
                                     .weight(1f, false),
                                 strokeWidth = 2.dp
                             )
+
                         if (concurrentMutableList.list.any { it.selected.value })
                             Icon(
                                 id = R.drawable.delete_24px,
@@ -252,6 +247,7 @@ fun HomeUI(
                                     concurrentMutableList.removeIf { it.selected.value }
                                 }
                             }
+
                         if (concurrentMutableList.size.value > 0) {
                             val countSelected = concurrentMutableList.list.count { it.selected.value }
 
@@ -277,6 +273,7 @@ fun HomeUI(
                             Icon(imageVector = Icons.Rounded.Add, contentDescription = "Localized description") {
                                 expanded.value = true
                             }
+
                             DropdownMenu(
                                 expanded = expanded.value,
                                 onDismissRequest = { expanded.value = false }
@@ -293,6 +290,7 @@ fun HomeUI(
                                             contentDescription = stringResource(id = R.string.import_files),
                                         )
                                     })
+
                                 DropdownMenuItem(
                                     text = { TextAuto(id = R.string.text_input) },
                                     onClick = {

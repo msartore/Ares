@@ -22,7 +22,6 @@ class NetworkCallback(
     private val onNetworkAvailable: (() -> Unit)? = null,
     val networkInfo: NetworkInfo
 ) : ConnectivityManager.NetworkCallback() {
-
     override fun onAvailable(network: Network) {
         super.onAvailable(network)
         networkInfo.isNetworkAvailable.value = true
@@ -57,7 +56,6 @@ class NetworkCallback(
     }
 
     private fun findIPV4(linkProperties: LinkProperties):String? {
-
         linkProperties.linkAddresses.forEach { linkAddress ->
             linkAddress.run {
                 if (address.toString().contains('.'))

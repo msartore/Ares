@@ -26,18 +26,14 @@ import java.util.Locale
 
 
 fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
-
     val fileData = FileData(uri = uri)
     val cursor: Cursor? = query(uri, null, null, null, null, null)
 
     cursor?.use {
-
         if (it.moveToFirst()) {
-
             val index = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
 
-            if (index < 0)
-                return null
+            if (index < 0) return null
 
             val displayName: String = it.getString(index)
             val typeIndex =  it.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)

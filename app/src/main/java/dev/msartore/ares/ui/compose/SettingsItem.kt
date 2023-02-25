@@ -30,7 +30,6 @@ fun SettingsItem(
     onClick: (() -> Unit)? = null,
     content: (@Composable () -> Unit)? = null,
 ) {
-
     val modifier =
         if (onClick != null)
             Modifier
@@ -100,7 +99,6 @@ fun SettingsItemSwitch(
     item: MutableState<Boolean>,
     onClick: (() -> Unit)? = null
 ) {
-
     SettingsItem(
         title = title,
         description = description,
@@ -130,7 +128,6 @@ fun SettingsItemInput(
     onCheck: ((String) -> Boolean)? = null,
     onClick: (() -> Unit)? = null
 ) {
-
     val focusManager = LocalFocusManager.current
     val itemUI = remember { mutableStateOf(item.value.toString()) }
     val isFocused = remember { mutableStateOf(false) }

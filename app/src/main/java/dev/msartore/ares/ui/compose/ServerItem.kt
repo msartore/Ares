@@ -19,7 +19,6 @@ fun ServerItem(
     openUrl: (String) -> Unit,
     serverSelected: () -> Unit
 ) {
-
     Row(
         modifier = Modifier
             .height(80.dp)

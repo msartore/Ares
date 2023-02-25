@@ -21,7 +21,6 @@ fun Permissions(
     onPermissionGranted: @Composable () -> Unit,
     onPermissionDenied: () -> Unit
 ) {
-
     if (permissionState?.allPermissionsGranted == true || permissionState == null) {
         onPermissionGranted()
     }

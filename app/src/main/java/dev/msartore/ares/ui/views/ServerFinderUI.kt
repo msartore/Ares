@@ -51,15 +51,12 @@ fun ServerFinderUI(
     mainViewModel: MainViewModel,
     serverFinderViewModel: ServerFinderViewModel
 ) {
-
     val state = rememberLazyGridState()
     val context = LocalContext.current
     val transition = updateTransition(serverFinderViewModel.selectedItem.value, label = serverFinderViewModel.selectedItem.value.name)
     val mainContent: @Composable (Modifier) -> Unit = { modifier ->
-
         mainViewModel.networkInfo.run {
             if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)) {
-
                 Column(
                     modifier = modifier,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,7 +66,6 @@ fun ServerFinderUI(
                     else
                         Arrangement.Top
                 ) {
-
                     when {
                         serverFinderViewModel.ipSearchData.ipList.size.value > 0 -> {
                             TextAuto(id = R.string.servers)
@@ -114,7 +110,6 @@ fun ServerFinderUI(
                 }
             }
             else {
-
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -143,10 +138,8 @@ fun ServerFinderUI(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             when (it) {
                 ServerFinderPages.SCAN_WIFI -> {
-
                     if(maxWidth.isWideView())
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -166,7 +159,6 @@ fun ServerFinderUI(
                                         verticalArrangement = Arrangement.Center,
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-
                                         if (serverFinderViewModel.ipSearchData.isSearching.value == 0) {
                                             CardIcon(
                                                 iconId = R.drawable.wifi_find_24px,
@@ -212,7 +204,6 @@ fun ServerFinderUI(
                                     isNetworkAvailable.value &&
                                     (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)
                                 ) {
-
                                     Row(
                                         modifier = Modifier
                                             .fillMaxHeight()
@@ -221,7 +212,6 @@ fun ServerFinderUI(
                                         horizontalArrangement = Arrangement.SpaceEvenly,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-
                                         CardIcon(
                                             iconId = R.drawable.wifi_find_24px,
                                             textId = R.string.scan_network_for_servers,

@@ -26,7 +26,6 @@ fun Icon(
     contentDescription: String? = null,
     onClick: (() -> Unit)? = null,
 ) {
-
     var localModifier = modifier
 
     if (shadowEnabled)

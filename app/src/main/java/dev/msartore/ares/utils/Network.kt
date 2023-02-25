@@ -18,9 +18,7 @@ fun Context.findServers(
     networkInfo: NetworkInfo,
     ipSearchData: IPSearchData
 ) {
-
     if (ipSearchData.isSearching.value == 0) {
-
         val list = networkInfo.ipAddress.value.split(".")
 
         ipSearchData.run {
@@ -36,7 +34,6 @@ fun Context.findServers(
 
                     job = work {
                         for (i in 1..254) {
-
                             if (job.isCancelled)
                                 break
 

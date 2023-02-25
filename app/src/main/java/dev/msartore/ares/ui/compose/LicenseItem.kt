@@ -18,7 +18,6 @@ fun LicenseItem(
     titleId: Int,
     text: String
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -33,7 +32,6 @@ fun LicenseItem(
             .padding(12.dp),
         verticalArrangement = Arrangement.Center,
     ) {
-
         TextAuto(
             id = titleId,
         )

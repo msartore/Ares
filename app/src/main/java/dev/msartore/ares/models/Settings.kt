@@ -13,7 +13,6 @@ import dev.msartore.ares.utils.write
 class Settings(
     private val dataStore: DataStore<Preferences>
 ) {
-
     private val timeout = 150
     private val port = 7070
 

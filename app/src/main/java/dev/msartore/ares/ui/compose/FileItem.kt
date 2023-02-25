@@ -28,7 +28,6 @@ fun FileItem(
     onShare: () -> Unit,
     onCopy: () -> Unit
 ) {
-
     fileDataJson.run {
         FileItem(
             name = name,
@@ -80,7 +79,6 @@ fun FileItem(
     fileData: FileData,
     maxLines: Int = 1,
 ) {
-
     fileData.run {
         FileItem(
             name = name,
@@ -101,7 +99,6 @@ fun FileItem(
     icon: Int?,
     content: @Composable (() -> Unit)? = null,
 ) {
-
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),

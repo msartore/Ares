@@ -30,7 +30,6 @@ fun CameraUI(
     visibility: MutableState<Boolean>,
     onQRFound: ((String) -> Unit)? = null,
 ) {
-
     val isFlashEnabled = remember { mutableStateOf(false) }
     val cameraControl = remember { mutableStateOf<CameraControl?>(null) }
 

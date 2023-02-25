@@ -39,13 +39,11 @@ fun Dialog(
     ),
     status: MutableState<Boolean> = mutableStateOf(false)
 ) {
-
     if (status.value)
         androidx.compose.ui.window.Dialog(
             properties = dialogProperties,
             onDismissRequest = { status.value = false },
         ) {
-
             Column(
                 modifier = Modifier
                     .wrapContentSize()
@@ -71,7 +69,6 @@ fun Dialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-
                     TextButton(
                         onClick = {
                             onCancel.invoke()
@@ -107,7 +104,6 @@ fun DialogContainer(
     status: MutableState<Boolean>,
     content: @Composable () -> Unit
 ) {
-
     if (status.value)
         androidx.compose.ui.window.Dialog(
             properties = dialogProperties,

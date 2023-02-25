@@ -29,7 +29,6 @@ fun CameraPreview(
     cameraControl: MutableState<CameraControl?>,
     isFlashEnabled: MutableState<Boolean>
 ) {
-
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle

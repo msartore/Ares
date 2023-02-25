@@ -13,7 +13,6 @@ suspend fun serverInfoExtraction(
     ip: String,
     client: HttpClient
 ): List<FileDataJson>? {
-
     val response = client.get("http://$ip:$port/info")
 
     return if (response.status.value in 200..299) {

@@ -13,14 +13,12 @@ import dev.msartore.ares.utils.isValidServerIP
 class BarcodeImageAnalyzer(
     private val onQRFound: ((String) -> Unit)? = null,
 ) : ImageAnalysis.Analyzer {
-
     private val scanner = BarcodeScanning.getClient(
         BarcodeScannerOptions
             .Builder()
             .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
             .build()
     )
-
     private var isIPFound = false
 
     override fun analyze(imageProxy: ImageProxy) {

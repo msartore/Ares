@@ -78,7 +78,6 @@ class MainActivity : ComponentActivity() {
         service = Intent(this, KtorService::class.java)
 
         runBlocking {
-
             connectivityManager = getSystemService(ConnectivityManager::class.java)
             networkCallback = NetworkCallback(
                 networkInfo = mainViewModel.networkInfo,
@@ -86,11 +85,12 @@ class MainActivity : ComponentActivity() {
                     stopService(service)
                 }
             )
+
             networkCallback?.let {
                 connectivityManager?.registerDefaultNetworkCallback(it)
             }
 
-            mainViewModel.apply {
+            mainViewModel.run {
                 clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                 pm = packageManager
                 onFindServers = { _settings, _networkInfo ->
@@ -119,7 +119,7 @@ class MainActivity : ComponentActivity() {
                 startActivity(Intent(applicationContext, OssLicensesMenuActivity::class.java))
             }
 
-            homeViewModel.apply {
+            homeViewModel.run {
                 onImportFiles = {
                     getContent.launch(arrayOf("*/*"))
                 }
@@ -164,7 +164,6 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-
             val isNavBarColorSet = remember { mutableStateOf(false) }
             val resetStatusBarColor = remember { mutableStateOf({}) }
 

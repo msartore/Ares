@@ -99,7 +99,6 @@ class KtorService: Service() {
     override fun onBind(intent: Intent?) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         val name = getString(R.string.channel_name)
         val descriptionText = getString(R.string.channel_description)
         val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -150,7 +149,7 @@ class KtorService: Service() {
                         call.response.header(
                             HttpHeaders.ContentDisposition,
                             "${
-                                if (streaming != "true" || (file.fileType != FileType.IMAGE && file.fileType != FileType.VIDEO))
+                                if (streaming != "true" || file.fileType != FileType.IMAGE && file.fileType != FileType.VIDEO)
                                     "attachment"
                                 else
                                     "inline"
@@ -181,7 +180,6 @@ class KtorService: Service() {
                     }
                 }
                 post("/upload") {
-
                     fileTransfer.pipelineContext = this
 
                     var fileName: String
@@ -194,13 +192,9 @@ class KtorService: Service() {
                     fileTransfer.isActive.value = true
 
                     runCatching {
-
                         multipartData.forEachPart { part ->
-
                             when (part) {
-
                                 is PartData.FileItem -> {
-
                                     fileName = part.originalFileName as String
 
                                     val (n, e) = splitFileTypeFromName(fileName)
@@ -216,7 +210,6 @@ class KtorService: Service() {
                                     file?.createNewFile()
 
                                     fileTransfer.run {
-
                                         if (name == null) {
                                             name = fileName
                                             size = contentLength?.toInt()
@@ -238,7 +231,6 @@ class KtorService: Service() {
 
                                     part.dispose()
                                 }
-
                                 else -> {}
                             }
                         }
@@ -257,7 +249,6 @@ class KtorService: Service() {
                     call.respondRedirect("/?success=$result")
                 }
                 get("/style.css") {
-
                     val asset = assets.open("style.css")
 
                     call.respondBytesWriter (

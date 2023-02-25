@@ -99,7 +99,6 @@ fun AresTheme(
 ) {
     darkTheme = isSystemInDarkTheme()
     val systemUiController = rememberSystemUiController()
-
     val colorScheme = when {
         mainViewModel.settings?.isMaterialYouEnabled?.value == true && darkTheme ->
             dynamicDarkColorScheme(LocalContext.current)
@@ -108,18 +107,18 @@ fun AresTheme(
         darkTheme -> DarkColors
         else -> LightColors
     }
-
     val surfaceColor = colorScheme.surfaceColorAtElevation(3.dp)
 
-    container.apply {
-        g = (surfaceColor.green) * 255
-        b = (surfaceColor.blue) * 255
-        r = (surfaceColor.red) * 255
+    container.run {
+        g = surfaceColor.green * 255
+        b = surfaceColor.blue * 255
+        r = surfaceColor.red * 255
     }
-    background.apply {
-        g = (colorScheme.background.green) * 255
-        b = (colorScheme.background.blue) * 255
-        r = (colorScheme.background.red) * 255
+
+    background.run {
+        g = colorScheme.background.green * 255
+        b = colorScheme.background.blue * 255
+        r = colorScheme.background.red * 255
     }
 
     changeStatusBarColor.value = {

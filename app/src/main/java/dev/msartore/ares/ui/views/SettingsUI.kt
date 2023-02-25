@@ -35,7 +35,6 @@ fun SettingsUI(
     mainViewModel: MainViewModel,
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
-
     val context = LocalContext.current
     val transition = updateTransition(settingsViewModel.selectedItem.value, label = "")
 
@@ -261,7 +260,6 @@ fun SettingsUI(
                 }
             }
             SettingsPages.ABOUT -> {
-
                 BackHandler(
                     enabled = true
                 ) {

@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateOf
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class ConcurrentMutableList<T> {
-
     val list = ConcurrentLinkedQueue<T>()
     val size = mutableStateOf(list.size)
 

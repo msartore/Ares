@@ -52,7 +52,6 @@ fun ServerUI(
 
     serverFinderViewModel.run {
         if (serverInfo != null) {
-
             val loadData = {
                 job = work {
                     runCatching {
@@ -179,7 +178,6 @@ fun ServerUI(
                         key = { serverFiles.elementAt(it).UUID.hashCode() }
                     ) {
                         serverFiles.elementAt(it).run {
-
                             val url = "http://${serverInfo.ip}:$port/$UUID"
 
                             ExpandableCard { expanded ->

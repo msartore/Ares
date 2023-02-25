@@ -75,7 +75,6 @@ fun MainUI(
     val items = remember { listOf(MainPages.HOME, MainPages.SERVER_FINDER, MainPages.SETTINGS) }
     val transition = updateTransition(selectedItem.value, label = selectedItem.value.name)
     val loadingStatusDialog = remember { mutableStateOf(false) }
-
     val icon: @Composable (MainPages) -> Unit = {
         Icon(
             id = when(it) {

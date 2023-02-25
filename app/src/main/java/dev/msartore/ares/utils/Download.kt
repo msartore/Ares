@@ -8,7 +8,6 @@ import android.os.Environment
 import dev.msartore.ares.R
 
 fun DownloadManager.downloadFile(url: String, fileName: String, mimeType: String?, context: Context): Long {
-
     val request = DownloadManager.Request(Uri.parse(url))
 
     request.run {
@@ -25,7 +24,6 @@ fun DownloadManager.downloadFile(url: String, fileName: String, mimeType: String
 }
 
 fun checkStatus(downloadManager: DownloadManager?, downloadReference: Long?): Int {
-
     if (downloadManager == null || downloadReference == null) return 0
 
     val downloadQuery = DownloadManager.Query()
@@ -33,8 +31,8 @@ fun checkStatus(downloadManager: DownloadManager?, downloadReference: Long?): In
     downloadQuery.setFilterById(downloadReference)
 
     val cursor: Cursor = downloadManager.query(downloadQuery)
-    if (cursor.moveToFirst()) {
 
+    if (cursor.moveToFirst()) {
         val columnIndex: Int = cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)
 
         return cursor.getInt(columnIndex)
