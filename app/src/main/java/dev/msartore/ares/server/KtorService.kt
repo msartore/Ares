@@ -146,8 +146,7 @@ class KtorService: Service() {
 
                     if (file == null) {
                         call.respond(HttpStatusCode.NotFound)
-                    }
-                    else {
+                    } else {
                         call.response.header(
                             HttpHeaders.ContentDisposition,
                             "${
@@ -230,7 +229,7 @@ class KtorService: Service() {
 
                                                 fileSizeRemaining += buffer.capacity()
 
-                                                sizeTransferred.value = fileSizeRemaining/(contentLength?.toFloatOrNull() ?: 1f)
+                                                sizeTransferred.value = fileSizeRemaining/(contentLength?.toFloatOrNull() ?: 0f)
 
                                                 !last
                                             }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,13 +24,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -74,6 +81,8 @@ fun HomeUI(
     val context = LocalContext.current
     val isLoading = homeViewModel.isLoading.collectAsState()
     val home1State = rememberScrollState()
+    val expanded = remember { mutableStateOf(false) }
+
 
     val homeUIContent1: @Composable (Modifier) -> Unit = { modifier ->
         Column(
@@ -263,17 +272,40 @@ fun HomeUI(
                                 }
                             }
                         }
-                        Icon(
-                            id = R.drawable.upload_24px,
-                            contentDescription = stringResource(id = R.string.import_files),
-                        ) {
-                            homeViewModel.onImportFilesClick()
-                        }
-                        Icon(
-                            id = R.drawable.title_24px,
-                            contentDescription = stringResource(id = R.string.text_input),
-                        ) {
-                            homeViewModel.dialogInput.value = true
+
+                        Box {
+                            Icon(imageVector = Icons.Rounded.Add, contentDescription = "Localized description") {
+                                expanded.value = true
+                            }
+                            DropdownMenu(
+                                expanded = expanded.value,
+                                onDismissRequest = { expanded.value = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { TextAuto(id = R.string.import_files) },
+                                    onClick = {
+                                        homeViewModel.onImportFilesClick()
+                                        expanded.value = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            id = R.drawable.upload_24px,
+                                            contentDescription = stringResource(id = R.string.import_files),
+                                        )
+                                    })
+                                DropdownMenuItem(
+                                    text = { TextAuto(id = R.string.text_input) },
+                                    onClick = {
+                                        homeViewModel.dialogInput.value = true
+                                        expanded.value = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            id = R.drawable.title_24px,
+                                            contentDescription = stringResource(id = R.string.text_input),
+                                        )
+                                    })
+                            }
                         }
                     }
                 }
