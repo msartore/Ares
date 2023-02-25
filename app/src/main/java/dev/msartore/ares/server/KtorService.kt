@@ -41,7 +41,7 @@ import io.ktor.server.application.install
 import io.ktor.server.engine.ApplicationEngine
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.html.respondHtml
-import io.ktor.server.netty.Netty
+import io.ktor.server.jetty.Jetty
 import io.ktor.server.plugins.autohead.AutoHeadResponse
 import io.ktor.server.request.header
 import io.ktor.server.request.receiveMultipart
@@ -131,7 +131,7 @@ class KtorService: Service() {
     override fun onCreate() {
         super.onCreate()
 
-        server = embeddedServer(Netty, port = port) {
+        server = embeddedServer(Jetty, port = port) {
             install(AutoHeadResponse)
             routing {
                 get ("/{name}") {
