@@ -4,11 +4,15 @@ import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.PorterDuff
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.core.graphics.BlendModeColorFilterCompat
+import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.drawable.toBitmap
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -113,8 +117,16 @@ fun Collection<FileDataJson>.toJsonArray(): JsonArray {
     return array
 }
 
-fun getByteArrayFromDrawable(context: Context, id: Int) =
+fun getByteArrayFromDrawable(context: Context, id: Int, color: Int? = null) =
     getDrawable(context, id)?.let {
+        if (color != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                it.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(color, BlendModeCompat.SRC_ATOP)
+            } else {
+                @Suppress("DEPRECATION")
+                it.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+            }
+        }
         val bitmap = it.toBitmap()
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)

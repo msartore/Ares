@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.graphics.Color
 import android.os.Environment
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.mutableStateOf
@@ -71,6 +72,7 @@ import kotlinx.html.dt
 import kotlinx.html.form
 import kotlinx.html.h2
 import kotlinx.html.head
+import kotlinx.html.img
 import kotlinx.html.input
 import kotlinx.html.li
 import kotlinx.html.link
@@ -130,6 +132,10 @@ class KtorService: Service() {
     override fun onCreate() {
         super.onCreate()
 
+        val favIcon = getByteArrayFromDrawable(applicationContext, R.drawable.logo)
+        val openNew = getByteArrayFromDrawable(applicationContext, R.drawable.open_in_new_24px, if (darkTheme) Color.WHITE else Color.BLACK)
+        val downloadIcon = getByteArrayFromDrawable(applicationContext, R.drawable.file_download_48px, if (darkTheme) Color.WHITE else Color.BLACK)
+
         server = embeddedServer(Jetty, port = port) {
             install(AutoHeadResponse)
             routing {
@@ -169,15 +175,45 @@ class KtorService: Service() {
                         }
                     }
                 }
+                get ("resources/{name}") {
+                    when (val name = call.parameters["name"]) {
+                        "favicon.svg" -> {
+                            favIcon?.let {
+                                call.respondBytes(it)
+                            }
+                        }
+                        "style.css" -> {
+                            val asset = assets.open(name)
+                            call.respondBytesWriter (
+                                contentType = ContentType.Text.CSS,
+                            ) {
+                                asset.toByteReadChannel().consumeEachBufferRange { buffer, last ->
+                                    writeFully(buffer)
+                                    !last
+                                }.also {
+                                    asset.close()
+                                }
+                            }
+                        }
+                        "download.svg" -> {
+                            downloadIcon?.let {
+                                call.respondBytes(it)
+                            }
+                        }
+                        "play_arrow.svg" -> {
+                            openNew?.let {
+                                call.respondBytes(it)
+                            }
+                        }
+                        else -> {
+                            call.respond(HttpStatusCode.NotFound)
+                        }
+                    }
+                }
                 get("/info") {
                     call.respond(concurrentMutableList.list.map { fileData ->
                         fileData.toFileDataJson()
                     }.toJsonArray().toString())
-                }
-                get("/favicon.png") {
-                    getByteArrayFromDrawable(applicationContext, R.drawable.logo)?.let { it1 ->
-                        call.respondBytes(it1)
-                    }
                 }
                 post("/upload") {
                     fileTransfer.pipelineContext = this
@@ -248,20 +284,6 @@ class KtorService: Service() {
 
                     call.respondRedirect("/?success=$result")
                 }
-                get("/style.css") {
-                    val asset = assets.open("style.css")
-
-                    call.respondBytesWriter (
-                        contentType = ContentType.Text.CSS,
-                    ) {
-                        asset.toByteReadChannel().consumeEachBufferRange { buffer, last ->
-                            writeFully(buffer)
-                            !last
-                        }.also {
-                            asset.close()
-                        }
-                    }
-                }
                 get("/") {
                     val result = call.parameters["success"]
                     val textColor = if (darkTheme) "white" else "black"
@@ -269,11 +291,11 @@ class KtorService: Service() {
                     call.respondHtml {
                         head {
                             title(content = applicationContext.getString(R.string.ares_title_website))
-                            link(rel = "icon", href = "/favicon.png")
-                            styleLink("/style.css")
+                            link(rel = "icon", href = "/resources/favicon.svg")
+                            styleLink("/resources/style.css")
                             style {
                                 unsafe {
-                                    +"body { background-color:${background.cssGenerator()}; color:$textColor; } .form { background-color: ${container.cssGenerator()}; } a { color:$textColor; }"
+                                    +"body { background-color:${background.cssGenerator()}; color:$textColor; } .form { background-color: ${container.cssGenerator()}; } a { color:$textColor; } img { height: 40px; }"
                                 }
                             }
                         }
@@ -319,20 +341,14 @@ class KtorService: Service() {
                                                         +"${getString(R.string.size)}: ${(size?:1).printableSize()}"
                                                     }
                                                     dd {
-                                                        a(href = "/$UUID") {
-                                                            b {
-                                                                +getString(R.string.download)
-                                                            }
+                                                        a(href="/$UUID", target="_blank") {
+                                                            img(alt = getString(R.string.download), src = "/resources/download.svg")
                                                         }
+                                                        if (fileType == FileType.IMAGE || fileType == FileType.VIDEO)
+                                                            a(href="/$UUID?streaming=true", target="_blank") {
+                                                                img(alt = getString(R.string.streaming), src = "/resources/play_arrow.svg")
+                                                            }
                                                     }
-                                                    if (fileType == FileType.IMAGE || fileType == FileType.VIDEO)
-                                                        dd {
-                                                            a(href = "/$UUID?streaming=true") {
-                                                                b {
-                                                                    +getString(R.string.streaming)
-                                                                }
-                                                            }
-                                                        }
                                                 }
                                                 else {
                                                     dt {

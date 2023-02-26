@@ -286,7 +286,7 @@ fun HomeUI(
                                     },
                                     leadingIcon = {
                                         Icon(
-                                            id = R.drawable.upload_24px,
+                                            id = R.drawable.upload_file_24px,
                                             contentDescription = stringResource(id = R.string.import_files),
                                         )
                                     })
