@@ -1,5 +1,5 @@
 # Ktor
--keep class io.netty.** { *; }
+-keep class io.jetty.** { *; }
 -dontwarn javax.imageio.spi.ImageInputStreamSpi
 -dontwarn javax.imageio.spi.ImageOutputStreamSpi
 -dontwarn javax.imageio.spi.ImageReaderSpi
@@ -14,6 +14,12 @@
 -dontwarn com.google.protobuf.ExtensionRegistry
 -dontwarn com.google.protobuf.ExtensionRegistryLite
 -dontwarn com.google.protobuf.MessageLite$Builder
+-dontwarn java.lang.Module
+-dontwarn javax.naming.ldap.LdapName
+-dontwarn javax.naming.ldap.Rdn
+-dontwarn org.eclipse.jetty.alpn.ALPN$Provider
+-dontwarn org.eclipse.jetty.alpn.ALPN$ServerProvider
+-dontwarn org.eclipse.jetty.alpn.ALPN
 -dontwarn com.aayushatharva.brotli4j.encoder.BrotliEncoderChannel
 -dontwarn com.aayushatharva.brotli4j.encoder.Encoder
 -dontwarn org.bouncycastle.asn1.pkcs.PrivateKeyInfo
@@ -47,21 +53,6 @@
 -dontwarn com.oracle.svm.core.annotate.RecomputeFieldValue$Kind
 -dontwarn com.oracle.svm.core.annotate.RecomputeFieldValue
 -dontwarn com.oracle.svm.core.annotate.TargetClass
--dontwarn io.netty.internal.tcnative.AsyncSSLPrivateKeyMethod
--dontwarn io.netty.internal.tcnative.AsyncTask
--dontwarn io.netty.internal.tcnative.Buffer
--dontwarn io.netty.internal.tcnative.CertificateCallback
--dontwarn io.netty.internal.tcnative.CertificateCompressionAlgo
--dontwarn io.netty.internal.tcnative.CertificateVerifier
--dontwarn io.netty.internal.tcnative.Library
--dontwarn io.netty.internal.tcnative.ResultCallback
--dontwarn io.netty.internal.tcnative.SSL
--dontwarn io.netty.internal.tcnative.SSLContext
--dontwarn io.netty.internal.tcnative.SSLPrivateKeyMethod
--dontwarn io.netty.internal.tcnative.SSLSession
--dontwarn io.netty.internal.tcnative.SSLSessionCache
--dontwarn io.netty.internal.tcnative.SessionTicketKey
--dontwarn io.netty.internal.tcnative.SniHostNameMatcher
 -dontwarn java.lang.management.ManagementFactory
 -dontwarn java.lang.management.RuntimeMXBean
 -dontwarn lzma.sdk.ICodeProgress
