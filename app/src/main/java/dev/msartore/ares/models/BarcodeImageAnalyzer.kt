@@ -15,10 +15,7 @@ class BarcodeImageAnalyzer(
 ) : ImageAnalysis.Analyzer {
     private var isIPFound = false
     private val scanner = BarcodeScanning.getClient(
-        BarcodeScannerOptions
-            .Builder()
-            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-            .build()
+        BarcodeScannerOptions.Builder().setBarcodeFormats(Barcode.FORMAT_QR_CODE).build()
     )
 
     override fun analyze(imageProxy: ImageProxy) {
@@ -28,8 +25,7 @@ class BarcodeImageAnalyzer(
 
             val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
-            scanner.process(image)
-                .addOnSuccessListener { barcodes ->
+            scanner.process(image).addOnSuccessListener { barcodes ->
 
                     for (barcode in barcodes) {
 
@@ -48,8 +44,7 @@ class BarcodeImageAnalyzer(
                             }
                         }
                     }
-                }
-                .addOnFailureListener {
+                }.addOnFailureListener {
                     it.printStackTrace()
                     mediaImage.close()
                     imageProxy.close()

@@ -298,12 +298,11 @@ fun MainUI(
                                     if(list.none { it.ip == ip })
                                         add(ServerInfo(ip = ip))
                                 }
-                            }.onSuccess {
-                                loadingStatusDialog.value = false
                             }.onFailure {
-                                isPingingServer.value = false
                                 errorStatusDialog.value = true
                             }
+
+                            isPingingServer.value = false
                         }
                     }
                 }
