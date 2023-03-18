@@ -26,30 +26,28 @@ fun TextAuto(
     color: Color = Color.Unspecified,
     style: TextStyle = LocalTextStyle.current
 ) {
-    if (id != null)
-        Text(
-            modifier = modifier,
-            text = stringResource(id = id),
-            color = color,
-            fontWeight = fontWeight,
-            textAlign = textAlign,
-            lineHeight = lineHeight,
-            maxLines = maxLines,
-            fontSize = fontSize,
-            overflow = TextOverflow.Ellipsis,
-            style = style
-        )
-    else
-        Text(
-            modifier = modifier,
-            text = text.toString(),
-            color = color,
-            fontWeight = fontWeight,
-            textAlign = textAlign,
-            lineHeight = lineHeight,
-            fontSize = fontSize,
-            maxLines = maxLines,
-            overflow = TextOverflow.Ellipsis,
-            style = style
-        )
+    if (id != null) Text(
+        modifier = modifier,
+        text = stringResource(id = id),
+        color = color,
+        fontWeight = fontWeight,
+        textAlign = textAlign,
+        lineHeight = lineHeight,
+        maxLines = maxLines,
+        fontSize = fontSize,
+        overflow = TextOverflow.Ellipsis,
+        style = style
+    )
+    else Text(
+        modifier = modifier,
+        text = text.toString(),
+        color = color,
+        fontWeight = fontWeight,
+        textAlign = textAlign,
+        lineHeight = lineHeight,
+        fontSize = fontSize,
+        maxLines = maxLines,
+        overflow = TextOverflow.Ellipsis,
+        style = style
+    )
 }

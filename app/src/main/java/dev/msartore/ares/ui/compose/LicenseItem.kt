@@ -15,8 +15,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun LicenseItem(
-    titleId: Int,
-    text: String
+    titleId: Int, text: String
 ) {
     Column(
         modifier = Modifier
@@ -24,10 +23,8 @@ fun LicenseItem(
             .padding(horizontal = 16.dp)
             .border(
                 border = BorderStroke(
-                    1.dp,
-                    MaterialTheme.colorScheme.primaryContainer
-                ),
-                shape = RoundedCornerShape(35.dp)
+                    1.dp, MaterialTheme.colorScheme.primaryContainer
+                ), shape = RoundedCornerShape(35.dp)
             )
             .padding(12.dp),
         verticalArrangement = Arrangement.Center,
@@ -41,8 +38,7 @@ fun LicenseItem(
         )
 
         TextAuto(
-            text = text,
-            maxLines = Int.MAX_VALUE
+            text = text, maxLines = Int.MAX_VALUE
         )
     }
 }

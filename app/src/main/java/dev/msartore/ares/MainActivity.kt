@@ -58,15 +58,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val getContent = registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
-            work {
-                filesDataHandler(homeViewModel.isLoading, uris)
+        val getContent =
+            registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
+                work {
+                    filesDataHandler(homeViewModel.isLoading, uris)
+                }
             }
-        }
         var permissionState: MultiplePermissionsState? = null
-        val getContentPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (permissionState?.allPermissionsGranted == false) finishAffinity()
-        }
+        val getContentPermission =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if (permissionState?.allPermissionsGranted == false) finishAffinity()
+            }
         val intentSettings = Intent(
             android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             Uri.fromParts("package", packageName, null)
@@ -79,12 +81,10 @@ class MainActivity : ComponentActivity() {
 
         runBlocking {
             connectivityManager = getSystemService(ConnectivityManager::class.java)
-            networkCallback = NetworkCallback(
-                networkInfo = mainViewModel.networkInfo,
-                onNetworkLost = {
+            networkCallback =
+                NetworkCallback(networkInfo = mainViewModel.networkInfo, onNetworkLost = {
                     stopService(service)
-                }
-            )
+                })
 
             networkCallback?.let {
                 connectivityManager?.registerDefaultNetworkCallback(it)
@@ -95,19 +95,15 @@ class MainActivity : ComponentActivity() {
                 pm = packageManager
                 onFindServers = { _settings, _networkInfo ->
                     findServers(
-                        _networkInfo,
-                        _settings,
-                        serverFinderViewModel.ipSearchData
+                        _networkInfo, _settings, serverFinderViewModel.ipSearchData
                     )
                 }
                 downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
                 onOpenUrl = { url ->
                     runCatching {
-                        startActivity(
-                            Intent(Intent.ACTION_VIEW).apply {
-                                data = Uri.parse(url)
-                            }
-                        )
+                        startActivity(Intent(Intent.ACTION_VIEW).apply {
+                            data = Uri.parse(url)
+                        })
                     }.getOrElse {
                         it.printStackTrace()
                     }
@@ -135,19 +131,17 @@ class MainActivity : ComponentActivity() {
                 intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
                     concurrentMutableList.add(
                         FileData(
-                            fileType = FileType.TEXT,
-                            text = it
+                            fileType = FileType.TEXT, text = it
                         )
                     )
                 }
 
-                if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true)
-                    homeViewModel.onStartServerClick()
+                if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true) homeViewModel.onStartServerClick()
             } else if (intent.clipData != null) {
                 runBlocking {
                     val listUri = mutableListOf<Uri>()
 
-                    for (i in 0 until (intent.clipData?.itemCount ?: 0))  {
+                    for (i in 0 until (intent.clipData?.itemCount ?: 0)) {
                         intent.clipData?.getItemAt(i)?.uri?.let {
                             listUri.add(it)
                         }
@@ -156,8 +150,7 @@ class MainActivity : ComponentActivity() {
                     if (listUri.isNotEmpty()) {
                         filesDataHandler(homeViewModel.isLoading, listUri)
 
-                        if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true)
-                            homeViewModel.onStartServerClick()
+                        if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true) homeViewModel.onStartServerClick()
                     }
                 }
             }
@@ -167,8 +160,8 @@ class MainActivity : ComponentActivity() {
             val isNavBarColorSet = remember { mutableStateOf(false) }
             val resetStatusBarColor = remember { mutableStateOf({}) }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.POST_NOTIFICATIONS))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) permissionState =
+                rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.POST_NOTIFICATIONS))
 
             AresTheme(
                 changeStatusBarColor = resetStatusBarColor,
@@ -176,11 +169,9 @@ class MainActivity : ComponentActivity() {
                 mainViewModel = mainViewModel
             ) {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    Permissions(
-                        permissionState = permissionState,
+                    Permissions(permissionState = permissionState,
                         settingsStringId = R.string.notification_permission_rejected_text,
                         requestStringId = R.string.notification_permission_request_text,
                         navigateToSettingsScreen = navigateToSettingsScreen,
@@ -199,8 +190,7 @@ class MainActivity : ComponentActivity() {
                                     maxWidth = maxWidth
                                 )
                             }
-                        }
-                    )
+                        })
                 }
             }
         }

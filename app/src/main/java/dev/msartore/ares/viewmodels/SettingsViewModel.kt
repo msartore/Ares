@@ -22,7 +22,9 @@ class SettingsViewModel : ViewModel() {
     @Suppress("DEPRECATION")
     fun packageInfo(context: Context): PackageInfo =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.packageManager.getPackageInfo(context.packageName, PackageManager.PackageInfoFlags.of(0L))
+            context.packageManager.getPackageInfo(
+                context.packageName, PackageManager.PackageInfoFlags.of(0L)
+            )
         } else {
             context.packageManager.getPackageInfo(context.packageName, 0)
         }

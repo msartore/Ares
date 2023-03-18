@@ -18,7 +18,8 @@ class Settings(
 
     var findServersAtStart: MutableState<Boolean> = mutableStateOf(false)
     var ipTimeout: MutableState<Int> = mutableStateOf(timeout)
-    var isMaterialYouEnabled: MutableState<Boolean> = mutableStateOf(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+    var isMaterialYouEnabled: MutableState<Boolean> =
+        mutableStateOf(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
     var serverPortNumber: MutableState<Int> = mutableStateOf(port)
     var removeWifiRestriction: MutableState<Boolean> = mutableStateOf(false)
     var serverAutoStartup: MutableState<Boolean> = mutableStateOf(false)
@@ -39,11 +40,11 @@ class Settings(
     }
 
     enum class Keys(val key: String) {
-        FindServersAtStart("find_servers_at_start"),
-        ServerPortNumber("server_port_number"),
-        IPTimeout("ip_timeout"),
-        RemoveWifiRestriction("remove_wifi_restriction"),
-        ServerAutoStartup("server_auto_startup"),
-        MaterialYou("material_you")
+        FindServersAtStart("find_servers_at_start"), ServerPortNumber("server_port_number"), IPTimeout(
+            "ip_timeout"
+        ),
+        RemoveWifiRestriction("remove_wifi_restriction"), ServerAutoStartup("server_auto_startup"), MaterialYou(
+            "material_you"
+        )
     }
 }

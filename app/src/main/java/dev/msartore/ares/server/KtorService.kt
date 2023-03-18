@@ -84,7 +84,7 @@ import kotlinx.html.unsafe
 import java.io.File
 
 @ExperimentalGetImage
-class KtorService: Service() {
+class KtorService : Service() {
 
     object KtorServer {
         const val ONGOING_NOTIFICATION_ID = 123
@@ -112,17 +112,16 @@ class KtorService: Service() {
 
         val pendingIntent: PendingIntent =
             Intent(this, MainActivity::class.java).let { notificationIntent ->
-                PendingIntent.getActivity(this, 0, notificationIntent,
-                    PendingIntent.FLAG_IMMUTABLE)
+                PendingIntent.getActivity(
+                    this, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE
+                )
             }
 
-        val notification: Notification = Notification.Builder(this, CHANNEL_ID)
-            .setContentTitle(getText(R.string.server))
-            .setContentText(getText(R.string.notification_message))
-            .setSmallIcon(R.drawable.logo)
-            .setContentIntent(pendingIntent)
-            .setTicker(getText(R.string.ticker_text))
-            .build()
+        val notification: Notification =
+            Notification.Builder(this, CHANNEL_ID).setContentTitle(getText(R.string.server))
+                .setContentText(getText(R.string.notification_message))
+                .setSmallIcon(R.drawable.logo).setContentIntent(pendingIntent)
+                .setTicker(getText(R.string.ticker_text)).build()
 
         startForeground(ONGOING_NOTIFICATION_ID, notification)
 
@@ -133,13 +132,21 @@ class KtorService: Service() {
         super.onCreate()
 
         val favIcon = getByteArrayFromDrawable(applicationContext, R.drawable.logo)
-        val openNew = getByteArrayFromDrawable(applicationContext, R.drawable.open_in_new_24px, if (darkTheme) Color.WHITE else Color.BLACK)
-        val downloadIcon = getByteArrayFromDrawable(applicationContext, R.drawable.file_download_48px, if (darkTheme) Color.WHITE else Color.BLACK)
+        val openNew = getByteArrayFromDrawable(
+            applicationContext,
+            R.drawable.open_in_new_24px,
+            if (darkTheme) Color.WHITE else Color.BLACK
+        )
+        val downloadIcon = getByteArrayFromDrawable(
+            applicationContext,
+            R.drawable.file_download_48px,
+            if (darkTheme) Color.WHITE else Color.BLACK
+        )
 
         server = embeddedServer(Jetty, port = port) {
             install(AutoHeadResponse)
             routing {
-                get ("/{name}") {
+                get("/{name}") {
                     val streaming = call.parameters["streaming"]
                     val fileUUID = call.parameters["name"]
                     val file = concurrentMutableList.list.find { fileUUID == it.UUID.toString() }
@@ -153,38 +160,36 @@ class KtorService: Service() {
                         call.respond(HttpStatusCode.NotFound)
                     } else {
                         call.response.header(
-                            HttpHeaders.ContentDisposition,
-                            "${
-                                if (streaming != "true" || file.fileType != FileType.IMAGE && file.fileType != FileType.VIDEO)
-                                    "attachment"
-                                else
-                                    "inline"
+                            HttpHeaders.ContentDisposition, "${
+                                if (streaming != "true" || file.fileType != FileType.IMAGE && file.fileType != FileType.VIDEO) "attachment"
+                                else "inline"
                             }; filename=\"${file.name}\""
                         )
 
-                        call.respondBytesWriter (
-                            contentType = ContentType.Any,
-                            contentLength = file.size?.toLong()
+                        call.respondBytesWriter(
+                            contentType = ContentType.Any, contentLength = file.size?.toLong()
                         ) {
-                            inputStream?.toByteReadChannel()?.consumeEachBufferRange { buffer, last ->
-                                writeFully(buffer)
-                                !last
-                            }.also {
-                                inputStream?.close()
-                            }
+                            inputStream?.toByteReadChannel()
+                                ?.consumeEachBufferRange { buffer, last ->
+                                    writeFully(buffer)
+                                    !last
+                                }.also {
+                                    inputStream?.close()
+                                }
                         }
                     }
                 }
-                get ("resources/{name}") {
+                get("resources/{name}") {
                     when (val name = call.parameters["name"]) {
                         "favicon.svg" -> {
                             favIcon?.let {
                                 call.respondBytes(it)
                             }
                         }
+
                         "style.css" -> {
                             val asset = assets.open(name)
-                            call.respondBytesWriter (
+                            call.respondBytesWriter(
                                 contentType = ContentType.Text.CSS,
                             ) {
                                 asset.toByteReadChannel().consumeEachBufferRange { buffer, last ->
@@ -195,16 +200,19 @@ class KtorService: Service() {
                                 }
                             }
                         }
+
                         "download.svg" -> {
                             downloadIcon?.let {
                                 call.respondBytes(it)
                             }
                         }
+
                         "play_arrow.svg" -> {
                             openNew?.let {
                                 call.respondBytes(it)
                             }
                         }
+
                         else -> {
                             call.respond(HttpStatusCode.NotFound)
                         }
@@ -236,10 +244,22 @@ class KtorService: Service() {
                                     val (n, e) = splitFileTypeFromName(fileName)
                                     var counter = 1
 
-                                    file = File("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$fileName")
+                                    file = File(
+                                        "${
+                                            Environment.getExternalStoragePublicDirectory(
+                                                Environment.DIRECTORY_DOWNLOADS
+                                            )
+                                        }/$fileName"
+                                    )
 
                                     while (file?.exists() == true) {
-                                        file = File("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)}/$n($counter)$e")
+                                        file = File(
+                                            "${
+                                                Environment.getExternalStoragePublicDirectory(
+                                                    Environment.DIRECTORY_DOWNLOADS
+                                                )
+                                            }/$n($counter)$e"
+                                        )
                                         counter++
                                     }
 
@@ -252,21 +272,25 @@ class KtorService: Service() {
                                         }
 
                                         file?.outputStream()?.channel.use {
-                                            part.streamProvider().toByteReadChannel().consumeEachBufferRange { buffer, last ->
+                                            part.streamProvider().toByteReadChannel()
+                                                .consumeEachBufferRange { buffer, last ->
 
-                                                it?.write(buffer)
+                                                    it?.write(buffer)
 
-                                                fileSizeRemaining += buffer.capacity()
+                                                    fileSizeRemaining += buffer.capacity()
 
-                                                sizeTransferred.value = fileSizeRemaining/(contentLength?.toFloatOrNull() ?: 0f)
+                                                    sizeTransferred.value =
+                                                        fileSizeRemaining / (contentLength?.toFloatOrNull()
+                                                            ?: 0f)
 
-                                                !last
-                                            }
+                                                    !last
+                                                }
                                         }
                                     }
 
                                     part.dispose()
                                 }
+
                                 else -> {}
                             }
                         }
@@ -307,7 +331,11 @@ class KtorService: Service() {
                                     encType = FormEncType.multipartFormData
                                 ) {
                                     div {
-                                        input(type=InputType.file, name="upload", formEncType = InputFormEncType.multipartFormData)
+                                        input(
+                                            type = InputType.file,
+                                            name = "upload",
+                                            formEncType = InputFormEncType.multipartFormData
+                                        )
                                     }
 
                                     button(type = ButtonType.submit) {
@@ -315,21 +343,18 @@ class KtorService: Service() {
                                     }
                                 }
 
-                                if (result != null)
-                                    b {
-                                        +(getString(R.string.file_sent) + ": $result")
-                                    }
+                                if (result != null) b {
+                                    +(getString(R.string.file_sent) + ": $result")
+                                }
                             }
                             h2 {
                                 +getString(
-                                    if (concurrentMutableList.list.isEmpty())
-                                        R.string.no_file_available
-                                    else
-                                        R.string.files
+                                    if (concurrentMutableList.list.isEmpty()) R.string.no_file_available
+                                    else R.string.files
                                 )
                             }
                             ol {
-                                for(i in 0 until concurrentMutableList.size.value) {
+                                for (i in 0 until concurrentMutableList.size.value) {
                                     concurrentMutableList.list.elementAt(i).run {
                                         li(classes = "file") {
                                             dl {
@@ -338,19 +363,26 @@ class KtorService: Service() {
                                                         +"${getString(R.string.name)}: $name"
                                                     }
                                                     dd {
-                                                        +"${getString(R.string.size)}: ${(size?:1).printableSize()}"
+                                                        +"${getString(R.string.size)}: ${(size ?: 1).printableSize()}"
                                                     }
                                                     dd {
-                                                        a(href="/$UUID", target="_blank") {
-                                                            img(alt = getString(R.string.download), src = "/resources/download.svg")
+                                                        a(href = "/$UUID", target = "_blank") {
+                                                            img(
+                                                                alt = getString(R.string.download),
+                                                                src = "/resources/download.svg"
+                                                            )
                                                         }
-                                                        if (fileType == FileType.IMAGE || fileType == FileType.VIDEO)
-                                                            a(href="/$UUID?streaming=true", target="_blank") {
-                                                                img(alt = getString(R.string.streaming), src = "/resources/play_arrow.svg")
-                                                            }
+                                                        if (fileType == FileType.IMAGE || fileType == FileType.VIDEO) a(
+                                                            href = "/$UUID?streaming=true",
+                                                            target = "_blank"
+                                                        ) {
+                                                            img(
+                                                                alt = getString(R.string.streaming),
+                                                                src = "/resources/play_arrow.svg"
+                                                            )
+                                                        }
                                                     }
-                                                }
-                                                else {
+                                                } else {
                                                     dt {
                                                         +"$text"
                                                     }
@@ -371,7 +403,7 @@ class KtorService: Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        server?.stop(0,0)
+        server?.stop(0, 0)
         isServerOn.value = false
     }
 }

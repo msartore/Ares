@@ -14,9 +14,7 @@ import java.net.Socket
 
 @ExperimentalGetImage
 fun Context.findServers(
-    settings: Settings?,
-    networkInfo: NetworkInfo,
-    ipSearchData: IPSearchData
+    settings: Settings?, networkInfo: NetworkInfo, ipSearchData: IPSearchData
 ) {
     if (ipSearchData.isSearching.value == 0) {
         val list = networkInfo.ipAddress.value.split(".")
@@ -34,19 +32,17 @@ fun Context.findServers(
 
                     job = work {
                         for (i in 1..254) {
-                            if (job.isCancelled)
-                                break
+                            if (job.isCancelled) break
 
                             val ip = firstThree + i
 
                             ipLeft.value--
 
-                            if (!last.contains(i.toString()))
-                                runCatching {
-                                    ip.pingServer(settings)
+                            if (!last.contains(i.toString())) runCatching {
+                                ip.pingServer(settings)
 
-                                    ipSearchData.ipList.add(ServerInfo(ip = firstThree + i))
-                                }
+                                ipSearchData.ipList.add(ServerInfo(ip = firstThree + i))
+                            }
                         }
 
                         isSearching.value--
@@ -54,15 +50,12 @@ fun Context.findServers(
                 }
             }
         }
-    }
-    else
-        Toast.makeText(this, getString(R.string.wait_still_searching), Toast.LENGTH_SHORT).show()
+    } else Toast.makeText(this, getString(R.string.wait_still_searching), Toast.LENGTH_SHORT).show()
 }
 
-fun isValidServerIP(string: String) =
-    string.matches(
-        Regex("^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\$")
-    )
+fun isValidServerIP(string: String) = string.matches(
+    Regex("^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\$")
+)
 
 @ExperimentalGetImage
 fun String.pingServer(settings: Settings?, timeout: Int? = settings?.ipTimeout?.value) =

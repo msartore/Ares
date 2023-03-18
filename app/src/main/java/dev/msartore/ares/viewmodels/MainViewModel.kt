@@ -50,8 +50,10 @@ class MainViewModel : ViewModel() {
 
         settings?.update()
 
-        if (settings?.findServersAtStart?.value == true)
-            onFindServers?.invoke(networkInfo, settings)
+        if (settings?.findServersAtStart?.value == true) onFindServers?.invoke(
+            networkInfo,
+            settings
+        )
     }
 
     fun copyText(label: String, string: String) {
@@ -66,37 +68,34 @@ class MainViewModel : ViewModel() {
                     action = Intent.ACTION_SEND
                     type = "text/plain"
                     putExtra(Intent.EXTRA_TEXT, string)
-                },
-                getString(R.string.send_to)
+                }, getString(R.string.send_to)
             )
         )
     }
 
     fun openStreaming(context: Context, url: String, fileType: FileType?) {
-        context.startActivity(
-            Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(
-                    Uri.parse(url),
-                    when(fileType) {
-                        FileType.VIDEO -> {
-                            "video/*"
-                        }
-                        FileType.IMAGE -> {
-                            "image/*"
-                        }
-                        else -> {
-                            "*/*"
-                        }
+        context.startActivity(Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(
+                Uri.parse(url), when (fileType) {
+                    FileType.VIDEO -> {
+                        "video/*"
                     }
-                )
-            }
-        )
+
+                    FileType.IMAGE -> {
+                        "image/*"
+                    }
+
+                    else -> {
+                        "*/*"
+                    }
+                }
+            )
+        })
     }
 
     fun openUrl(url: String) {
         onOpenUrl?.invoke(url)
     }
 
-    fun hasCamera() =
-        pm?.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) == true
+    fun hasCamera() = pm?.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) == true
 }

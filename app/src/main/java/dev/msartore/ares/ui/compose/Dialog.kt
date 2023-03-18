@@ -1,4 +1,3 @@
-
 package dev.msartore.ares.ui.compose
 
 import androidx.compose.foundation.background
@@ -34,81 +33,65 @@ fun Dialog(
     confirmText: String = stringResource(id = R.string.confirm),
     cancelText: String = stringResource(id = R.string.cancel),
     dialogProperties: DialogProperties = DialogProperties(
-        dismissOnBackPress = false,
-        dismissOnClickOutside = false
+        dismissOnBackPress = false, dismissOnClickOutside = false
     ),
     status: MutableState<Boolean> = mutableStateOf(false)
 ) {
-    if (status.value)
-        androidx.compose.ui.window.Dialog(
-            properties = dialogProperties,
-            onDismissRequest = { status.value = false },
+    if (status.value) androidx.compose.ui.window.Dialog(
+        properties = dialogProperties,
+        onDismissRequest = { status.value = false },
+    ) {
+        Column(
+            modifier = Modifier
+                .wrapContentSize()
+                .background(
+                    color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp)
+                )
+                .padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Column(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .background(
-                        color = MaterialTheme.colorScheme.background,
-                        shape = RoundedCornerShape(16.dp)
-                    )
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+            TextAuto(
+                text = title, fontWeight = FontWeight.Bold, fontSize = 18.sp
+            )
+
+            TextAuto(
+                text = text, maxLines = Int.MAX_VALUE
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End
             ) {
-                TextAuto(
-                    text = title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
+                TextButton(onClick = {
+                    onCancel.invoke()
+                    if (closeOnClick) status.value = false
+                }) {
+                    TextAuto(text = cancelText)
+                }
 
-                TextAuto(
-                    text = text,
-                    maxLines = Int.MAX_VALUE
-                )
+                Spacer(modifier = Modifier.width(8.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                TextButton(
+                    onClick = {
+                        onConfirm.invoke()
+                        if (closeOnClick) status.value = false
+                    },
                 ) {
-                    TextButton(
-                        onClick = {
-                            onCancel.invoke()
-                            if (closeOnClick)
-                                status.value = false
-                        }
-                    ) {
-                        TextAuto(text = cancelText)
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    TextButton(
-                        onClick = {
-                            onConfirm.invoke()
-                            if (closeOnClick)
-                                status.value = false
-                       },
-                    ) {
-                        TextAuto(text = confirmText)
-                    }
+                    TextAuto(text = confirmText)
                 }
             }
         }
+    }
 }
 
 @Composable
 fun DialogContainer(
     dialogProperties: DialogProperties = DialogProperties(
-        dismissOnBackPress = false,
-        dismissOnClickOutside = false
-    ),
-    status: MutableState<Boolean>,
-    content: @Composable () -> Unit
+        dismissOnBackPress = false, dismissOnClickOutside = false
+    ), status: MutableState<Boolean>, content: @Composable () -> Unit
 ) {
-    if (status.value)
-        androidx.compose.ui.window.Dialog(
-            properties = dialogProperties,
-            onDismissRequest = { status.value = false },
-        ) {
-            content()
-        }
+    if (status.value) androidx.compose.ui.window.Dialog(
+        properties = dialogProperties,
+        onDismissRequest = { status.value = false },
+    ) {
+        content()
+    }
 }

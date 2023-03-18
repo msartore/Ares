@@ -16,12 +16,10 @@ fun LicenseUI() {
     val verticalScrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier
-            .verticalScroll(verticalScrollState)
+        modifier = Modifier.verticalScroll(verticalScrollState)
     ) {
         LicenseItem(
-            titleId = R.string.ares_title,
-            text = stringResource(id = R.string.ares_description)
+            titleId = R.string.ares_title, text = stringResource(id = R.string.ares_description)
         )
     }
 }

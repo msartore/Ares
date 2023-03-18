@@ -59,13 +59,10 @@ fun ServerUI(
                         error.value = false
                         serverFiles.clear()
                         serverInfoExtraction(
-                            serverInfo.ip,
-                            client = mainViewModel.client
+                            serverInfo.ip, client = mainViewModel.client
                         )?.let { list ->
-                            if (list.none { it.UUID == null })
-                                serverFiles.addAll(list)
-                            else
-                                error.value = true
+                            if (list.none { it.UUID == null }) serverFiles.addAll(list)
+                            else error.value = true
                         }
                         isRefreshing.value = false
                     }.onFailure {
@@ -87,8 +84,7 @@ fun ServerUI(
                 if (isRefreshing.value) {
                     // Infinite repeatable rotation when is playing
                     rotation.animateTo(
-                        targetValue = currentRotation + 360f,
-                        animationSpec = infiniteRepeatable(
+                        targetValue = currentRotation + 360f, animationSpec = infiniteRepeatable(
                             animation = tween(1000, easing = LinearEasing),
                             repeatMode = RepeatMode.Restart
                         )
@@ -99,10 +95,8 @@ fun ServerUI(
                     if (currentRotation != 90f) {
                         // Slow down rotation on pause
                         rotation.animateTo(
-                            targetValue = currentRotation + 50,
-                            animationSpec = tween(
-                                durationMillis = 250,
-                                easing = LinearOutSlowInEasing
+                            targetValue = currentRotation + 50, animationSpec = tween(
+                                durationMillis = 250, easing = LinearOutSlowInEasing
                             )
                         ) {
                             currentRotation = value
@@ -137,8 +131,7 @@ fun ServerUI(
                 }
 
                 Icon(
-                    modifier = Modifier
-                        .rotate(rotation.value),
+                    modifier = Modifier.rotate(rotation.value),
                     painter = painterResource(id = R.drawable.refresh_24px),
                     contentDescription = stringResource(id = R.string.refresh),
                 ) {
@@ -146,75 +139,68 @@ fun ServerUI(
                 }
             }
 
-            if (error.value)
-                Column(
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
-                        .verticalScroll(scrollState),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.server_error_rafiki),
-                        contentDescription = stringResource(id = R.string.error_during_connection)
-                    )
+            if (error.value) Column(
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .verticalScroll(scrollState),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.server_error_rafiki),
+                    contentDescription = stringResource(id = R.string.error_during_connection)
+                )
 
-                    TextAuto(id = R.string.error_during_connection_try_again)
+                TextAuto(id = R.string.error_during_connection_try_again)
 
-                    Button(onClick = { loadData() }) {
-                        TextAuto(id = R.string.refresh)
-                    }
+                Button(onClick = { loadData() }) {
+                    TextAuto(id = R.string.refresh)
                 }
-            else
-                LazyVerticalGrid(
-                    modifier = Modifier.fillMaxHeight(),
-                    columns = GridCells.Adaptive(250.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    state = state
-                ) {
-                    items(
-                        count = serverFiles.size,
-                        key = { serverFiles.elementAt(it).UUID.hashCode() }
-                    ) {
-                        serverFiles.elementAt(it).run {
-                            val url = "http://${serverInfo.ip}:$port/$UUID"
+            }
+            else LazyVerticalGrid(
+                modifier = Modifier.fillMaxHeight(),
+                columns = GridCells.Adaptive(250.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                state = state
+            ) {
+                items(count = serverFiles.size,
+                    key = { serverFiles.elementAt(it).UUID.hashCode() }) {
+                    serverFiles.elementAt(it).run {
+                        val url = "http://${serverInfo.ip}:$port/$UUID"
 
-                            ExpandableCard { expanded ->
-                                FileItem(
-                                    fileDataJson = this,
-                                    maxLines = if (expanded) Int.MAX_VALUE else 1,
-                                    onDownload = {
-                                        mainViewModel.downloadManager?.downloadFile(
-                                            url = url,
-                                            mimeType = mimeType,
-                                            fileName = "$name",
-                                            context = context
-                                        )
-                                    },
-                                    onStreaming = {
-                                        mainViewModel.openStreaming(
-                                            context = context,
-                                            url = "$url?streaming=true",
-                                            fileType = fileType
-                                        )
-                                    },
-                                    onShare = {
-                                        mainViewModel.run {
-                                            context.shareText("$text")
-                                        }
-                                    },
-                                    onCopy = {
-                                        mainViewModel.copyText(
-                                            context.getString(R.string.text_input),
-                                            "$text"
-                                        )
+                        ExpandableCard { expanded ->
+                            FileItem(fileDataJson = this,
+                                maxLines = if (expanded) Int.MAX_VALUE else 1,
+                                onDownload = {
+                                    mainViewModel.downloadManager?.downloadFile(
+                                        url = url,
+                                        mimeType = mimeType,
+                                        fileName = "$name",
+                                        context = context
+                                    )
+                                },
+                                onStreaming = {
+                                    mainViewModel.openStreaming(
+                                        context = context,
+                                        url = "$url?streaming=true",
+                                        fileType = fileType
+                                    )
+                                },
+                                onShare = {
+                                    mainViewModel.run {
+                                        context.shareText("$text")
                                     }
-                                )
-                            }
+                                },
+                                onCopy = {
+                                    mainViewModel.copyText(
+                                        context.getString(R.string.text_input), "$text"
+                                    )
+                                })
                         }
                     }
                 }
+            }
         }
     }
 }

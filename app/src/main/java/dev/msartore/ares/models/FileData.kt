@@ -33,11 +33,5 @@ data class FileDataJson(
 
 @Keep
 enum class FileType {
-    VIDEO,
-    IMAGE,
-    DOCUMENT,
-    TEXT,
-    COMPRESSED_ARCHIVE,
-    APK,
-    UNKNOWN
+    VIDEO, IMAGE, DOCUMENT, TEXT, COMPRESSED_ARCHIVE, APK, UNKNOWN
 }

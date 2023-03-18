@@ -39,7 +39,8 @@ class NetworkCallback(
             val ip = findIPV4(linkProperties) ?: ""
 
             cor {
-                networkInfo.bitmap.value = encodeAsBitmap("http://$ip:$port", 500, 500)?.asImageBitmap()
+                networkInfo.bitmap.value =
+                    encodeAsBitmap("http://$ip:$port", 500, 500)?.asImageBitmap()
             }
 
             ip
@@ -55,11 +56,10 @@ class NetworkCallback(
         onNetworkLost()
     }
 
-    private fun findIPV4(linkProperties: LinkProperties):String? {
+    private fun findIPV4(linkProperties: LinkProperties): String? {
         linkProperties.linkAddresses.forEach { linkAddress ->
             linkAddress.run {
-                if (address.toString().contains('.'))
-                    return address.toString().substring(1)
+                if (address.toString().contains('.')) return address.toString().substring(1)
             }
         }
 

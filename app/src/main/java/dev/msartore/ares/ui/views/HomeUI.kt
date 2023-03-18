@@ -72,9 +72,7 @@ import kotlinx.coroutines.launch
 @ExperimentalGetImage
 @Composable
 fun HomeUI(
-    maxWidth: Dp,
-    mainViewModel: MainViewModel,
-    homeViewModel: HomeViewModel = viewModel()
+    maxWidth: Dp, mainViewModel: MainViewModel, homeViewModel: HomeViewModel = viewModel()
 ) {
     val lazyGridState = rememberLazyGridState()
     val scope = rememberCoroutineScope()
@@ -84,8 +82,7 @@ fun HomeUI(
     val expanded = remember { mutableStateOf(false) }
     val homeUIContent1: @Composable (Modifier) -> Unit = { modifier ->
         Column(
-            modifier = modifier
-                .verticalScroll(home1State),
+            modifier = modifier.verticalScroll(home1State),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             TextAuto(
@@ -109,33 +106,28 @@ fun HomeUI(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         TextAuto(
-                            id = R.string.server,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Medium
+                            id = R.string.server, fontSize = 18.sp, fontWeight = FontWeight.Medium
                         )
 
-                        if (isServerOn.value)
-                            Column {
-                                if (mainViewModel.networkInfo.bitmap.value != null)
-                                    Image(
-                                        modifier = Modifier
-                                            .size(30.dp)
-                                            .background(
-                                                MaterialTheme.colorScheme.onBackground,
-                                                RoundedCornerShape(8.dp)
-                                            )
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .clickable {
-                                                mainViewModel.qrCodeDialog.value = true
-                                            },
-                                        bitmap = mainViewModel.networkInfo.bitmap.value!!,
-                                        contentDescription = "ip"
+                        if (isServerOn.value) Column {
+                            if (mainViewModel.networkInfo.bitmap.value != null) Image(
+                                modifier = Modifier
+                                    .size(30.dp)
+                                    .background(
+                                        MaterialTheme.colorScheme.onBackground,
+                                        RoundedCornerShape(8.dp)
                                     )
-                                else
-                                    CircularProgressIndicator(
-                                        modifier = Modifier.size(50.dp),
-                                    )
-                            }
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        mainViewModel.qrCodeDialog.value = true
+                                    },
+                                bitmap = mainViewModel.networkInfo.bitmap.value!!,
+                                contentDescription = "ip"
+                            )
+                            else CircularProgressIndicator(
+                                modifier = Modifier.size(50.dp),
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -151,16 +143,18 @@ fun HomeUI(
 
                     mainViewModel.networkInfo.run {
                         TextAuto(
-                            text =
-                            when {
-                                isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true) ->
-                                    "${stringResource(id = R.string.ip_address)}:" +
-                                            " ${ipAddress.value}" +
-                                            if (isServerOn.value) ":${port}" else ""
-                                !(isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true) && isNetworkAvailable.value ->
-                                    stringResource(id = R.string.wrong_network)
-                                else ->
-                                    stringResource(id = R.string.no_network_available)
+                            text = when {
+                                isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true) -> "${
+                                    stringResource(
+                                        id = R.string.ip_address
+                                    )
+                                }:" + " ${ipAddress.value}" + if (isServerOn.value) ":${port}" else ""
+
+                                !(isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true) && isNetworkAvailable.value -> stringResource(
+                                    id = R.string.wrong_network
+                                )
+
+                                else -> stringResource(id = R.string.no_network_available)
                             }
                         )
                     }
@@ -168,9 +162,8 @@ fun HomeUI(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement =
-                        if (isServerOn.value) Arrangement.SpaceBetween
-                        else Arrangement.End,
+                    horizontalArrangement = if (isServerOn.value) Arrangement.SpaceBetween
+                    else Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (isServerOn.value) {
@@ -186,37 +179,31 @@ fun HomeUI(
                             id = R.drawable.stop_circle_24px,
                             contentDescription = stringResource(id = R.string.stop_server),
                         ) {
-                            if (isServerOn.value)
-                                homeViewModel.onStopServerClick()
+                            if (isServerOn.value) homeViewModel.onStopServerClick()
                         }
-                    }
-                    else {
+                    } else {
                         mainViewModel.networkInfo.run {
-                            if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true))
-                                Icon(
-                                    id = R.drawable.power_rounded_24px,
-                                    contentDescription = stringResource(id = R.string.start_server),
-                                ) {
-                                    homeViewModel.onStartServerClick()
-                                }
+                            if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)) Icon(
+                                id = R.drawable.power_rounded_24px,
+                                contentDescription = stringResource(id = R.string.start_server),
+                            ) {
+                                homeViewModel.onStartServerClick()
+                            }
                         }
                     }
                 }
             }
 
             Column(
-                modifier = modifier
-                    .fillMaxWidth()
+                modifier = modifier.fillMaxWidth()
             ) {
                 TextAuto(
-                    id = R.string.file,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
+                    id = R.string.file, fontSize = 18.sp, fontWeight = FontWeight.Medium
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                TextAuto(text = "${stringResource(id = R.string.available)}: ${concurrentMutableList.size.value}" )
+                TextAuto(text = "${stringResource(id = R.string.available)}: ${concurrentMutableList.size.value}")
 
                 TextAuto(text = "${stringResource(id = R.string.selected)}: ${concurrentMutableList.list.filter { it.selected.value }.size}")
 
@@ -230,30 +217,27 @@ fun HomeUI(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (isLoading.value)
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .weight(1f, false),
-                                strokeWidth = 2.dp
-                            )
+                        if (isLoading.value) CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .weight(1f, false), strokeWidth = 2.dp
+                        )
 
-                        if (concurrentMutableList.list.any { it.selected.value })
-                            Icon(
-                                id = R.drawable.delete_24px,
-                                contentDescription = stringResource(id = R.string.delete_selected),
-                            ) {
-                                scope.launch {
-                                    concurrentMutableList.removeIf { it.selected.value }
-                                }
+                        if (concurrentMutableList.list.any { it.selected.value }) Icon(
+                            id = R.drawable.delete_24px,
+                            contentDescription = stringResource(id = R.string.delete_selected),
+                        ) {
+                            scope.launch {
+                                concurrentMutableList.removeIf { it.selected.value }
                             }
+                        }
 
                         if (concurrentMutableList.size.value > 0) {
-                            val countSelected = concurrentMutableList.list.count { it.selected.value }
+                            val countSelected =
+                                concurrentMutableList.list.count { it.selected.value }
 
                             Icon(
-                                id =
-                                when (countSelected) {
+                                id = when (countSelected) {
                                     concurrentMutableList.size.value -> R.drawable.check_box_24px
                                     in 1..concurrentMutableList.size.value -> R.drawable.indeterminate_check_box_24px
                                     else -> R.drawable.check_box_outline_blank_24px
@@ -262,24 +246,29 @@ fun HomeUI(
                             ) {
                                 scope.launch {
                                     when (countSelected) {
-                                        0 -> concurrentMutableList.list.forEach { it.selected.value = true }
-                                        else -> concurrentMutableList.list.forEach { it.selected.value = false }
+                                        0 -> concurrentMutableList.list.forEach {
+                                            it.selected.value = true
+                                        }
+
+                                        else -> concurrentMutableList.list.forEach {
+                                            it.selected.value = false
+                                        }
                                     }
                                 }
                             }
                         }
 
                         Box {
-                            Icon(imageVector = Icons.Rounded.Add, contentDescription = "Localized description") {
+                            Icon(
+                                imageVector = Icons.Rounded.Add,
+                                contentDescription = "Localized description"
+                            ) {
                                 expanded.value = true
                             }
 
-                            DropdownMenu(
-                                expanded = expanded.value,
-                                onDismissRequest = { expanded.value = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { TextAuto(id = R.string.import_files) },
+                            DropdownMenu(expanded = expanded.value,
+                                onDismissRequest = { expanded.value = false }) {
+                                DropdownMenuItem(text = { TextAuto(id = R.string.import_files) },
                                     onClick = {
                                         homeViewModel.onImportFilesClick()
                                         expanded.value = false
@@ -291,8 +280,7 @@ fun HomeUI(
                                         )
                                     })
 
-                                DropdownMenuItem(
-                                    text = { TextAuto(id = R.string.text_input) },
+                                DropdownMenuItem(text = { TextAuto(id = R.string.text_input) },
                                     onClick = {
                                         homeViewModel.dialogInput.value = true
                                         expanded.value = false
@@ -318,25 +306,19 @@ fun HomeUI(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             state = lazyGridState
         ) {
-            items(
-                count = concurrentMutableList.size.value,
-                key = {
-                    concurrentMutableList.list.elementAt(it).UUID
-                }
-            ) { index ->
+            items(count = concurrentMutableList.size.value, key = {
+                concurrentMutableList.list.elementAt(it).UUID
+            }) { index ->
 
                 concurrentMutableList.list.elementAt(index).run {
-                    ExpandableCard(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(if (selected.value) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer),
+                    ExpandableCard(modifier = Modifier
+                        .fillMaxWidth()
+                        .background(if (selected.value) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer),
                         onLongClick = {
                             selected.value = !selected.value
-                        }
-                    ) {
+                        }) {
                         FileItem(
-                            fileData = this,
-                            maxLines = if (it) Int.MAX_VALUE else 1
+                            fileData = this, maxLines = if (it) Int.MAX_VALUE else 1
                         )
                     }
                 }
@@ -344,23 +326,22 @@ fun HomeUI(
         }
     }
 
-    if (maxWidth.isWideView())
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            homeUIContent1(
-                Modifier
-                    .fillMaxHeight()
-                    .weight(1f))
-            homeUIContent2(Modifier.weight(1f))
-        }
-    else
-        Column(
-            modifier = Modifier.padding(top = 16.dp)
-        ) {
-            homeUIContent1(Modifier.wrapContentHeight())
-            homeUIContent2(Modifier)
-        }
+    if (maxWidth.isWideView()) Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        homeUIContent1(
+            Modifier
+                .fillMaxHeight()
+                .weight(1f)
+        )
+        homeUIContent2(Modifier.weight(1f))
+    }
+    else Column(
+        modifier = Modifier.padding(top = 16.dp)
+    ) {
+        homeUIContent1(Modifier.wrapContentHeight())
+        homeUIContent2(Modifier)
+    }
 
     homeViewModel.run {
         DialogContainer(status = dialogInput) {
@@ -378,50 +359,41 @@ fun HomeUI(
                     id = R.string.text_input
                 )
 
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
+                TextField(modifier = Modifier.fillMaxWidth(),
                     value = inputText.value,
                     onValueChange = { inputText.value = it },
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done
                     ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            keyboardController?.hide()
-                        }
-                    ),
-                    maxLines = 1
-                )
+                    keyboardActions = KeyboardActions(onDone = {
+                        keyboardController?.hide()
+                    }),
+                    maxLines = 1)
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TextButton(
-                        onClick = {
-                            dialogInput.value = false
-                            inputText.value = ""
-                        }
-                    ) {
+                    TextButton(onClick = {
+                        dialogInput.value = false
+                        inputText.value = ""
+                    }) {
                         TextAuto(id = R.string.cancel)
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
 
-                    TextButton(
-                        onClick = {
-                            if (inputText.value.isNotBlank())
-                                concurrentMutableList.add(FileData(
-                                    text = inputText.value,
-                                    fileType = FileType.TEXT
-                                ))
+                    TextButton(onClick = {
+                        if (inputText.value.isNotBlank()) concurrentMutableList.add(
+                            FileData(
+                                text = inputText.value, fileType = FileType.TEXT
+                            )
+                        )
 
-                            dialogInput.value = false
-                            inputText.value = ""
-                        }
-                    ) {
+                        dialogInput.value = false
+                        inputText.value = ""
+                    }) {
                         TextAuto(id = R.string.save)
                     }
                 }

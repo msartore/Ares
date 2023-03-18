@@ -100,10 +100,14 @@ fun AresTheme(
     darkTheme = isSystemInDarkTheme()
     val systemUiController = rememberSystemUiController()
     val colorScheme = when {
-        mainViewModel.settings?.isMaterialYouEnabled?.value == true && darkTheme ->
-            dynamicDarkColorScheme(LocalContext.current)
-        mainViewModel.settings?.isMaterialYouEnabled?.value == true && !darkTheme ->
-            dynamicLightColorScheme(LocalContext.current)
+        mainViewModel.settings?.isMaterialYouEnabled?.value == true && darkTheme -> dynamicDarkColorScheme(
+            LocalContext.current
+        )
+
+        mainViewModel.settings?.isMaterialYouEnabled?.value == true && !darkTheme -> dynamicLightColorScheme(
+            LocalContext.current
+        )
+
         darkTheme -> DarkColors
         else -> LightColors
     }
@@ -123,27 +127,21 @@ fun AresTheme(
 
     changeStatusBarColor.value = {
         systemUiController.setSystemBarsColor(
-            color = colorScheme.background,
-            darkIcons = !darkTheme
+            color = colorScheme.background, darkIcons = !darkTheme
         )
     }
 
     cor { mainViewModel.isDarkTheme.emit(darkTheme) }
 
     systemUiController.setSystemBarsColor(
-        color = colorScheme.background,
-        darkIcons = !darkTheme
+        color = colorScheme.background, darkIcons = !darkTheme
     )
 
-    if (isNavBarColorSet.value)
-        systemUiController.setNavigationBarColor(
-            color = colorScheme.surfaceColorAtElevation(3.dp),
-            darkIcons = !darkTheme
-        )
+    if (isNavBarColorSet.value) systemUiController.setNavigationBarColor(
+        color = colorScheme.surfaceColorAtElevation(3.dp), darkIcons = !darkTheme
+    )
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        typography = AppTypography,
-        content = content
+        colorScheme = colorScheme, typography = AppTypography, content = content
     )
 }

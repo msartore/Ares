@@ -32,23 +32,20 @@ import dev.msartore.ares.viewmodels.SettingsViewModel
 @Composable
 @androidx.camera.core.ExperimentalGetImage
 fun SettingsUI(
-    mainViewModel: MainViewModel,
-    settingsViewModel: SettingsViewModel = viewModel()
+    mainViewModel: MainViewModel, settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val transition = updateTransition(settingsViewModel.selectedItem.value, label = "")
 
     transition.AnimatedContent { settingsPages ->
-        when(settingsPages) {
+        when (settingsPages) {
             SettingsPages.SETTINGS -> {
                 Column(
-                    modifier = Modifier
-                        .verticalScroll(settingsViewModel.scrollState),
+                    modifier = Modifier.verticalScroll(settingsViewModel.scrollState),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     TextAuto(
-                        modifier = Modifier
-                            .padding(top = 16.dp),
+                        modifier = Modifier.padding(top = 16.dp),
                         id = R.string.settings,
                         style = MaterialTheme.typography.displaySmall,
                     )
@@ -92,23 +89,26 @@ fun SettingsUI(
                             color = MaterialTheme.colorScheme.primary
                         )
 
-                        if (!KtorService.KtorServer.isServerOn.value)
-                            SettingsItemInput(
-                                title = stringResource(id = R.string.server_port),
-                                description = stringResource(id = R.string.server_port_description),
-                                icon = painterResource(id = R.drawable.dns_24px),
-                                item = serverPortNumber,
-                                onCheck = {
-                                    if ((it.toIntOrNull() ?: 0) in 1024..49151) true
-                                    else {
-                                        Toast.makeText(context, context.getString(R.string.server_port_error), Toast.LENGTH_SHORT).show()
-                                        false
-                                    }
+                        if (!KtorService.KtorServer.isServerOn.value) SettingsItemInput(title = stringResource(
+                            id = R.string.server_port
+                        ),
+                            description = stringResource(id = R.string.server_port_description),
+                            icon = painterResource(id = R.drawable.dns_24px),
+                            item = serverPortNumber,
+                            onCheck = {
+                                if ((it.toIntOrNull() ?: 0) in 1024..49151) true
+                                else {
+                                    Toast.makeText(
+                                        context,
+                                        context.getString(R.string.server_port_error),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    false
                                 }
-                            ) {
-                                work { save(Settings.Keys.ServerPortNumber, serverPortNumber) }
-                                KtorService.KtorServer.port = serverPortNumber.value
-                            }
+                            }) {
+                            work { save(Settings.Keys.ServerPortNumber, serverPortNumber) }
+                            KtorService.KtorServer.port = serverPortNumber.value
+                        }
 
                         SettingsItemSwitch(
                             title = stringResource(id = R.string.server_auto_startup),
@@ -160,7 +160,11 @@ fun SettingsUI(
                             icon = painterResource(id = R.drawable.wifi_off_24px),
                             item = removeWifiRestriction,
                         ) {
-                            work { save(Settings.Keys.RemoveWifiRestriction, removeWifiRestriction) }
+                            work {
+                                save(
+                                    Settings.Keys.RemoveWifiRestriction, removeWifiRestriction
+                                )
+                            }
                         }
                     }
 
@@ -176,61 +180,47 @@ fun SettingsUI(
                         color = MaterialTheme.colorScheme.primary
                     )
 
-                    SettingsItem(
-                        title = stringResource(R.string.license),
+                    SettingsItem(title = stringResource(R.string.license),
                         icon = painterResource(id = R.drawable.description_24px),
                         onClick = {
                             settingsViewModel.selectedItem.value = SettingsPages.ABOUT
-                        }
-                    )
+                        })
 
-                    SettingsItem(
-                        title = stringResource(R.string.open_source_licenses),
+                    SettingsItem(title = stringResource(R.string.open_source_licenses),
                         icon = painterResource(id = R.drawable.description_24px),
                         onClick = {
                             settingsViewModel.openThirdLicenses()
-                        }
-                    )
+                        })
 
-                    SettingsItem(
-                        title = stringResource(R.string.privacy_policy),
+                    SettingsItem(title = stringResource(R.string.privacy_policy),
                         icon = painterResource(id = R.drawable.policy_24px),
                         onClick = {
                             mainViewModel.openUrl("https://msartore.dev/ares/privacy/")
-                        }
-                    )
+                        })
 
-                    SettingsItem(
-                        title = stringResource(id = R.string.illustrations_credit),
+                    SettingsItem(title = stringResource(id = R.string.illustrations_credit),
                         icon = painterResource(id = R.drawable.draw_24px),
                         onClick = {
                             mainViewModel.openUrl("http://storyset.com/")
-                        }
-                    )
+                        })
 
-                    SettingsItem(
-                        title = stringResource(R.string.contribute),
+                    SettingsItem(title = stringResource(R.string.contribute),
                         icon = painterResource(id = R.drawable.handshake_24px),
                         onClick = {
                             mainViewModel.openUrl("https://github.com/msartore/Ares")
-                        }
-                    )
+                        })
 
-                    SettingsItem(
-                        title = stringResource(R.string.donate),
+                    SettingsItem(title = stringResource(R.string.donate),
                         icon = painterResource(id = R.drawable.volunteer_activism_24px),
                         onClick = {
                             mainViewModel.openUrl("https://msartore.dev/donation/")
-                        }
-                    )
+                        })
 
-                    SettingsItem(
-                        title = stringResource(R.string.more_about_me),
+                    SettingsItem(title = stringResource(R.string.more_about_me),
                         icon = painterResource(id = R.drawable.favorite_24px),
                         onClick = {
                             mainViewModel.openUrl("https://msartore.dev/#projects")
-                        }
-                    )
+                        })
 
                     Column(
                         modifier = Modifier
@@ -259,6 +249,7 @@ fun SettingsUI(
                     }
                 }
             }
+
             SettingsPages.ABOUT -> {
                 BackHandler(
                     enabled = true
@@ -296,6 +287,5 @@ fun SettingsUI(
 }
 
 enum class SettingsPages {
-    SETTINGS,
-    ABOUT
+    SETTINGS, ABOUT
 }

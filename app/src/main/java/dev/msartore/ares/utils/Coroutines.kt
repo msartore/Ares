@@ -5,21 +5,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-fun cor(block: suspend CoroutineScope.() -> Unit) =
-    CoroutineScope(Dispatchers.Main).launch {
+fun cor(block: suspend CoroutineScope.() -> Unit) = CoroutineScope(Dispatchers.Main).launch {
+    block()
+}
+
+fun work(block: suspend CoroutineScope.() -> Unit) = cor {
+    withContext(Dispatchers.IO) {
         block()
     }
+}
 
-fun work(block: suspend CoroutineScope.() -> Unit) =
-    cor {
-        withContext(Dispatchers.IO) {
-            block()
-        }
+fun main(block: suspend CoroutineScope.() -> Unit) = cor {
+    withContext(Dispatchers.Main) {
+        block()
     }
-
-fun main(block: suspend CoroutineScope.() -> Unit) =
-    cor {
-        withContext(Dispatchers.Main) {
-            block()
-        }
-    }
+}

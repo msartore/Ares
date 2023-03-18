@@ -65,17 +65,14 @@ fun CameraPreview(
                     setSurfaceProvider(previewView.surfaceProvider)
                 }
 
-                val cameraSelector = CameraSelector.Builder()
-                    .requireLensFacing(CameraSelector.LENS_FACING_BACK)
-                    .build()
+                val cameraSelector =
+                    CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                        .build()
 
                 cameraProvider.value?.unbindAll()
 
                 val camera = cameraProvider.value?.bindToLifecycle(
-                    lifecycleOwner,
-                    cameraSelector,
-                    setupImageAnalysis(executor, analyzer),
-                    preview
+                    lifecycleOwner, cameraSelector, setupImageAnalysis(executor, analyzer), preview
                 )
 
                 cameraControl.value = camera?.cameraControl
@@ -87,10 +84,7 @@ fun CameraPreview(
 }
 
 private fun setupImageAnalysis(executor: Executor, analyzer: ImageAnalysis.Analyzer) =
-    ImageAnalysis.Builder()
-        .setTargetResolution(Size(720, 1280))
-        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-        .build()
-        .apply {
-            setAnalyzer(executor,analyzer)
+    ImageAnalysis.Builder().setTargetResolution(Size(720, 1280))
+        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build().apply {
+            setAnalyzer(executor, analyzer)
         }

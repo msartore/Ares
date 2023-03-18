@@ -10,8 +10,7 @@ import io.ktor.client.request.*
 
 @ExperimentalGetImage
 suspend fun serverInfoExtraction(
-    ip: String,
-    client: HttpClient
+    ip: String, client: HttpClient
 ): List<FileDataJson>? {
     val response = client.get("http://$ip:$port/info")
 
@@ -19,6 +18,5 @@ suspend fun serverInfoExtraction(
         Gson().fromJson(response.body<String>(), mutableListOf<String>().javaClass).map {
             Gson().fromJson(it, FileDataJson::class.java)
         }
-    }
-    else null
+    } else null
 }

@@ -28,14 +28,13 @@ fun Icon(
 ) {
     var localModifier = modifier
 
-    if (shadowEnabled)
-        localModifier = localModifier.shadow(shape = RoundedCornerShape(16.dp), elevation = 50.dp)
+    if (shadowEnabled) localModifier =
+        localModifier.shadow(shape = RoundedCornerShape(16.dp), elevation = 50.dp)
 
-    if (onClick != null)
-        localModifier = localModifier
-            .clip(RoundedCornerShape(35.dp))
-            .clickable { onClick.invoke() }
-            .padding(8.dp)
+    if (onClick != null) localModifier = localModifier
+        .clip(RoundedCornerShape(35.dp))
+        .clickable { onClick.invoke() }
+        .padding(8.dp)
 
     when {
         imageVector != null -> Icon(
@@ -44,12 +43,14 @@ fun Icon(
             imageVector = imageVector,
             contentDescription = contentDescription
         )
+
         painter != null -> Icon(
             modifier = localModifier,
             tint = tint,
             painter = painter,
             contentDescription = contentDescription
         )
+
         id != null -> Icon(
             modifier = localModifier,
             tint = tint,

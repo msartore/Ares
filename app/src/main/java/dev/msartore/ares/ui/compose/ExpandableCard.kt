@@ -29,14 +29,11 @@ fun ExpandableCard(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .combinedClickable(
-                onClick = {
-                    expandedState.value = !expandedState.value
-                },
-                onLongClick = {
-                    onLongClick?.invoke()
-                }
-            ),
+            .combinedClickable(onClick = {
+                expandedState.value = !expandedState.value
+            }, onLongClick = {
+                onLongClick?.invoke()
+            }),
         shape = RoundedCornerShape(16.dp),
     ) {
         Column(

@@ -60,8 +60,8 @@ import dev.msartore.ares.viewmodels.ServerFinderViewModel
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalAnimationApi::class,
-    ExperimentalPermissionsApi::class
+@OptIn(
+    ExperimentalAnimationApi::class, ExperimentalPermissionsApi::class
 )
 @ExperimentalGetImage
 @Composable
@@ -77,38 +77,31 @@ fun MainUI(
     val loadingStatusDialog = remember { mutableStateOf(false) }
     val icon: @Composable (MainPages) -> Unit = {
         Icon(
-            id = when(it) {
+            id = when (it) {
                 MainPages.HOME -> {
-                    if (selectedItem.value == it)
-                        R.drawable.home_filled_24px
-                    else
-                        R.drawable.home_24px
+                    if (selectedItem.value == it) R.drawable.home_filled_24px
+                    else R.drawable.home_24px
                 }
+
                 MainPages.SERVER_FINDER -> {
-                    if (selectedItem.value == it)
-                        R.drawable.wifi_find_filled_24px
-                    else
-                        R.drawable.wifi_find_24px
+                    if (selectedItem.value == it) R.drawable.wifi_find_filled_24px
+                    else R.drawable.wifi_find_24px
                 }
+
                 else -> {
-                    if (selectedItem.value == it)
-                        R.drawable.settings_filled_24px
-                    else
-                        R.drawable.settings_24px
+                    if (selectedItem.value == it) R.drawable.settings_filled_24px
+                    else R.drawable.settings_24px
                 }
-            },
-            contentDescription = stringResource(id = it.stringId)
+            }, contentDescription = stringResource(id = it.stringId)
         )
     }
     val label: @Composable (MainPages) -> Unit = {
         TextAuto(
-            id = it.stringId,
-            style = MaterialTheme.typography.labelLarge
+            id = it.stringId, style = MaterialTheme.typography.labelLarge
         )
     }
     val onClick: (MainPages) -> Unit = { page ->
-        if (selectedItem.value != page)
-            selectedItem.value = page
+        if (selectedItem.value != page) selectedItem.value = page
     }
     val mainUI: @Composable (PaddingValues?) -> Unit = { paddingValues ->
         val scope = rememberCoroutineScope()
@@ -124,13 +117,13 @@ fun MainUI(
         ) {
             transition.AnimatedContent {
                 Column {
-                    when(it) {
+                    when (it) {
                         MainPages.HOME -> {
                             HomeUI(
-                                maxWidth = maxWidth,
-                                mainViewModel = mainViewModel
+                                maxWidth = maxWidth, mainViewModel = mainViewModel
                             )
                         }
+
                         MainPages.SERVER_FINDER -> {
                             ServerFinderUI(
                                 maxWidth = maxWidth,
@@ -138,6 +131,7 @@ fun MainUI(
                                 serverFinderViewModel = serverFinderViewModel
                             )
                         }
+
                         MainPages.SETTINGS -> {
                             SettingsUI(
                                 mainViewModel = mainViewModel,
@@ -154,8 +148,7 @@ fun MainUI(
                 visible = serverFinderViewModel.ipSearchData.isSearching.value != 0
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -184,8 +177,9 @@ fun MainUI(
             )
 
             DialogContainer(
-                status = mainViewModel.qrCodeDialog,
-                dialogProperties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true)
+                status = mainViewModel.qrCodeDialog, dialogProperties = DialogProperties(
+                    dismissOnBackPress = true, dismissOnClickOutside = true
+                )
             ) {
                 Column(
                     modifier = Modifier
@@ -195,20 +189,16 @@ fun MainUI(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    if (mainViewModel.networkInfo.bitmap.value != null)
-                        Image(
-                            modifier = Modifier
-                                .background(
-                                    MaterialTheme.colorScheme.onBackground,
-                                    RoundedCornerShape(16.dp)
-                                ),
-                            bitmap = mainViewModel.networkInfo.bitmap.value!!,
-                            contentDescription = "ip"
-                        )
-                    else
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(80.dp),
-                        )
+                    if (mainViewModel.networkInfo.bitmap.value != null) Image(
+                        modifier = Modifier.background(
+                                MaterialTheme.colorScheme.onBackground, RoundedCornerShape(16.dp)
+                            ),
+                        bitmap = mainViewModel.networkInfo.bitmap.value!!,
+                        contentDescription = "ip"
+                    )
+                    else CircularProgressIndicator(
+                        modifier = Modifier.size(80.dp),
+                    )
 
                     Row(
                         horizontalArrangement = Arrangement.End
@@ -222,43 +212,37 @@ fun MainUI(
         }
     }
 
-    if (maxWidth.isWideView())
-        Row {
-            NavigationRail(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .wrapContentWidth()
-            ) {
-                items.forEach { item ->
-                    NavigationRailItem(
-                        icon = { icon(item) },
-                        label = { label(item) },
-                        onClick = { onClick(item) },
-                        selected = selectedItem.value == item
-                    )
-                }
-            }
-
-            mainUI(null)
-        }
-    else
-        Scaffold(
-            modifier = Modifier.fillMaxHeight(),
-            bottomBar = {
-                NavigationBar {
-                    items.forEach { item ->
-                        NavigationBarItem(
-                            icon = { icon(item) },
-                            label = { label(item) },
-                            onClick = { onClick(item) },
-                            selected = selectedItem.value == item,
-                        )
-                    }
-                }
-            }
+    if (maxWidth.isWideView()) Row {
+        NavigationRail(
+            modifier = Modifier
+                .padding(16.dp)
+                .wrapContentWidth()
         ) {
-            mainUI(it)
+            items.forEach { item ->
+                NavigationRailItem(icon = { icon(item) },
+                    label = { label(item) },
+                    onClick = { onClick(item) },
+                    selected = selectedItem.value == item
+                )
+            }
         }
+
+        mainUI(null)
+    }
+    else Scaffold(modifier = Modifier.fillMaxHeight(), bottomBar = {
+        NavigationBar {
+            items.forEach { item ->
+                NavigationBarItem(
+                    icon = { icon(item) },
+                    label = { label(item) },
+                    onClick = { onClick(item) },
+                    selected = selectedItem.value == item,
+                )
+            }
+        }
+    }) {
+        mainUI(it)
+    }
 
     serverFinderViewModel.qrReadingProcess.apply {
         LaunchedEffect(key1 = isPingingServer.value) {
@@ -266,14 +250,14 @@ fun MainUI(
         }
 
         if (isReadingQR.value) {
-            val permissionState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.CAMERA))
+            val permissionState =
+                rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.CAMERA))
 
             BackHandler(true) {
                 isReadingQR.value = false
             }
 
-            Permissions(
-                permissionState = permissionState,
+            Permissions(permissionState = permissionState,
                 requestStringId = R.string.camera_permission_request_text,
                 settingsStringId = R.string.camera_permission_rejected_text,
                 navigateToSettingsScreen = navigateToSettingsScreen,
@@ -290,13 +274,11 @@ fun MainUI(
                         work {
                             runCatching {
                                 ip.pingServer(
-                                    settings = mainViewModel.settings,
-                                    2000
+                                    settings = mainViewModel.settings, 2000
                                 )
 
                                 serverFinderViewModel.ipSearchData.ipList.apply {
-                                    if(list.none { it.ip == ip })
-                                        add(ServerInfo(ip = ip))
+                                    if (list.none { it.ip == ip }) add(ServerInfo(ip = ip))
                                 }
                             }.onFailure {
                                 errorStatusDialog.value = true
@@ -305,15 +287,12 @@ fun MainUI(
                             isPingingServer.value = false
                         }
                     }
-                }
-            )
+                })
         }
 
         DialogContainer(
-            status = errorStatusDialog,
-            dialogProperties = DialogProperties(
-                dismissOnBackPress = true,
-                dismissOnClickOutside = true
+            status = errorStatusDialog, dialogProperties = DialogProperties(
+                dismissOnBackPress = true, dismissOnClickOutside = true
             )
         ) {
             Column(
@@ -325,8 +304,7 @@ fun MainUI(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 TextAuto(
-                    id = R.string.server_not_found,
-                    maxLines = Int.MAX_VALUE
+                    id = R.string.server_not_found, maxLines = Int.MAX_VALUE
                 )
 
                 Row(
@@ -357,7 +335,5 @@ fun MainUI(
 }
 
 enum class MainPages(val stringId: Int) {
-    HOME(R.string.home),
-    SERVER_FINDER(R.string.server_finder),
-    SETTINGS(R.string.settings)
+    HOME(R.string.home), SERVER_FINDER(R.string.server_finder), SETTINGS(R.string.settings)
 }

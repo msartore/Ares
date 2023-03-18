@@ -5,6 +5,5 @@ class Rgb {
     var g = 0f
     var b = 0f
 
-    fun cssGenerator() =
-        "rgb($r,$g,$b)"
+    fun cssGenerator() = "rgb($r,$g,$b)"
 }

@@ -14,10 +14,7 @@ import dev.msartore.ares.R
 
 @Composable
 fun ServerItem(
-    IP: String,
-    url: String,
-    openUrl: (String) -> Unit,
-    serverSelected: () -> Unit
+    IP: String, url: String, openUrl: (String) -> Unit, serverSelected: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -37,8 +34,7 @@ fun ServerItem(
         Icon(
             modifier = Modifier
                 .size(50.dp)
-                .padding(end = 8.dp),
-            id = R.drawable.devices_24px
+                .padding(end = 8.dp), id = R.drawable.devices_24px
         )
 
         Row(

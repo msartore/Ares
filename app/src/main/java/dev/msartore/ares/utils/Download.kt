@@ -7,7 +7,9 @@ import android.net.Uri
 import android.os.Environment
 import dev.msartore.ares.R
 
-fun DownloadManager.downloadFile(url: String, fileName: String, mimeType: String?, context: Context): Long {
+fun DownloadManager.downloadFile(
+    url: String, fileName: String, mimeType: String?, context: Context
+): Long {
     val request = DownloadManager.Request(Uri.parse(url))
 
     request.run {

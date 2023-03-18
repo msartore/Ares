@@ -40,7 +40,7 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
             if (index < 0) return null
 
             val displayName: String = it.getString(index)
-            val typeIndex =  it.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
+            val typeIndex = it.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
             val sizeIndex: Int = it.getColumnIndex(OpenableColumns.SIZE)
 
             fileData.run {
@@ -69,7 +69,12 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
 
 fun fileType(name: String): FileType {
     return when {
-        name.contains(listOf("mp4", "wav", "mpg", "mpeg", "mp4", "3gp", "3gpp", "mkv", "avi")) -> FileType.VIDEO
+        name.contains(
+            listOf(
+                "mp4", "wav", "mpg", "mpeg", "mp4", "3gp", "3gpp", "mkv", "avi"
+            )
+        ) -> FileType.VIDEO
+
         name.contains(listOf("jpg", "png", "jpeg", "gif", "bmp", "wbmp", "webp")) -> FileType.IMAGE
         name.contains(listOf("pdf", "txt", "html", "htm")) -> FileType.DOCUMENT
         name.contains(listOf("apk")) -> FileType.APK
@@ -79,33 +84,31 @@ fun fileType(name: String): FileType {
 }
 
 fun splitFileTypeFromName(text: String): Pair<String, String> {
-    return Pair(text.substring(0, text.indexOfLast { it == '.' }), text.substring(text.indexOfLast { it == '.' }, text.length))
+    return Pair(text.substring(0, text.indexOfLast { it == '.' }),
+        text.substring(text.indexOfLast { it == '.' }, text.length)
+    )
 }
 
-fun String.contains(collection: Collection<String>) =
-    collection.any { this.contains(it) }
+fun String.contains(collection: Collection<String>) = collection.any { this.contains(it) }
 
-fun Int.printableSize() =
-    when(this) {
-        in 0..999 -> "$this B"
-        in 1000..999999 -> "%.2f".format(this/1000.0) + " KB"
-        in 1000000..1000000000 -> "%.2f".format(this/1000000.0) + " MB"
-        else -> "%.2f".format(this/1000000000.0) + " GB"
-    }
+fun Int.printableSize() = when (this) {
+    in 0..999 -> "$this B"
+    in 1000..999999 -> "%.2f".format(this / 1000.0) + " KB"
+    in 1000000..1000000000 -> "%.2f".format(this / 1000000.0) + " MB"
+    else -> "%.2f".format(this / 1000000000.0) + " GB"
+}
 
-fun FileData.toFileDataJson() =
-    FileDataJson(
-        name = this.name,
-        size = this.size,
-        text = this.text,
-        fileType = this.fileType,
-        mimeType = mimeType,
-        icon = this.icon,
-        UUID = this.UUID
-    )
+fun FileData.toFileDataJson() = FileDataJson(
+    name = this.name,
+    size = this.size,
+    text = this.text,
+    fileType = this.fileType,
+    mimeType = mimeType,
+    icon = this.icon,
+    UUID = this.UUID
+)
 
-fun FileDataJson.toJson(): String =
-    Gson().toJson(this)
+fun FileDataJson.toJson(): String = Gson().toJson(this)
 
 fun Collection<FileDataJson>.toJsonArray(): JsonArray {
     val array = JsonArray()
@@ -121,10 +124,11 @@ fun getByteArrayFromDrawable(context: Context, id: Int, color: Int? = null) =
     getDrawable(context, id)?.let {
         if (color != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                it.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(color, BlendModeCompat.SRC_ATOP)
+                it.colorFilter = BlendModeColorFilterCompat.createBlendModeColorFilterCompat(
+                    color, BlendModeCompat.SRC_ATOP
+                )
             } else {
-                @Suppress("DEPRECATION")
-                it.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+                @Suppress("DEPRECATION") it.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
             }
         }
         val bitmap = it.toBitmap()
@@ -140,25 +144,20 @@ suspend fun Context.filesDataHandler(isLoading: MutableStateFlow<Boolean>, uris:
         isLoading.value = true
 
         KtorService.KtorServer.concurrentMutableList.run {
-            addAll(
-                uris.filter { uri ->
-                    this.list.none { it.uri == uri }
-                }.mapNotNull {
-                    runCatching { contentResolver.extractFileInformation(it) }.getOrNull()
-                }
-            )
+            addAll(uris.filter { uri ->
+                this.list.none { it.uri == uri }
+            }.mapNotNull {
+                runCatching { contentResolver.extractFileInformation(it) }.getOrNull()
+            })
         }
 
-        if (listFileSizeB == KtorService.KtorServer.concurrentMutableList.size.value)
-            cor {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        applicationContext,
-                        getString(R.string.removed_duplicates),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        if (listFileSizeB == KtorService.KtorServer.concurrentMutableList.size.value) cor {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    applicationContext, getString(R.string.removed_duplicates), Toast.LENGTH_SHORT
+                ).show()
             }
+        }
 
         isLoading.value = false
     }

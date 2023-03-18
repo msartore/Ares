@@ -29,8 +29,7 @@ fun FileItem(
     onCopy: () -> Unit
 ) {
     fileDataJson.run {
-        FileItem(
-            name = name,
+        FileItem(name = name,
             text = text,
             size = size,
             icon = icon,
@@ -40,37 +39,31 @@ fun FileItem(
                     if (fileDataJson.fileType == FileType.VIDEO || fileDataJson.fileType == FileType.IMAGE) {
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(
-                            modifier = Modifier.size(40.dp),
-                            id = R.drawable.open_in_new_24px
+                            modifier = Modifier.size(40.dp), id = R.drawable.open_in_new_24px
                         ) {
                             onStreaming()
                         }
                     }
 
                     Icon(
-                        modifier = Modifier.size(40.dp),
-                        id = R.drawable.file_download_48px
+                        modifier = Modifier.size(40.dp), id = R.drawable.file_download_48px
                     ) {
                         onDownload()
                     }
-                }
-                else {
+                } else {
                     Icon(
-                        modifier = Modifier.size(40.dp),
-                        id = R.drawable.content_copy_24px
+                        modifier = Modifier.size(40.dp), id = R.drawable.content_copy_24px
                     ) {
                         onCopy()
                     }
 
                     Icon(
-                        modifier = Modifier.size(40.dp),
-                        id = R.drawable.share_24px
+                        modifier = Modifier.size(40.dp), id = R.drawable.share_24px
                     ) {
                         onShare()
                     }
                 }
-            }
-        )
+            })
     }
 }
 
@@ -81,11 +74,7 @@ fun FileItem(
 ) {
     fileData.run {
         FileItem(
-            name = name,
-            text = text,
-            size = size,
-            icon = icon,
-            maxLines = maxLines
+            name = name, text = text, size = size, icon = icon, maxLines = maxLines
         )
     }
 }
@@ -108,8 +97,7 @@ fun FileItem(
             Icon(
                 modifier = Modifier
                     .size(50.dp)
-                    .padding(end = 8.dp),
-                id = icon
+                    .padding(end = 8.dp), id = icon
             )
 
             Column {

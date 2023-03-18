@@ -30,14 +30,11 @@ fun SettingsItem(
     onClick: (() -> Unit)? = null,
     content: (@Composable () -> Unit)? = null,
 ) {
-    val modifier =
-        if (onClick != null)
-            Modifier
-                .clip(shape = RoundedCornerShape(16.dp))
-                .clickable { onClick.invoke() }
-                .padding(16.dp)
-        else Modifier
-                .padding(16.dp)
+    val modifier = if (onClick != null) Modifier
+        .clip(shape = RoundedCornerShape(16.dp))
+        .clickable { onClick.invoke() }
+        .padding(16.dp)
+    else Modifier.padding(16.dp)
 
     Row(
         modifier = modifier
@@ -58,23 +55,20 @@ fun SettingsItem(
 
             Column {
                 TextAuto(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp),
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     text = title,
                     style = MaterialTheme.typography.titleLarge,
                     maxLines = Int.MAX_VALUE,
                     lineHeight = 22.sp
                 )
 
-                if (description != null)
-                    TextAuto(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp),
-                        text = description,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.labelLarge,
-                        maxLines = Int.MAX_VALUE,
-                    )
+                if (description != null) TextAuto(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = description,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.labelLarge,
+                    maxLines = Int.MAX_VALUE,
+                )
             }
         }
 
@@ -99,22 +93,14 @@ fun SettingsItemSwitch(
     item: MutableState<Boolean>,
     onClick: (() -> Unit)? = null
 ) {
-    SettingsItem(
-        title = title,
-        description = description,
-        icon = icon,
-        onClick = {
-            item.value = !item.value
+    SettingsItem(title = title, description = description, icon = icon, onClick = {
+        item.value = !item.value
+        onClick?.invoke()
+    }) {
+        Switch(checked = item.value, onCheckedChange = {
+            item.value = it
             onClick?.invoke()
-        }
-    ) {
-        Switch(
-            checked = item.value,
-            onCheckedChange = {
-                item.value = it
-                onClick?.invoke()
-            }
-        )
+        })
     }
 }
 
@@ -142,33 +128,26 @@ fun SettingsItemInput(
         description = description,
         icon = icon,
     ) {
-        TextField(
-            modifier = Modifier
-                .onFocusEvent { focusState ->
-                    isFocused.value = focusState.isFocused
-                },
-            value = itemUI.value,
-            onValueChange = {
-                itemUI.value = it
+        TextField(modifier = Modifier.onFocusEvent { focusState ->
+                isFocused.value = focusState.isFocused
+            }, value = itemUI.value, onValueChange = {
+            itemUI.value = it
+        }, keyboardOptions = KeyboardOptions.Default.copy(
+            keyboardType = KeyboardType.Number, imeAction = ImeAction.Done
+        ), keyboardActions = KeyboardActions(
+            onDone = {
+                if (onCheck?.invoke(itemUI.value) != false) {
+                    item.value = itemUI.value.toIntOrNull() ?: 0
+                    itemUI.value = item.value.toString()
+                    onClick?.invoke()
+                    focusManager.clearFocus()
+                } else {
+                    itemUI.value = item.value.toString()
+                    onClick?.invoke()
+                    focusManager.clearFocus()
+                }
             },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    if (onCheck?.invoke(itemUI.value) != false) {
-                        item.value = itemUI.value.toIntOrNull() ?: 0
-                        itemUI.value = item.value.toString()
-                        onClick?.invoke()
-                        focusManager.clearFocus()
-                    } else {
-                        itemUI.value = item.value.toString()
-                        onClick?.invoke()
-                        focusManager.clearFocus()
-                    }
-                },
-            )
+        )
         )
     }
 }

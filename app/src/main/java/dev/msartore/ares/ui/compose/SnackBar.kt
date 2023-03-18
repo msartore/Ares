@@ -16,16 +16,12 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SnackBar(
-    modifier: Modifier = Modifier,
-    visible: Boolean,
-    content: @Composable (() -> Unit)
+    modifier: Modifier = Modifier, visible: Boolean, content: @Composable (() -> Unit)
 ) {
-    AnimatedVisibility(
-        modifier = modifier,
+    AnimatedVisibility(modifier = modifier,
         visible = visible,
         enter = slideInVertically { it },
-        exit = slideOutVertically { it + it/2 }
-    ) {
+        exit = slideOutVertically { it + it / 2 }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -33,7 +29,7 @@ fun SnackBar(
                     color = MaterialTheme.colorScheme.secondaryContainer,
                     shape = RoundedCornerShape(16.dp)
                 )
-                .clickable(false) {  }
+                .clickable(false) { }
                 .padding(16.dp),
         ) {
             content()

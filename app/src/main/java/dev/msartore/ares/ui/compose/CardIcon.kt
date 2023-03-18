@@ -18,28 +18,23 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun CardIcon(
-    iconId: Int,
-    textId: Int,
-    contentDescription: String,
-    onClick: () -> Unit
-){
+    iconId: Int, textId: Int, contentDescription: String, onClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .size(100.dp)
             .background(
-                MaterialTheme.colorScheme.primaryContainer,
-                RoundedCornerShape(16.dp)
+                MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(16.dp)
             )
             .clip(RoundedCornerShape(16.dp))
             .clickable {
-               onClick()
+                onClick()
             }
             .padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Icon(
-            id = iconId,
-            contentDescription = contentDescription
+            id = iconId, contentDescription = contentDescription
         )
 
         TextAuto(

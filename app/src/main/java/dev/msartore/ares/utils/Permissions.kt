@@ -1,4 +1,3 @@
-
 package dev.msartore.ares.utils
 
 import androidx.compose.runtime.Composable
@@ -23,12 +22,11 @@ fun Permissions(
 ) {
     if (permissionState?.allPermissionsGranted == true || permissionState == null) {
         onPermissionGranted()
-    }
-    else {
-        val dialogStatus = remember { mutableStateOf(permissionState.permissions.none { it.status.shouldShowRationale }) }
+    } else {
+        val dialogStatus =
+            remember { mutableStateOf(permissionState.permissions.none { it.status.shouldShowRationale }) }
 
-        Dialog(
-            title = stringResource(R.string.permission_request),
+        Dialog(title = stringResource(R.string.permission_request),
 
             text = stringResource(requestStringId),
             closeOnClick = false,
@@ -39,16 +37,14 @@ fun Permissions(
             onConfirm = {
                 dialogStatus.value = false
                 permissionState.launchMultiplePermissionRequest()
-            }
-        )
+            })
     }
 
-    if (permissionState?.permissions?.any { it.status.shouldShowRationale } == true)
-        DialogPermissionRejected(
-            navigateToSettingsScreen = navigateToSettingsScreen,
-            onCancel = onPermissionDenied,
-            settingsStringId = settingsStringId
-        )
+    if (permissionState?.permissions?.any { it.status.shouldShowRationale } == true) DialogPermissionRejected(
+        navigateToSettingsScreen = navigateToSettingsScreen,
+        onCancel = onPermissionDenied,
+        settingsStringId = settingsStringId
+    )
 }
 
 @Composable
@@ -59,8 +55,7 @@ fun DialogPermissionRejected(
 ) {
     val dialogStatus = remember { mutableStateOf(true) }
 
-    Dialog(
-        title = stringResource(id = R.string.permission_rejected),
+    Dialog(title = stringResource(id = R.string.permission_rejected),
         text = stringResource(settingsStringId),
         status = dialogStatus,
         confirmText = stringResource(id = R.string.open_settings),
@@ -68,6 +63,5 @@ fun DialogPermissionRejected(
         closeOnClick = false,
         onConfirm = {
             navigateToSettingsScreen()
-        }
-    )
+        })
 }

@@ -22,8 +22,7 @@ import kotlinx.coroutines.cancel
 
 @Composable
 fun TransferDialog(
-    status: MutableState<Boolean>,
-    progress: MutableState<Float>
+    status: MutableState<Boolean>, progress: MutableState<Float>
 ) {
     DialogContainer(status = status) {
         Column(
@@ -38,26 +37,21 @@ fun TransferDialog(
                 text = "Transfer in progress"
             )
 
-            if (progress.value > 0)
-                LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth(),
-                    progress = progress.value
-                )
-            else
-                LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth()
-                )
+            if (progress.value > 0) LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth(), progress = progress.value
+            )
+            else LinearProgressIndicator(
+                modifier = Modifier.fillMaxWidth()
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextButton(
-                    onClick = {
-                        fileTransfer.pipelineContext?.cancel()
-                    }
-                ) {
+                TextButton(onClick = {
+                    fileTransfer.pipelineContext?.cancel()
+                }) {
                     TextAuto(id = R.string.cancel)
                 }
             }
