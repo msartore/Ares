@@ -109,7 +109,7 @@ fun FileItem(
                 size?.let {
                     TextAuto(
                         text = "${stringResource(id = R.string.size)}: ${size.printableSize()}",
-                        maxLines = 1
+                        maxLines = maxLines
                     )
                 }
             }
