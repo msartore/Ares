@@ -194,36 +194,34 @@ fun HomeUI(
                 }
             }
 
-            Column(
-                modifier = modifier.fillMaxWidth()
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 TextAuto(
-                    id = R.string.file, fontSize = 18.sp, fontWeight = FontWeight.Medium
+                    modifier = Modifier.weight(1f),
+                    text = "${stringResource(id = R.string.file)}: ${concurrentMutableList.list.filter { it.selected.value }.size}",
+                    fontWeight = FontWeight.Medium
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                TextAuto(text = "${stringResource(id = R.string.available)}: ${concurrentMutableList.size.value}")
-
-                TextAuto(text = "${stringResource(id = R.string.selected)}: ${concurrentMutableList.list.filter { it.selected.value }.size}")
-
                 Row(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 5.dp),
+                    modifier = Modifier.weight(1f),
                     horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (isLoading.value) CircularProgressIndicator(
+                    if (isLoading.value) {
+                        CircularProgressIndicator(
                             modifier = Modifier
                                 .size(16.dp)
-                                .weight(1f, false), strokeWidth = 2.dp
+                                .weight(1f, false),
+                            strokeWidth = 2.dp
                         )
 
-                        if (concurrentMutableList.list.any { it.selected.value }) Icon(
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+
+                    if (concurrentMutableList.list.any { it.selected.value }) {
+                        Icon(
                             id = R.drawable.delete_24px,
                             contentDescription = stringResource(id = R.string.delete_selected),
                         ) {
@@ -232,67 +230,71 @@ fun HomeUI(
                             }
                         }
 
-                        if (concurrentMutableList.size.value > 0) {
-                            val countSelected =
-                                concurrentMutableList.list.count { it.selected.value }
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                }
 
-                            Icon(
-                                id = when (countSelected) {
-                                    concurrentMutableList.size.value -> R.drawable.check_box_24px
-                                    in 1..concurrentMutableList.size.value -> R.drawable.indeterminate_check_box_24px
-                                    else -> R.drawable.check_box_outline_blank_24px
-                                },
-                                contentDescription = stringResource(id = R.string.select_all),
-                            ) {
-                                scope.launch {
-                                    when (countSelected) {
-                                        0 -> concurrentMutableList.list.forEach {
-                                            it.selected.value = true
-                                        }
+                if (concurrentMutableList.size.value > 0) {
+                    val countSelected =
+                        concurrentMutableList.list.count { it.selected.value }
 
-                                        else -> concurrentMutableList.list.forEach {
-                                            it.selected.value = false
-                                        }
-                                    }
+                    Icon(
+                        id = when (countSelected) {
+                            concurrentMutableList.size.value -> R.drawable.check_box_24px
+                            in 1..concurrentMutableList.size.value -> R.drawable.indeterminate_check_box_24px
+                            else -> R.drawable.check_box_outline_blank_24px
+                        },
+                        contentDescription = stringResource(id = R.string.select_all),
+                    ) {
+                        scope.launch {
+                            when (countSelected) {
+                                0 -> concurrentMutableList.list.forEach {
+                                    it.selected.value = true
+                                }
+
+                                else -> concurrentMutableList.list.forEach {
+                                    it.selected.value = false
                                 }
                             }
                         }
+                    }
 
-                        Box {
-                            Icon(
-                                imageVector = Icons.Rounded.Add,
-                                contentDescription = "Localized description"
-                            ) {
-                                expanded.value = true
-                            }
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
 
-                            DropdownMenu(expanded = expanded.value,
-                                onDismissRequest = { expanded.value = false }) {
-                                DropdownMenuItem(text = { TextAuto(id = R.string.import_files) },
-                                    onClick = {
-                                        homeViewModel.onImportFilesClick()
-                                        expanded.value = false
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            id = R.drawable.upload_file_24px,
-                                            contentDescription = stringResource(id = R.string.import_files),
-                                        )
-                                    })
+                Box {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = stringResource(id = androidx.compose.ui.R.string.dropdown_menu)
+                    ) {
+                        expanded.value = true
+                    }
 
-                                DropdownMenuItem(text = { TextAuto(id = R.string.text_input) },
-                                    onClick = {
-                                        homeViewModel.dialogInput.value = true
-                                        expanded.value = false
-                                    },
-                                    leadingIcon = {
-                                        Icon(
-                                            id = R.drawable.title_24px,
-                                            contentDescription = stringResource(id = R.string.text_input),
-                                        )
-                                    })
-                            }
-                        }
+                    DropdownMenu(expanded = expanded.value,
+                        onDismissRequest = { expanded.value = false }) {
+                        DropdownMenuItem(text = { TextAuto(id = R.string.import_files) },
+                            onClick = {
+                                homeViewModel.onImportFilesClick()
+                                expanded.value = false
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    id = R.drawable.upload_file_24px,
+                                    contentDescription = stringResource(id = R.string.import_files),
+                                )
+                            })
+
+                        DropdownMenuItem(text = { TextAuto(id = R.string.text_input) },
+                            onClick = {
+                                homeViewModel.dialogInput.value = true
+                                expanded.value = false
+                            },
+                            leadingIcon = {
+                                Icon(
+                                    id = R.drawable.title_24px,
+                                    contentDescription = stringResource(id = R.string.text_input),
+                                )
+                            })
                     }
                 }
             }
