@@ -42,10 +42,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -120,17 +120,12 @@ fun HomeUI(
                         ) {
                             if (mainViewModel.networkInfo.bitmap.value != null) Image(
                                 modifier = Modifier
-                                    .size(20.dp)
-                                    .background(
-                                        MaterialTheme.colorScheme.onBackground,
-                                        RoundedCornerShape(8.dp)
-                                    )
-                                    .clip(RoundedCornerShape(2.dp))
+                                    .size(24.dp)
                                     .clickable {
                                         mainViewModel.qrCodeDialog.value = true
                                     },
-                                bitmap = mainViewModel.networkInfo.bitmap.value!!,
-                                contentDescription = "ip"
+                                painter = painterResource(id = R.drawable.qr_code_2_24px),
+                                contentDescription = stringResource(id = R.string.qr_code)
                             )
                             else CircularProgressIndicator(
                                 modifier = Modifier.size(20.dp),
@@ -337,7 +332,7 @@ fun HomeUI(
         homeUIContent2(Modifier.weight(1f))
     }
     else Column(
-        modifier = Modifier.padding(top = 16.dp)
+        modifier = Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         homeUIContent1(Modifier.wrapContentHeight())
         homeUIContent2(Modifier)
