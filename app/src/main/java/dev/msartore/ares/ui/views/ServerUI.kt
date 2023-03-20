@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.verticalScroll
@@ -130,12 +131,38 @@ fun ServerUI(
                     )
                 }
 
-                Icon(
-                    modifier = Modifier.rotate(rotation.value),
-                    painter = painterResource(id = R.drawable.refresh_24px),
-                    contentDescription = stringResource(id = R.string.refresh),
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    loadData()
+                    Icon(
+                        modifier = Modifier.size(40.dp),
+                        id = R.drawable.file_download_48px,
+                        contentDescription = stringResource(id = R.string.download_all)
+                    ) {
+                        work {
+                            serverFiles.forEach {
+                                it.run {
+                                    mainViewModel.downloadManager?.downloadFile(
+                                        url = "http://${serverInfo.ip}:$port/$UUID",
+                                        mimeType = mimeType,
+                                        fileName = "$name",
+                                        context = context
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Icon(
+                        modifier = Modifier
+                            .rotate(rotation.value)
+                            .size(40.dp),
+                        painter = painterResource(id = R.drawable.refresh_24px),
+                        contentDescription = stringResource(id = R.string.refresh),
+                    ) {
+                        loadData()
+                    }
                 }
             }
 
@@ -164,7 +191,8 @@ fun ServerUI(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 state = state
             ) {
-                items(count = serverFiles.size,
+                items(
+                    count = serverFiles.size,
                     key = { serverFiles.elementAt(it).UUID.hashCode() }) {
                     serverFiles.elementAt(it).run {
                         val url = "http://${serverInfo.ip}:$port/$UUID"

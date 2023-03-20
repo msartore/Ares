@@ -101,4 +101,5 @@
     <string name="text">Testo</string>
     <string name="loading">Caricamento</string>
     <string name="error">Errore</string>
+    <string name="download_all">Scarica tutto</string>
 </resources>

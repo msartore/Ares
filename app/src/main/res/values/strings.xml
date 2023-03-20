@@ -104,4 +104,5 @@
     <string name="text">Text</string>
     <string name="loading">Loading</string>
     <string name="error">Error</string>
+    <string name="download_all">Download all</string>
 </resources>
