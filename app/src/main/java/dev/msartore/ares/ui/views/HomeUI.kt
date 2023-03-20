@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -101,23 +102,30 @@ fun HomeUI(
             ) {
                 Column {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 20.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         TextAuto(
-                            id = R.string.server, fontSize = 18.sp, fontWeight = FontWeight.Medium
+                            id = R.string.server,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = if (isServerOn.value) Color.Green else Color.Red
                         )
 
-                        if (isServerOn.value) Column {
+                        if (isServerOn.value) Column(
+                            Modifier.padding(end = 10.dp)
+                        ) {
                             if (mainViewModel.networkInfo.bitmap.value != null) Image(
                                 modifier = Modifier
-                                    .size(30.dp)
+                                    .size(20.dp)
                                     .background(
                                         MaterialTheme.colorScheme.onBackground,
                                         RoundedCornerShape(8.dp)
                                     )
-                                    .clip(RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(2.dp))
                                     .clickable {
                                         mainViewModel.qrCodeDialog.value = true
                                     },
@@ -125,21 +133,12 @@ fun HomeUI(
                                 contentDescription = "ip"
                             )
                             else CircularProgressIndicator(
-                                modifier = Modifier.size(50.dp),
+                                modifier = Modifier.size(20.dp),
                             )
                         }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    Row {
-                        TextAuto(text = "${stringResource(id = R.string.running)}: ")
-
-                        TextAuto(
-                            text = isServerOn.value.toString(),
-                            color = if (isServerOn.value) Color.Green else Color.Red
-                        )
-                    }
 
                     mainViewModel.networkInfo.run {
                         TextAuto(
@@ -159,6 +158,7 @@ fun HomeUI(
                         )
                     }
                 }
+
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -192,6 +192,7 @@ fun HomeUI(
                         }
                     }
                 }
+
             }
 
             Row(
@@ -213,8 +214,7 @@ fun HomeUI(
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .size(16.dp)
-                                .weight(1f, false),
-                            strokeWidth = 2.dp
+                                .weight(1f, false), strokeWidth = 2.dp
                         )
 
                         Spacer(modifier = Modifier.width(8.dp))
@@ -235,8 +235,7 @@ fun HomeUI(
                 }
 
                 if (concurrentMutableList.size.value > 0) {
-                    val countSelected =
-                        concurrentMutableList.list.count { it.selected.value }
+                    val countSelected = concurrentMutableList.list.count { it.selected.value }
 
                     Icon(
                         id = when (countSelected) {
@@ -270,7 +269,8 @@ fun HomeUI(
                         expanded.value = true
                     }
 
-                    DropdownMenu(expanded = expanded.value,
+                    DropdownMenu(
+                        expanded = expanded.value,
                         onDismissRequest = { expanded.value = false }) {
                         DropdownMenuItem(text = { TextAuto(id = R.string.import_files) },
                             onClick = {
@@ -284,17 +284,15 @@ fun HomeUI(
                                 )
                             })
 
-                        DropdownMenuItem(text = { TextAuto(id = R.string.text_input) },
-                            onClick = {
-                                homeViewModel.dialogInput.value = true
-                                expanded.value = false
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    id = R.drawable.title_24px,
-                                    contentDescription = stringResource(id = R.string.text_input),
-                                )
-                            })
+                        DropdownMenuItem(text = { TextAuto(id = R.string.text_input) }, onClick = {
+                            homeViewModel.dialogInput.value = true
+                            expanded.value = false
+                        }, leadingIcon = {
+                            Icon(
+                                id = R.drawable.title_24px,
+                                contentDescription = stringResource(id = R.string.text_input),
+                            )
+                        })
                     }
                 }
             }
@@ -361,7 +359,8 @@ fun HomeUI(
                     id = R.string.text_input
                 )
 
-                TextField(modifier = Modifier.fillMaxWidth(),
+                TextField(
+                    modifier = Modifier.fillMaxWidth(),
                     value = inputText.value,
                     onValueChange = { inputText.value = it },
                     keyboardOptions = KeyboardOptions(
@@ -370,7 +369,8 @@ fun HomeUI(
                     keyboardActions = KeyboardActions(onDone = {
                         keyboardController?.hide()
                     }),
-                    maxLines = 1)
+                    maxLines = 1
+                )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
