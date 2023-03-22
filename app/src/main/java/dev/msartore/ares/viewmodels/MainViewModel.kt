@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import dev.msartore.ares.R
+import dev.msartore.ares.models.FileDownload
 import dev.msartore.ares.models.FileType
 import dev.msartore.ares.models.NetworkInfo
 import dev.msartore.ares.models.Settings
@@ -30,11 +31,12 @@ class MainViewModel : ViewModel() {
     var clipboard: ClipboardManager? = null
     val networkInfo = NetworkInfo()
     val qrCodeDialog = mutableStateOf(false)
+    val fileDownload = FileDownload()
     val isDarkTheme = MutableStateFlow(false)
     val client: HttpClient = HttpClient(CIO) {
         install(HttpTimeout)
     }
-
+    var openFile: (() -> Unit)? = null
     var pm: PackageManager? = null
     var settings: Settings? = null
     var onOpenUrl: ((String) -> Unit)? = null

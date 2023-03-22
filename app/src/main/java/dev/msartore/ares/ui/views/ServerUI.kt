@@ -143,12 +143,14 @@ fun ServerUI(
                         work {
                             serverFiles.forEach {
                                 it.run {
-                                    mainViewModel.downloadManager?.downloadFile(
-                                        url = "http://${serverInfo.ip}:$port/$UUID",
-                                        mimeType = mimeType,
-                                        fileName = "$name",
-                                        context = context
-                                    )
+                                    mainViewModel.run {
+                                        downloadManager?.downloadFile(
+                                            url = "http://${serverInfo.ip}:$port/$UUID",
+                                            mimeType = mimeType,
+                                            fileName = "$name",
+                                            context = context
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -201,12 +203,14 @@ fun ServerUI(
                             FileItem(fileDataJson = this,
                                 maxLines = if (expanded) Int.MAX_VALUE else 1,
                                 onDownload = {
-                                    mainViewModel.downloadManager?.downloadFile(
-                                        url = url,
-                                        mimeType = mimeType,
-                                        fileName = "$name",
-                                        context = context
-                                    )
+                                    mainViewModel.run {
+                                        downloadManager?.downloadFile(
+                                            url = url,
+                                            mimeType = mimeType,
+                                            fileName = "$name",
+                                            context = context
+                                        )
+                                    }
                                 },
                                 onStreaming = {
                                     mainViewModel.openStreaming(

@@ -69,12 +69,7 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
 
 fun fileType(name: String): FileType {
     return when {
-        name.contains(
-            listOf(
-                "mp4", "wav", "mpg", "mpeg", "mp4", "3gp", "3gpp", "mkv", "avi"
-            )
-        ) -> FileType.VIDEO
-
+        name.contains(listOf("mp4", "wav", "mpg", "mpeg", "mp4", "3gp", "3gpp", "mkv", "avi")) -> FileType.VIDEO
         name.contains(listOf("jpg", "png", "jpeg", "gif", "bmp", "wbmp", "webp")) -> FileType.IMAGE
         name.contains(listOf("pdf", "txt", "html", "htm")) -> FileType.DOCUMENT
         name.contains(listOf("apk")) -> FileType.APK
@@ -84,7 +79,8 @@ fun fileType(name: String): FileType {
 }
 
 fun splitFileTypeFromName(text: String): Pair<String, String> {
-    return Pair(text.substring(0, text.indexOfLast { it == '.' }),
+    return Pair(
+        text.substring(0, text.indexOfLast { it == '.' }),
         text.substring(text.indexOfLast { it == '.' }, text.length)
     )
 }
@@ -103,7 +99,7 @@ fun FileData.toFileDataJson() = FileDataJson(
     size = this.size,
     text = this.text,
     fileType = this.fileType,
-    mimeType = mimeType,
+    mimeType = this.mimeType,
     icon = this.icon,
     UUID = this.UUID
 )

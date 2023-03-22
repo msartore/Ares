@@ -49,6 +49,7 @@ import dev.msartore.ares.server.ServerInfo
 import dev.msartore.ares.ui.compose.DialogContainer
 import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.SnackBar
+import dev.msartore.ares.ui.compose.SnackBarDownload
 import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.ui.compose.TransferDialog
 import dev.msartore.ares.utils.Permissions
@@ -171,6 +172,14 @@ fun MainUI(
                 }
             }
 
+            SnackBarDownload(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 16.dp),
+                fileDownload = mainViewModel.fileDownload,
+                action = mainViewModel.openFile
+            )
+
             TransferDialog(
                 status = KtorService.KtorServer.fileTransfer.isActive,
                 progress = KtorService.KtorServer.fileTransfer.sizeTransferred
@@ -191,8 +200,8 @@ fun MainUI(
                 ) {
                     if (mainViewModel.networkInfo.bitmap.value != null) Image(
                         modifier = Modifier.background(
-                                MaterialTheme.colorScheme.onBackground, RoundedCornerShape(16.dp)
-                            ),
+                            MaterialTheme.colorScheme.onBackground, RoundedCornerShape(16.dp)
+                        ),
                         bitmap = mainViewModel.networkInfo.bitmap.value!!,
                         contentDescription = "ip"
                     )
@@ -219,7 +228,8 @@ fun MainUI(
                 .wrapContentWidth()
         ) {
             items.forEach { item ->
-                NavigationRailItem(icon = { icon(item) },
+                NavigationRailItem(
+                    icon = { icon(item) },
                     label = { label(item) },
                     onClick = { onClick(item) },
                     selected = selectedItem.value == item

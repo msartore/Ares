@@ -2,9 +2,11 @@ package dev.msartore.ares
 
 import android.Manifest
 import android.app.DownloadManager
+import android.content.BroadcastReceiver
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
@@ -33,6 +35,7 @@ import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.ui.theme.AresTheme
 import dev.msartore.ares.ui.views.MainUI
 import dev.msartore.ares.utils.Permissions
+import dev.msartore.ares.utils.extractFileInformation
 import dev.msartore.ares.utils.filesDataHandler
 import dev.msartore.ares.utils.findServers
 import dev.msartore.ares.utils.isWideView
@@ -43,26 +46,47 @@ import dev.msartore.ares.viewmodels.ServerFinderViewModel
 import dev.msartore.ares.viewmodels.SettingsViewModel
 import kotlinx.coroutines.runBlocking
 
+
 @ExperimentalGetImage
 class MainActivity : ComponentActivity() {
 
-    private var service: Intent? = null
-    private var connectivityManager: ConnectivityManager? = null
-    private var networkCallback: NetworkCallback? = null
     private val mainViewModel: MainViewModel by viewModels()
     private val homeViewModel: HomeViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by viewModels()
     private val serverFinderViewModel: ServerFinderViewModel by viewModels()
+    private var service: Intent? = null
+    private var connectivityManager: ConnectivityManager? = null
+    private var networkCallback: NetworkCallback? = null
+    private var receiver: BroadcastReceiver? = null
 
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+        receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent) {
+                val reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                mainViewModel.fileDownload.run {
+                    fileData =
+                        mainViewModel.downloadManager?.getUriForDownloadedFile(reference)
+                            ?.let { context?.contentResolver?.extractFileInformation(it) }
+                    state.value = true
+                    mainViewModel.fileDownload.timerScheduler?.start()
+                }
+            }
+        }
+        registerReceiver(receiver, filter)
 
         val getContent =
             registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
                 work {
                     filesDataHandler(homeViewModel.isLoading, uris)
                 }
+            }
+        val getDownload =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                mainViewModel.fileDownload.state.value = false
             }
         var permissionState: MultiplePermissionsState? = null
         val getContentPermission =
@@ -107,6 +131,20 @@ class MainActivity : ComponentActivity() {
                     }.getOrElse {
                         it.printStackTrace()
                     }
+                }
+                openFile = {
+                    mainViewModel.fileDownload.timerScheduler?.cancel()
+                    getDownload.launch(
+                        Intent(Intent.ACTION_VIEW).apply {
+                            fileDownload.fileData?.run {
+                                setDataAndType(
+                                    uri,
+                                    mimeType
+                                )
+                            }
+                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        }
+                    )
                 }
                 startSettings()
             }
@@ -200,5 +238,6 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
         mainViewModel.client.close()
         networkCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
+        unregisterReceiver(receiver)
     }
 }
