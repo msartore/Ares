@@ -21,8 +21,8 @@ android {
         applicationId "dev.msartore.ares"
         minSdk 26
         targetSdk 33
-        versionCode 22
-        versionName "0.0.21"
+        versionCode 23
+        versionName "0.0.22"
         resConfigs "en", "it"
         setProperty("archivesBaseName", "ares-$versionName")
         vectorDrawables.useSupportLibrary = true
