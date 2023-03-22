@@ -49,11 +49,12 @@ fun SnackBar(
 fun SnackBarDownload(
     modifier: Modifier = Modifier,
     fileDownload: FileDownload?,
-    action: (() -> Unit)?
+    onOpenFile: (() -> Unit)?,
+    onShareFile: (() -> Unit)?
 ) {
     SnackBar(
         modifier = modifier,
-        visible = fileDownload?.state?.value == true,
+        visible = true,
     ) {
         Row(
             modifier = Modifier
@@ -62,13 +63,27 @@ fun SnackBarDownload(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             TextAuto(
-                text = fileDownload?.fileData?.name
+                modifier = Modifier.weight(5f),
+                text = fileDownload?.fileData?.name,
+                maxLines = 1
             )
 
-            Icon(
-                id = R.drawable.open_in_new_24px
+            Row(
+                modifier = Modifier.weight(2f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
             ) {
-                action?.invoke()
+                Icon(
+                    id = R.drawable.open_in_new_24px
+                ) {
+                    onOpenFile?.invoke()
+                }
+
+                Icon(
+                    id = R.drawable.share_24px
+                ) {
+                    onShareFile?.invoke()
+                }
             }
         }
     }

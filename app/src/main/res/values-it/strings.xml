@@ -102,4 +102,5 @@
     <string name="loading">Caricamento</string>
     <string name="error">Errore</string>
     <string name="download_all">Scarica tutto</string>
+    <string name="no_app_can_perform">Nessuna app può eseguire questa azione</string>
 </resources>

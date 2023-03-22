@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -172,13 +174,32 @@ fun MainUI(
                 }
             }
 
-            SnackBarDownload(
+            LazyColumn(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 16.dp),
-                fileDownload = mainViewModel.fileDownload,
-                action = mainViewModel.openFile
-            )
+                    .wrapContentHeight()
+            ) {
+                items(
+                    count = mainViewModel.listFileDownload.size.value,
+                    key = { mainViewModel.listFileDownload.list.elementAt(it).fileData?.uri ?: it }
+                ) {
+                    mainViewModel.listFileDownload.list.elementAt(it).run {
+                        SnackBarDownload(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 16.dp),
+                            fileDownload = this,
+                            onOpenFile = {
+                                mainViewModel.openFile?.invoke(this)
+                            },
+                            onShareFile = {
+                                mainViewModel.shareFile?.invoke(this)
+                            }
+                        )
+                    }
+                }
+            }
 
             TransferDialog(
                 status = KtorService.KtorServer.fileTransfer.isActive,

@@ -2,6 +2,7 @@ package dev.msartore.ares.ui.compose
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,7 +25,7 @@ fun CardIcon(
         modifier = Modifier
             .size(125.dp)
             .background(
-                MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(16.dp)
+                MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp)
             )
             .clip(RoundedCornerShape(16.dp))
             .clickable {
@@ -32,6 +33,7 @@ fun CardIcon(
             }
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Icon(
             id = iconId, contentDescription = contentDescription

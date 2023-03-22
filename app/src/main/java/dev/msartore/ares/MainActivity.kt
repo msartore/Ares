@@ -11,6 +11,7 @@ import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +29,7 @@ import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import dev.msartore.ares.models.FileData
+import dev.msartore.ares.models.FileDownload
 import dev.msartore.ares.models.FileType
 import dev.msartore.ares.models.NetworkCallback
 import dev.msartore.ares.server.KtorService
@@ -67,13 +69,17 @@ class MainActivity : ComponentActivity() {
         receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent) {
                 val reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                mainViewModel.fileDownload.run {
-                    fileData =
-                        mainViewModel.downloadManager?.getUriForDownloadedFile(reference)
-                            ?.let { context?.contentResolver?.extractFileInformation(it) }
-                    state.value = true
-                    mainViewModel.fileDownload.timerScheduler?.start()
-                }
+                val fileData = mainViewModel.downloadManager?.getUriForDownloadedFile(reference)?.let { context?.contentResolver?.extractFileInformation(it) }
+                mainViewModel.listFileDownload.add(
+                    FileDownload(
+                        fileData = fileData,
+                        onFinish = {
+                            mainViewModel.listFileDownload.removeIf { it.fileData?.uri == fileData?.uri }
+                        }
+                    ).also {
+                        it.timerScheduler?.start()
+                    }
+                )
             }
         }
         registerReceiver(receiver, filter)
@@ -83,10 +89,6 @@ class MainActivity : ComponentActivity() {
                 work {
                     filesDataHandler(homeViewModel.isLoading, uris)
                 }
-            }
-        val getDownload =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                mainViewModel.fileDownload.state.value = false
             }
         var permissionState: MultiplePermissionsState? = null
         val getContentPermission =
@@ -132,19 +134,37 @@ class MainActivity : ComponentActivity() {
                         it.printStackTrace()
                     }
                 }
-                openFile = {
-                    mainViewModel.fileDownload.timerScheduler?.cancel()
-                    getDownload.launch(
-                        Intent(Intent.ACTION_VIEW).apply {
-                            fileDownload.fileData?.run {
-                                setDataAndType(
-                                    uri,
-                                    mimeType
-                                )
+                openFile = { fileDownload ->
+                    fileDownload.timerScheduler?.cancel()
+                    runCatching {
+                        startActivity(
+                            Intent(Intent.ACTION_VIEW).apply {
+                                fileDownload.fileData?.run {
+                                    setDataAndType(
+                                        uri,
+                                        mimeType
+                                    )
+                                }
+                                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                             }
+                        )
+                    }.onFailure {
+                        Toast.makeText(applicationContext, getString(R.string.no_app_can_perform), Toast.LENGTH_LONG).show()
+                    }
+                    mainViewModel.listFileDownload.removeIf { it == fileDownload }
+                }
+                shareFile = { fileDownload ->
+                    fileDownload.fileData?.run {
+                        val intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_STREAM, uri)
+                            type = mimeType
                             flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                         }
-                    )
+                        startActivity(Intent.createChooser(intent, getString(R.string.send_to)))
+                    }
+
+                    mainViewModel.listFileDownload.removeIf { it == fileDownload }
                 }
                 startSettings()
             }

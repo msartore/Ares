@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.provider.OpenableColumns
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.core.graphics.BlendModeColorFilterCompat
@@ -49,8 +50,8 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
                 fileType = fileType(displayName.lowercase(Locale.ROOT))
                 runCatching {
                     mimeType = it.getString(typeIndex)
-                }.onFailure { throwable ->
-                    throwable.printStackTrace()
+                }.onFailure {
+                    mimeType = getMimeTypeFromExtension(displayName.substring(displayName.lastIndexOf(".") + 1)) ?: "application/octet-stream"
                 }
                 icon = when (fileType) {
                     FileType.VIDEO -> R.drawable.video_file_24px
@@ -157,4 +158,8 @@ suspend fun Context.filesDataHandler(isLoading: MutableStateFlow<Boolean>, uris:
 
         isLoading.value = false
     }
+}
+
+fun getMimeTypeFromExtension(extension: String): String? {
+    return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
 }

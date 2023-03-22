@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import dev.msartore.ares.R
+import dev.msartore.ares.models.ConcurrentMutableList
 import dev.msartore.ares.models.FileDownload
 import dev.msartore.ares.models.FileType
 import dev.msartore.ares.models.NetworkInfo
@@ -31,12 +32,13 @@ class MainViewModel : ViewModel() {
     var clipboard: ClipboardManager? = null
     val networkInfo = NetworkInfo()
     val qrCodeDialog = mutableStateOf(false)
-    val fileDownload = FileDownload()
+    val listFileDownload = ConcurrentMutableList<FileDownload>()
     val isDarkTheme = MutableStateFlow(false)
     val client: HttpClient = HttpClient(CIO) {
         install(HttpTimeout)
     }
-    var openFile: (() -> Unit)? = null
+    var openFile: ((FileDownload) -> Unit)? = null
+    var shareFile: ((FileDownload) -> Unit)? = null
     var pm: PackageManager? = null
     var settings: Settings? = null
     var onOpenUrl: ((String) -> Unit)? = null
@@ -66,8 +68,7 @@ class MainViewModel : ViewModel() {
     fun Context.shareText(string: String) {
         startActivity(
             Intent.createChooser(
-                Intent().apply {
-                    action = Intent.ACTION_SEND
+                Intent(Intent.ACTION_SEND).apply {
                     type = "text/plain"
                     putExtra(Intent.EXTRA_TEXT, string)
                 }, getString(R.string.send_to)

@@ -38,11 +38,11 @@ enum class FileType {
 
 data class FileDownload(
     var fileData: FileData? = null,
-    val state: MutableState<Boolean> = mutableStateOf(false),
-    val timerScheduler: CountDownTimer? = object : CountDownTimer(3600, 3600) {
+    var onFinish: (() -> Unit)? = null,
+    val timerScheduler: CountDownTimer? = object : CountDownTimer(7200, 3600) {
         override fun onTick(millisUntilFinished: Long) {}
         override fun onFinish() {
-            state.value = false
+            onFinish?.invoke()
         }
     }
 )
