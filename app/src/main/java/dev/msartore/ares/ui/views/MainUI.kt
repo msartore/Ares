@@ -192,7 +192,7 @@ fun MainUI(
                 ) { index ->
                     mainViewModel.let {
                         val dismissState = rememberDismissState()
-                        
+
                         LaunchedEffect(key1 = dismissState.currentValue) {
                             if (dismissState.currentValue != DismissValue.Default) {
                                 mainViewModel.run {

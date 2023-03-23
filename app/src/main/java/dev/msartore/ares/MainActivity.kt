@@ -24,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.core.content.FileProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -116,6 +117,27 @@ class MainActivity : ComponentActivity() {
 
             networkCallback?.let {
                 connectivityManager?.registerDefaultNetworkCallback(it)
+            }
+
+            KtorService.KtorServer.fileTransfer.onFileTransferred = { file ->
+                FileProvider.getUriForFile(
+                    applicationContext,
+                    applicationContext.packageName + ".provider",
+                    file
+                ).run {
+                    contentResolver.extractFileInformation(this).run {
+                        mainViewModel.listFileDownload.add(
+                            FileDownload(
+                                fileData = this,
+                                onFinish = {
+                                    mainViewModel.listFileDownload.removeIf { it.fileData?.uri == this?.uri }
+                                }
+                            ).also {
+                                it.timerScheduler?.start()
+                            }
+                        )
+                    }
+                }
             }
 
             mainViewModel.run {

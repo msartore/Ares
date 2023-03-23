@@ -13,8 +13,6 @@ import androidx.compose.ui.graphics.asImageBitmap
 import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.encodeAsBitmap
-import io.ktor.server.application.ApplicationCall
-import io.ktor.util.pipeline.PipelineContext
 
 @ExperimentalGetImage
 class NetworkCallback(
@@ -72,12 +70,4 @@ data class NetworkInfo(
     val isWifiNetwork: MutableState<Boolean> = mutableStateOf(false),
     val ipAddress: MutableState<String> = mutableStateOf(""),
     var bitmap: MutableState<ImageBitmap?> = mutableStateOf(null)
-)
-
-data class FileTransfer(
-    var pipelineContext: PipelineContext<Unit, ApplicationCall>? = null,
-    val isActive: MutableState<Boolean> = mutableStateOf(false),
-    var sizeTransferred: MutableState<Float> = mutableStateOf(0f),
-    var size: Int? = null,
-    var name: String? = null,
 )

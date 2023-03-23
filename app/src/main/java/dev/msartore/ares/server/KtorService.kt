@@ -27,6 +27,7 @@ import dev.msartore.ares.ui.theme.Theme.background
 import dev.msartore.ares.ui.theme.Theme.container
 import dev.msartore.ares.ui.theme.Theme.darkTheme
 import dev.msartore.ares.utils.getByteArrayFromDrawable
+import dev.msartore.ares.utils.main
 import dev.msartore.ares.utils.printableSize
 import dev.msartore.ares.utils.splitFileTypeFromName
 import dev.msartore.ares.utils.toFileDataJson
@@ -293,6 +294,10 @@ class KtorService : Service() {
 
                                 else -> {}
                             }
+                        }
+
+                        main {
+                            file?.let { it1 -> fileTransfer.onFileTransferred?.invoke(it1) }
                         }
 
                         result = true

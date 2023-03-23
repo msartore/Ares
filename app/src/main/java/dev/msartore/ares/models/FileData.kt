@@ -5,6 +5,9 @@ import android.os.CountDownTimer
 import androidx.annotation.Keep
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import io.ktor.server.application.ApplicationCall
+import io.ktor.util.pipeline.PipelineContext
+import java.io.File
 import java.util.UUID
 
 @Keep
@@ -45,4 +48,13 @@ data class FileDownload(
             onFinish?.invoke()
         }
     }
+)
+
+data class FileTransfer(
+    var pipelineContext: PipelineContext<Unit, ApplicationCall>? = null,
+    val isActive: MutableState<Boolean> = mutableStateOf(false),
+    var sizeTransferred: MutableState<Float> = mutableStateOf(0f),
+    var size: Int? = null,
+    var name: String? = null,
+    var onFileTransferred: ((File) -> Unit)? = null
 )
