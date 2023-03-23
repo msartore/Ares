@@ -38,6 +38,7 @@ class MainViewModel : ViewModel() {
         install(HttpTimeout)
     }
     var openFile: ((FileDownload) -> Unit)? = null
+    var onDismiss: ((FileDownload) -> Unit)? = null
     var shareFile: ((FileDownload) -> Unit)? = null
     var pm: PackageManager? = null
     var settings: Settings? = null

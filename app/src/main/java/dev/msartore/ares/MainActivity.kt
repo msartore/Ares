@@ -66,10 +66,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+
         receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent) {
                 val reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                val fileData = mainViewModel.downloadManager?.getUriForDownloadedFile(reference)?.let { context?.contentResolver?.extractFileInformation(it) }
+                val fileData = mainViewModel.downloadManager?.getUriForDownloadedFile(reference)
+                    ?.let { context?.contentResolver?.extractFileInformation(it) }
                 mainViewModel.listFileDownload.add(
                     FileDownload(
                         fileData = fileData,
@@ -149,7 +151,11 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     }.onFailure {
-                        Toast.makeText(applicationContext, getString(R.string.no_app_can_perform), Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            applicationContext,
+                            getString(R.string.no_app_can_perform),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                     mainViewModel.listFileDownload.removeIf { it == fileDownload }
                 }
@@ -164,6 +170,9 @@ class MainActivity : ComponentActivity() {
                         startActivity(Intent.createChooser(intent, getString(R.string.send_to)))
                     }
 
+                    mainViewModel.listFileDownload.removeIf { it == fileDownload }
+                }
+                onDismiss = { fileDownload ->
                     mainViewModel.listFileDownload.removeIf { it == fileDownload }
                 }
                 startSettings()
