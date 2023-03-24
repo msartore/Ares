@@ -18,7 +18,7 @@
     <string name="channel_description">Questa notifica viene utilizzata per mantenere attivo il server in background</string>
     <string name="channel_name">"Server "</string>
     <string name="download">Scarica</string>
-    <string name="ip_address">Indirizzi IP</string>
+    <string name="ip_address">Indirizzo IP</string>
     <string name="wrong_network">È necessario utilizzare una rete locale</string>
     <string name="no_network_available">Nessuna rete disponibile</string>
     <string name="status">Stato</string>
