@@ -73,16 +73,12 @@ class MainActivity : ComponentActivity() {
                 val reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
                 val fileData = mainViewModel.downloadManager?.getUriForDownloadedFile(reference)
                     ?.let { context?.contentResolver?.extractFileInformation(it) }
-                mainViewModel.listFileDownload.add(
-                    FileDownload(
-                        fileData = fileData,
-                        onFinish = {
-                            mainViewModel.listFileDownload.removeIf { it.fileData?.uri == fileData?.uri }
-                        }
-                    ).also {
-                        it.timerScheduler?.start()
-                    }
-                )
+                if (!fileData?.name.isNullOrEmpty()) mainViewModel.listFileDownload.add(FileDownload(fileData = fileData,
+                    onFinish = {
+                        mainViewModel.listFileDownload.removeIf { it.fileData?.uri == fileData?.uri }
+                    }).also {
+                    it.timerScheduler?.start()
+                })
             }
         }
         registerReceiver(receiver, filter)
@@ -121,21 +117,15 @@ class MainActivity : ComponentActivity() {
 
             KtorService.KtorServer.fileTransfer.onFileTransferred = { file ->
                 FileProvider.getUriForFile(
-                    applicationContext,
-                    applicationContext.packageName + ".provider",
-                    file
+                    applicationContext, applicationContext.packageName + ".provider", file
                 ).run {
                     contentResolver.extractFileInformation(this).run {
-                        mainViewModel.listFileDownload.add(
-                            FileDownload(
-                                fileData = this,
-                                onFinish = {
-                                    mainViewModel.listFileDownload.removeIf { it.fileData?.uri == this?.uri }
-                                }
-                            ).also {
-                                it.timerScheduler?.start()
-                            }
-                        )
+                        mainViewModel.listFileDownload.add(FileDownload(fileData = this,
+                            onFinish = {
+                                mainViewModel.listFileDownload.removeIf { it.fileData?.uri == this?.uri }
+                            }).also {
+                            it.timerScheduler?.start()
+                        })
                     }
                 }
             }
@@ -161,17 +151,14 @@ class MainActivity : ComponentActivity() {
                 openFile = { fileDownload ->
                     fileDownload.timerScheduler?.cancel()
                     runCatching {
-                        startActivity(
-                            Intent(Intent.ACTION_VIEW).apply {
-                                fileDownload.fileData?.run {
-                                    setDataAndType(
-                                        uri,
-                                        mimeType
-                                    )
-                                }
-                                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        startActivity(Intent(Intent.ACTION_VIEW).apply {
+                            fileDownload.fileData?.run {
+                                setDataAndType(
+                                    uri, mimeType
+                                )
                             }
-                        )
+                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        })
                     }.onFailure {
                         Toast.makeText(
                             applicationContext,
