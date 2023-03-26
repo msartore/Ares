@@ -51,15 +51,24 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
                 runCatching {
                     mimeType = it.getString(typeIndex)
                 }.onFailure {
-                    mimeType = getMimeTypeFromExtension(displayName.substring(displayName.lastIndexOf(".") + 1)) ?: "application/octet-stream"
+                    mimeType =
+                        getMimeTypeFromExtension(displayName.substring(displayName.lastIndexOf(".") + 1))
+                            ?: "application/octet-stream"
                 }
                 icon = when (fileType) {
-                    FileType.VIDEO -> R.drawable.video_file_24px
-                    FileType.IMAGE -> R.drawable.image_24px
-                    FileType.DOCUMENT -> R.drawable.description_24px
-                    FileType.COMPRESSED_ARCHIVE -> R.drawable.folder_zip_24px
-                    FileType.APK -> R.drawable.apk_document_24px
-                    else -> R.drawable.draft_24px
+                    FileType.VIDEO -> R.drawable.file_earmark_play
+                    FileType.IMAGE -> R.drawable.file_earmark_image
+                    FileType.COMPRESSED_ARCHIVE -> R.drawable.file_earmark_zip
+                    FileType.TEXT -> R.drawable.file_earmark_text
+                    FileType.CODE -> R.drawable.file_earmark_code
+                    FileType.BINARY -> R.drawable.file_earmark_binary
+                    FileType.FONT -> R.drawable.file_earmark_font
+                    FileType.RICHTEXT -> R.drawable.file_earmark_richtext
+                    FileType.PDF -> R.drawable.file_earmark_pdf
+                    FileType.AUDIO -> R.drawable.file_earmark_music
+                    FileType.EASEL -> R.drawable.file_earmark_easel
+                    FileType.UNKNOWN -> R.drawable.file_earmark
+                    else -> R.drawable.file_earmark
                 }
             }
         }
@@ -69,12 +78,25 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
 }
 
 fun fileType(name: String): FileType {
-    return when {
-        name.contains(listOf("mp4", "wav", "mpg", "mpeg", "mp4", "3gp", "3gpp", "mkv", "avi")) -> FileType.VIDEO
-        name.contains(listOf("jpg", "png", "jpeg", "gif", "bmp", "wbmp", "webp")) -> FileType.IMAGE
-        name.contains(listOf("pdf", "txt", "html", "htm")) -> FileType.DOCUMENT
-        name.contains(listOf("apk")) -> FileType.APK
-        name.contains(listOf("zip", "rar", "tar")) -> FileType.COMPRESSED_ARCHIVE
+    val extension = runCatching {
+        name.substring(name.lastIndexOf('.') + 1).lowercase()
+    }.getOrElse {
+        null
+    }
+
+    return when (extension) {
+        "mp4", "flv", "mkv", "mov", "mpeg", "mpg", "avi", "wmv" -> FileType.VIDEO
+        "jpg", "png", "jpeg", "gif", "bmp", "wbmp", "webp" -> FileType.IMAGE
+        "cs", "cpp", "c", "java", "js", "py", "rb", "xml" -> FileType.CODE
+        "aif", "cda", "mid", "midi", "mp3", "mpa", "ogg", "wav", "wma", "wpl" -> FileType.AUDIO
+        "7z", "arj", "deb", "pkg", "rar", "rpm", "tar.gz", "z", "zip", "apk" -> FileType.COMPRESSED_ARCHIVE
+        "dxf", "stl", "svg" -> FileType.EASEL
+        "fnt", "fon", "otf", "ttf" -> FileType.FONT
+        "ppt", "pptx", "key", "odp" -> FileType.PRESENTATION
+        "doc", "docx", "odt", "rtf" -> FileType.RICHTEXT
+        "bin", "dat", "exe", "out" -> FileType.BINARY
+        "text" -> FileType.TEXT
+        "pdf" -> FileType.PDF
         else -> FileType.UNKNOWN
     }
 }
