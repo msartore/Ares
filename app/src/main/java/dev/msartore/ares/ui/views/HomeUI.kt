@@ -274,7 +274,8 @@ fun HomeUI(
                             },
                             leadingIcon = {
                                 Icon(
-                                    id = R.drawable.upload_file_24px,
+                                    modifier = Modifier.size(25.dp),
+                                    id = R.drawable.file_earmark_arrow_up,
                                     contentDescription = stringResource(id = R.string.import_files),
                                 )
                             })
@@ -284,7 +285,8 @@ fun HomeUI(
                             expanded.value = false
                         }, leadingIcon = {
                             Icon(
-                                id = R.drawable.title_24px,
+                                modifier = Modifier.size(25.dp),
+                                id = R.drawable.input_cursor_text,
                                 contentDescription = stringResource(id = R.string.text_input),
                             )
                         })
