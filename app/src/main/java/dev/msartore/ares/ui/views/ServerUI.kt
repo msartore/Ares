@@ -137,6 +137,23 @@ fun ServerUI(
                 ) {
                     Icon(
                         modifier = Modifier.size(40.dp),
+                        id = R.drawable.folder_zip_24px,
+                        contentDescription = stringResource(id = R.string.download_all)
+                    ) {
+                        work {
+                            mainViewModel.run {
+                                downloadManager?.downloadFile(
+                                    url = "http://${serverInfo.ip}:$port/download_all",
+                                    mimeType = "application/zip",
+                                    fileName = "download_all.zip",
+                                    context = context
+                                )
+                            }
+                        }
+                    }
+
+                    Icon(
+                        modifier = Modifier.size(40.dp),
                         id = R.drawable.file_download_48px,
                         contentDescription = stringResource(id = R.string.download_all)
                     ) {

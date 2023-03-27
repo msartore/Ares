@@ -107,4 +107,5 @@
     <string name="download_all">Download all</string>
     <string name="qr_code" translatable="false">QR Code</string>
     <string name="no_app_can_perform">No app can perform this action</string>
+    <string name="logo" translatable="false">Logo</string>
 </resources>

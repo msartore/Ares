@@ -83,15 +83,11 @@ fun HomeUI(
     val expanded = remember { mutableStateOf(false) }
     val homeUIContent1: @Composable (Modifier) -> Unit = { modifier ->
         Column(
-            modifier = modifier.verticalScroll(home1State),
+            modifier = modifier
+                .padding(top = 16.dp)
+                .verticalScroll(home1State),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            TextAuto(
-                id = R.string.ares,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold
-            )
-
             Column(
                 modifier = Modifier
                     .background(

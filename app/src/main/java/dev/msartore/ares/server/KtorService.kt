@@ -51,6 +51,7 @@ import io.ktor.server.response.header
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondBytes
 import io.ktor.server.response.respondBytesWriter
+import io.ktor.server.response.respondFile
 import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
@@ -83,6 +84,8 @@ import kotlinx.html.styleLink
 import kotlinx.html.title
 import kotlinx.html.unsafe
 import java.io.File
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 @ExperimentalGetImage
 class KtorService : Service() {
@@ -147,6 +150,35 @@ class KtorService : Service() {
         server = embeddedServer(Jetty, port = port) {
             install(AutoHeadResponse)
             routing {
+                get("/download_all") {
+                    val fileDataList = concurrentMutableList.list.filter { it.text.isNullOrEmpty() }
+
+                    File(applicationContext.cacheDir.path + "/all.zip").run {
+                        runCatching {
+                            if (exists()) delete()
+
+                            createNewFile()
+
+                            ZipOutputStream(outputStream().buffered()).use { out ->
+                                for (fileData in fileDataList) {
+                                    fileData.uri?.let {
+                                        contentResolver.openInputStream(it)?.buffered().use { origin ->
+                                            val entry = ZipEntry(fileData.name)
+                                            out.putNextEntry(entry)
+                                            origin?.copyTo(out, 1024)
+                                        }
+                                    }
+                                }
+                            }
+
+                            call.respondFile(this)
+                        }.onFailure {
+                            call.respond(HttpStatusCode.InternalServerError)
+                        }
+
+                        if (exists()) delete()
+                    }
+                }
                 get("/{name}") {
                     val streaming = call.parameters["streaming"]
                     val fileUUID = call.parameters["name"]
@@ -358,6 +390,10 @@ class KtorService : Service() {
                                     else R.string.files
                                 )
                             }
+                            if (concurrentMutableList.list.isNotEmpty())
+                                a(href = "/download_all") {
+                                    +getString(R.string.download_all)
+                                }
                             ol {
                                 for (i in 0 until concurrentMutableList.size.value) {
                                     concurrentMutableList.list.elementAt(i).run {

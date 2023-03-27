@@ -42,6 +42,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -274,14 +275,31 @@ fun MainUI(
             modifier = Modifier
                 .padding(16.dp)
                 .wrapContentWidth()
+                .fillMaxHeight(),
         ) {
-            items.forEach { item ->
-                NavigationRailItem(
-                    icon = { icon(item) },
-                    label = { label(item) },
-                    onClick = { onClick(item) },
-                    selected = selectedItem.value == item
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    modifier = Modifier.size(40.dp),
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = stringResource(id = R.string.logo)
                 )
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    items.forEach { item ->
+                        NavigationRailItem(
+                            icon = { icon(item) },
+                            label = { label(item) },
+                            onClick = { onClick(item) },
+                            selected = selectedItem.value == item
+                        )
+                    }
+                }
             }
         }
 

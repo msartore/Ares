@@ -67,7 +67,6 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
                     FileType.PDF -> R.drawable.file_earmark_pdf
                     FileType.AUDIO -> R.drawable.file_earmark_music
                     FileType.EASEL -> R.drawable.file_earmark_easel
-                    FileType.UNKNOWN -> R.drawable.file_earmark
                     else -> R.drawable.file_earmark
                 }
             }
