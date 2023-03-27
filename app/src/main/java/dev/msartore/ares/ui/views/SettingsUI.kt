@@ -24,6 +24,7 @@ import dev.msartore.ares.R
 import dev.msartore.ares.models.Settings
 import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.ui.compose.*
+import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.SettingsViewModel
@@ -243,7 +244,7 @@ fun SettingsUI(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         TextAuto(
-                            text = "Ares v${settingsViewModel.packageInfo(context).versionName}",
+                            text = "Ares v${context.packageInfo().versionName}",
                             fontSize = 10.sp
                         )
                     }

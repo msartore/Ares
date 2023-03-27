@@ -2,6 +2,8 @@ package dev.msartore.ares.utils
 
 import android.content.ContentResolver
 import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.PorterDuff
@@ -126,7 +128,7 @@ fun FileData.toFileDataJson() = FileDataJson(
     UUID = this.UUID
 )
 
-fun FileDataJson.toJson(): String = Gson().toJson(this)
+fun Any.toJson(): String = Gson().toJson(this)
 
 fun Collection<FileDataJson>.toJsonArray(): JsonArray {
     val array = JsonArray()
@@ -184,3 +186,13 @@ suspend fun Context.filesDataHandler(isLoading: MutableStateFlow<Boolean>, uris:
 fun getMimeTypeFromExtension(extension: String): String? {
     return MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
 }
+
+@Suppress("DEPRECATION")
+fun Context.packageInfo(): PackageInfo =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.getPackageInfo(
+            packageName, PackageManager.PackageInfoFlags.of(0L)
+        )
+    } else {
+        packageManager.getPackageInfo(packageName, 0)
+    }

@@ -53,10 +53,10 @@
     <string name="app">App</string>
     <string name="permission_request">Permission request</string>
     <string name="permission_rejected">Permission rejected</string>
-    <string name="notification_permission_request_text">This app must have permission to send you notifications. Please grant the permission.</string>
-    <string name="notification_permission_rejected_text">Notifications permission denied. Please, grant us access to the Settings screen.</string>
-    <string name="camera_permission_request_text">This app must have permission to access your camera to scan the QR code. Please grant the permission.</string>
-    <string name="camera_permission_rejected_text">Camera permission denied. Please, grant us access to the Settings screen.</string>
+    <string name="notification_permission_request_text">This app requires permission to send notifications. Please grant the necessary permission.</string>
+    <string name="notification_permission_rejected_text">Notification access has been denied. Please grant us permission by going to the Settings screen.</string>
+    <string name="camera_permission_request_text">This app requires camera access to scan QR codes. Please grant the necessary permission.</string>
+    <string name="camera_permission_rejected_text">Camera access has been denied. Please grant us permission by going to the Settings screen.</string>
     <string name="open_settings">Open settings</string>
     <string name="about">About</string>
     <string name="licenses">Licences</string>
@@ -88,11 +88,11 @@
     <string name="upload">Upload</string>
     <string name="file_sent">file sent</string>
     <string name="server_port">Server port</string>
-    <string name="server_port_description">Set a custom port number in a range: 1024–49151</string>
+    <string name="server_port_description">Set a custom port number in the range: 1024–49151</string>
     <string name="server_port_error">The port number must be in the range stated</string>
     <string name="experimental">Experimental</string>
     <string name="remove_wifi_restriction_title">Remove WIFI restriction</string>
-    <string name="remove_wifi_restriction_description">Remove WIFI restriction and access all the feature without using a WIFI</string>
+    <string name="remove_wifi_restriction_description">Remove the Wi-Fi restriction to access all features without using a Wi-Fi connection.</string>
     <string name="files">Files</string>
     <string name="server_auto_startup">Server auto startup</string>
     <string name="server_auto_startup_description">Start the server when the app receive a file</string>
@@ -108,4 +108,6 @@
     <string name="qr_code" translatable="false">QR Code</string>
     <string name="no_app_can_perform">No app can perform this action</string>
     <string name="logo" translatable="false">Logo</string>
+    <string name="error_update_server">Update server error</string>
+    <string name="error_update_server_message">An error has occurred. It might be caused by the outdated ares app on the server side. Please update it and try again.</string>
 </resources>

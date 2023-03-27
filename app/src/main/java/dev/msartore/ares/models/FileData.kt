@@ -5,10 +5,17 @@ import android.os.CountDownTimer
 import androidx.annotation.Keep
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.JsonArray
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
 import java.io.File
 import java.util.UUID
+
+@Keep
+data class APIData(
+    val collection: JsonArray,
+    val appVersion: String
+)
 
 @Keep
 data class FileData(

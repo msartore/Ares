@@ -12,6 +12,7 @@ import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.mutableStateOf
 import dev.msartore.ares.MainActivity
 import dev.msartore.ares.R
+import dev.msartore.ares.models.APIData
 import dev.msartore.ares.models.ConcurrentMutableList
 import dev.msartore.ares.models.FileData
 import dev.msartore.ares.models.FileTransfer
@@ -28,9 +29,11 @@ import dev.msartore.ares.ui.theme.Theme.container
 import dev.msartore.ares.ui.theme.Theme.darkTheme
 import dev.msartore.ares.utils.getByteArrayFromDrawable
 import dev.msartore.ares.utils.main
+import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.printableSize
 import dev.msartore.ares.utils.splitFileTypeFromName
 import dev.msartore.ares.utils.toFileDataJson
+import dev.msartore.ares.utils.toJson
 import dev.msartore.ares.utils.toJsonArray
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
@@ -252,9 +255,14 @@ class KtorService : Service() {
                     }
                 }
                 get("/info") {
-                    call.respond(concurrentMutableList.list.map { fileData ->
-                        fileData.toFileDataJson()
-                    }.toJsonArray().toString())
+                    call.respond(
+                        APIData(
+                            collection = concurrentMutableList.list.map { fileData ->
+                                fileData.toFileDataJson()
+                            }.toJsonArray(),
+                            appVersion = applicationContext.packageInfo().versionName
+                        ).toJson()
+                    )
                 }
                 post("/upload") {
                     fileTransfer.pipelineContext = this

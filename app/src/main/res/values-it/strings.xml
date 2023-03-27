@@ -68,11 +68,11 @@
     <string name="cancel">Annulla</string>
     <string name="confirm">Conferma</string>
     <string name="permission_request">Richiesta di permesso</string>
-    <string name="notification_permission_request_text">Questa app deve disporre dell\'autorizzazione per inviarti notifiche. Si prega di concedere il permesso.</string>
+    <string name="notification_permission_request_text">Questa app richiede il permesso di inviare notifiche. Si prega di concedere il permesso necessario.</string>
     <string name="permission_rejected">Autorizzazione rifiutata</string>
-    <string name="notification_permission_rejected_text">Autorizzazione notifiche negata. Per favore, concedici l\'accesso alla schermata Impostazioni.</string>
-    <string name="camera_permission_request_text">Questa app deve avere l\'autorizzazione per accedere alla tua fotocamera per scansionare il codice QR. Si prega di concedere il permesso.</string>
-    <string name="camera_permission_rejected_text">Autorizzazione della fotocamera negata. Per favore, concedici l\'accesso alla schermata Impostazioni.</string>
+    <string name="notification_permission_rejected_text">L’accesso alle notifiche è stato negato. Si prega di concederci il permesso andando nella schermata delle Impostazioni.</string>
+    <string name="camera_permission_request_text">Questa app richiede l’accesso alla fotocamera per scansionare i codici QR. Si prega di concedere il permesso necessario.</string>
+    <string name="camera_permission_rejected_text">L’accesso alla fotocamera è stato negato. Si prega di concederci il permesso andando nella schermata delle Impostazioni.</string>
     <string name="open_settings">Apri le impostazioni</string>
     <string name="close">Chiudi</string>
     <string name="scan_qrcode">Scansiona QR code</string>
@@ -91,7 +91,7 @@
     <string name="server_port_error">Il numero di porta deve essere compreso nell\'intervallo indicato</string>
     <string name="experimental">Sperimentale</string>
     <string name="remove_wifi_restriction_title">Rimuovi la restrizione WIFI</string>
-    <string name="remove_wifi_restriction_description">Rimuovi la restrizione WIFI e accedi a tutte le funzionalità senza utilizzare un WIFI</string>
+    <string name="remove_wifi_restriction_description">Rimuovi la restrizione Wi-Fi per accedere a tutte le funzionalità senza utilizzare una connessione Wi-Fi.</string>
     <string name="files">File</string>
     <string name="server_auto_startup">Avvio automatico del server</string>
     <string name="server_auto_startup_description">Avvia il server quando l\'app riceve un file</string>
@@ -103,4 +103,6 @@
     <string name="error">Errore</string>
     <string name="download_all">Scarica tutto</string>
     <string name="no_app_can_perform">Nessuna app può eseguire questa azione</string>
+    <string name="error_update_server">Aggiornamento server errore</string>
+    <string name="error_update_server_message">Si è verificato un errore. Potrebbe essere causato dall’app Ares obsoleta sul lato server. Si prega di aggiornarla e riprovare.</string>
 </resources>

@@ -21,6 +21,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -37,6 +39,7 @@ import dev.msartore.ares.ui.compose.FileItem
 import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.utils.downloadFile
+import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.serverInfoExtraction
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
@@ -50,6 +53,7 @@ fun ServerUI(
     serverFinderViewModel: ServerFinderViewModel,
 ) {
     val context = LocalContext.current
+    val lowerVersion = remember { mutableStateOf(false) }
 
     serverFinderViewModel.run {
         if (serverInfo != null) {
@@ -61,7 +65,11 @@ fun ServerUI(
                         serverFiles.clear()
                         serverInfoExtraction(
                             serverInfo.ip, client = mainViewModel.client
-                        )?.let { list ->
+                        )?.let { (version, list) ->
+                            lowerVersion.value = (version.filter { it.isDigit() }.toIntOrNull()
+                                ?: 0) < (context.packageInfo().versionName.filter { it.isDigit() }
+                                .toIntOrNull() ?: 0)
+
                             if (list.none { it.UUID == null }) serverFiles.addAll(list)
                             else error.value = true
                         }
@@ -135,38 +143,40 @@ fun ServerUI(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        modifier = Modifier.size(40.dp),
-                        id = R.drawable.folder_zip_24px,
-                        contentDescription = stringResource(id = R.string.download_all)
-                    ) {
-                        work {
-                            mainViewModel.run {
-                                downloadManager?.downloadFile(
-                                    url = "http://${serverInfo.ip}:$port/download_all",
-                                    mimeType = "application/zip",
-                                    fileName = "download_all.zip",
-                                    context = context
-                                )
+                    if (!error.value && !isRefreshing.value) {
+                        Icon(
+                            modifier = Modifier.size(40.dp),
+                            id = R.drawable.folder_zip_24px,
+                            contentDescription = stringResource(id = R.string.download_all)
+                        ) {
+                            work {
+                                mainViewModel.run {
+                                    downloadManager?.downloadFile(
+                                        url = "http://${serverInfo.ip}:$port/download_all",
+                                        mimeType = "application/zip",
+                                        fileName = "download_all.zip",
+                                        context = context
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    Icon(
-                        modifier = Modifier.size(40.dp),
-                        id = R.drawable.file_download_48px,
-                        contentDescription = stringResource(id = R.string.download_all)
-                    ) {
-                        work {
-                            serverFiles.forEach {
-                                it.run {
-                                    mainViewModel.run {
-                                        downloadManager?.downloadFile(
-                                            url = "http://${serverInfo.ip}:$port/$UUID",
-                                            mimeType = mimeType,
-                                            fileName = "$name",
-                                            context = context
-                                        )
+                        Icon(
+                            modifier = Modifier.size(40.dp),
+                            id = R.drawable.file_download_48px,
+                            contentDescription = stringResource(id = R.string.download_all)
+                        ) {
+                            work {
+                                serverFiles.forEach {
+                                    it.run {
+                                        mainViewModel.run {
+                                            downloadManager?.downloadFile(
+                                                url = "http://${serverInfo.ip}:$port/$UUID",
+                                                mimeType = mimeType,
+                                                fileName = "$name",
+                                                context = context
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -193,59 +203,77 @@ fun ServerUI(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.server_error_rafiki),
-                    contentDescription = stringResource(id = R.string.error_during_connection)
+                    painter = painterResource(id =
+                        if (lowerVersion.value) R.drawable.update_rafiki
+                        else R.drawable.server_error_rafiki
+                    ),
+                    contentDescription = stringResource(id =
+                        if (lowerVersion.value) R.string.error_update_server
+                        else R.string.error_during_connection
+                    )
                 )
 
-                TextAuto(id = R.string.error_during_connection_try_again)
+                TextAuto(id =
+                    if (lowerVersion.value) R.string.error_update_server_message
+                    else R.string.error_during_connection_try_again)
 
                 Button(onClick = { loadData() }) {
                     TextAuto(id = R.string.refresh)
                 }
             }
-            else LazyVerticalGrid(
-                modifier = Modifier.fillMaxHeight(),
-                columns = GridCells.Adaptive(250.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                state = state
-            ) {
-                items(
-                    count = serverFiles.size,
-                    key = { serverFiles.elementAt(it).UUID.hashCode() }) {
-                    serverFiles.elementAt(it).run {
-                        val url = "http://${serverInfo.ip}:$port/$UUID"
+            else if(serverFiles.isEmpty() && !isRefreshing.value) {
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    TextAuto(id = R.string.no_file_available)
+                }
+            } else {
+                LazyVerticalGrid(
+                    modifier = Modifier.fillMaxHeight(),
+                    columns = GridCells.Adaptive(250.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    state = state
+                ) {
+                    items(
+                        count = serverFiles.size,
+                        key = { serverFiles.elementAt(it).UUID.hashCode() }) {
+                        serverFiles.elementAt(it).run {
+                            val url = "http://${serverInfo.ip}:$port/$UUID"
 
-                        ExpandableCard { expanded ->
-                            FileItem(fileDataJson = this,
-                                maxLines = if (expanded) Int.MAX_VALUE else 1,
-                                onDownload = {
-                                    mainViewModel.run {
-                                        downloadManager?.downloadFile(
-                                            url = url,
-                                            mimeType = mimeType,
-                                            fileName = "$name",
-                                            context = context
+                            ExpandableCard { expanded ->
+                                FileItem(fileDataJson = this,
+                                    maxLines = if (expanded) Int.MAX_VALUE else 1,
+                                    onDownload = {
+                                        mainViewModel.run {
+                                            downloadManager?.downloadFile(
+                                                url = url,
+                                                mimeType = mimeType,
+                                                fileName = "$name",
+                                                context = context
+                                            )
+                                        }
+                                    },
+                                    onStreaming = {
+                                        mainViewModel.openStreaming(
+                                            context = context,
+                                            url = "$url?streaming=true",
+                                            fileType = fileType
                                         )
-                                    }
-                                },
-                                onStreaming = {
-                                    mainViewModel.openStreaming(
-                                        context = context,
-                                        url = "$url?streaming=true",
-                                        fileType = fileType
-                                    )
-                                },
-                                onShare = {
-                                    mainViewModel.run {
-                                        context.shareText("$text")
-                                    }
-                                },
-                                onCopy = {
-                                    mainViewModel.copyText(
-                                        context.getString(R.string.text_input), "$text"
-                                    )
-                                })
+                                    },
+                                    onShare = {
+                                        mainViewModel.run {
+                                            context.shareText("$text")
+                                        }
+                                    },
+                                    onCopy = {
+                                        mainViewModel.copyText(
+                                            context.getString(R.string.text_input), "$text"
+                                        )
+                                    })
+                            }
                         }
                     }
                 }
