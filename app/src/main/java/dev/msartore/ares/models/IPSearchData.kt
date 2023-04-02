@@ -7,7 +7,7 @@ import kotlinx.coroutines.Job
 
 data class IPSearchData(
     val ipList: ConcurrentMutableList<ServerInfo> = ConcurrentMutableList(),
-    val isSearching: MutableState<Int> = mutableStateOf(0),
+    val isSearching: MutableState<Boolean> = mutableStateOf(false),
     val ipLeft: MutableState<Int> = mutableStateOf(0),
-    var job: Job = Job()
+    var job: Job? = null
 )

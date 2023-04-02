@@ -187,30 +187,19 @@ fun HomeUI(
             }
 
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 TextAuto(
-                    modifier = Modifier.weight(1f),
                     text = "${stringResource(id = R.string.file)}: ${concurrentMutableList.list.filter { it.selected.value }.size}",
                     fontWeight = FontWeight.Medium
                 )
 
                 Row(
-                    modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isLoading.value) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(16.dp)
-                                .weight(1f, false), strokeWidth = 2.dp
-                        )
-
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-
                     if (concurrentMutableList.list.any { it.selected.value }) {
                         Icon(
                             id = R.drawable.delete_24px,
@@ -220,73 +209,82 @@ fun HomeUI(
                                 concurrentMutableList.removeIf { it.selected.value }
                             }
                         }
-
-                        Spacer(modifier = Modifier.width(8.dp))
                     }
-                }
 
-                if (concurrentMutableList.size.value > 0) {
-                    val countSelected = concurrentMutableList.list.count { it.selected.value }
+                    if (concurrentMutableList.size.value > 0) {
+                        val countSelected = runCatching { concurrentMutableList.list.count { it.selected.value } }.getOrElse { 0 }
 
-                    Icon(
-                        id = when (countSelected) {
-                            concurrentMutableList.size.value -> R.drawable.check_box_24px
-                            in 1..concurrentMutableList.size.value -> R.drawable.indeterminate_check_box_24px
-                            else -> R.drawable.check_box_outline_blank_24px
-                        },
-                        contentDescription = stringResource(id = R.string.select_all),
-                    ) {
-                        scope.launch {
-                            when (countSelected) {
-                                0 -> concurrentMutableList.list.forEach {
-                                    it.selected.value = true
-                                }
+                        Icon(
+                            id = when (countSelected) {
+                                concurrentMutableList.size.value -> R.drawable.check_box_24px
+                                in 1..concurrentMutableList.size.value -> R.drawable.indeterminate_check_box_24px
+                                else -> R.drawable.check_box_outline_blank_24px
+                            },
+                            contentDescription = stringResource(id = R.string.select_all),
+                        ) {
+                            scope.launch {
+                                when (countSelected) {
+                                    0 -> concurrentMutableList.list.forEach {
+                                        it.selected.value = true
+                                    }
 
-                                else -> concurrentMutableList.list.forEach {
-                                    it.selected.value = false
+                                    else -> concurrentMutableList.list.forEach {
+                                        it.selected.value = false
+                                    }
                                 }
                             }
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-                }
-
-                Box {
-                    Icon(
-                        imageVector = Icons.Rounded.Add,
-                        contentDescription = stringResource(id = androidx.compose.ui.R.string.dropdown_menu)
-                    ) {
-                        expanded.value = true
-                    }
-
-                    DropdownMenu(
-                        expanded = expanded.value,
-                        onDismissRequest = { expanded.value = false }) {
-                        DropdownMenuItem(text = { TextAuto(id = R.string.import_files) },
-                            onClick = {
-                                homeViewModel.onImportFilesClick()
-                                expanded.value = false
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    modifier = Modifier.size(25.dp),
-                                    id = R.drawable.file_earmark_arrow_up,
-                                    contentDescription = stringResource(id = R.string.import_files),
-                                )
-                            })
-
-                        DropdownMenuItem(text = { TextAuto(id = R.string.text_input) }, onClick = {
-                            homeViewModel.dialogInput.value = true
-                            expanded.value = false
-                        }, leadingIcon = {
+                    if (!isLoading.value)
+                        Box {
                             Icon(
-                                modifier = Modifier.size(25.dp),
-                                id = R.drawable.input_cursor_text,
-                                contentDescription = stringResource(id = R.string.text_input),
+                                imageVector = Icons.Rounded.Add,
+                                contentDescription = stringResource(id = androidx.compose.ui.R.string.dropdown_menu)
+                            ) {
+                                expanded.value = true
+                            }
+
+                            DropdownMenu(
+                                expanded = expanded.value,
+                                onDismissRequest = { expanded.value = false }) {
+                                DropdownMenuItem(text = { TextAuto(id = R.string.import_files) },
+                                    onClick = {
+                                        homeViewModel.onImportFilesClick()
+                                        expanded.value = false
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            modifier = Modifier.size(25.dp),
+                                            id = R.drawable.file_earmark_arrow_up,
+                                            contentDescription = stringResource(id = R.string.import_files),
+                                        )
+                                    })
+
+                                DropdownMenuItem(text = { TextAuto(id = R.string.text_input) }, onClick = {
+                                    homeViewModel.dialogInput.value = true
+                                    expanded.value = false
+                                }, leadingIcon = {
+                                    Icon(
+                                        modifier = Modifier.size(25.dp),
+                                        id = R.drawable.input_cursor_text,
+                                        contentDescription = stringResource(id = R.string.text_input),
+                                    )
+                                })
+                            }
+                        }
+                    else
+                        Row(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .size(16.dp),
+                                strokeWidth = 3.dp
                             )
-                        })
-                    }
+                        }
                 }
             }
         }

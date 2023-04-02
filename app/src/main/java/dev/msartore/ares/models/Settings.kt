@@ -13,7 +13,7 @@ import dev.msartore.ares.utils.write
 class Settings(
     private val dataStore: DataStore<Preferences>
 ) {
-    private val timeout = 150
+    private val timeout = 300
     private val port = 7070
 
     var findServersAtStart: MutableState<Boolean> = mutableStateOf(false)

@@ -14,6 +14,7 @@ import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.encodeAsBitmap
 
+
 @ExperimentalGetImage
 class NetworkCallback(
     val onNetworkLost: () -> Unit,
@@ -33,8 +34,9 @@ class NetworkCallback(
 
     override fun onLinkPropertiesChanged(network: Network, linkProperties: LinkProperties) {
         super.onLinkPropertiesChanged(network, linkProperties)
+
         networkInfo.ipAddress.value = runCatching {
-            val ip = findIPV4(linkProperties) ?: ""
+            val ip = findIPV4(linkProperties)
 
             cor {
                 networkInfo.bitmap.value =
@@ -44,7 +46,7 @@ class NetworkCallback(
             ip
         }.getOrElse {
             networkInfo.isNetworkAvailable.value = false
-            ""
+            null
         }
     }
 
@@ -68,6 +70,7 @@ class NetworkCallback(
 data class NetworkInfo(
     val isNetworkAvailable: MutableState<Boolean> = mutableStateOf(false),
     val isWifiNetwork: MutableState<Boolean> = mutableStateOf(false),
-    val ipAddress: MutableState<String> = mutableStateOf(""),
+    val ipAddress: MutableState<String?> = mutableStateOf(null),
     var bitmap: MutableState<ImageBitmap?> = mutableStateOf(null)
 )
+

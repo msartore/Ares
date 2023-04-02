@@ -16,37 +16,30 @@ import java.net.Socket
 fun Context.findServers(
     settings: Settings?, networkInfo: NetworkInfo, ipSearchData: IPSearchData
 ) {
-    if (ipSearchData.isSearching.value == 0) {
-        val list = networkInfo.ipAddress.value.split(".")
-
+    if (!ipSearchData.isSearching.value) {
         ipSearchData.run {
-            ipList.clear()
-            isSearching.value = 1
-            ipLeft.value = 254
+            networkInfo.ipAddress.value?.let { ip ->
+                val postFix = ip.substring(ip.lastIndexOf('.') + 1)
+                val prefix = ip.substring(0, ip.lastIndexOf('.') + 1)
+                ipList.clear()
+                isSearching.value = true
+                ipLeft.value = 254
 
-            if (list.size == 4) {
-                val firstThree = "${list[0]}.${list[1]}.${list[2]}."
-                val last = list.last()
+                job = work {
+                    for (index in 2..254) {
+                        if (job?.isCancelled == true) break
+                        if (index.toString() == postFix) continue
 
-                if (last.isNotEmpty()) {
+                        runCatching {
+                            settings?.pingServer(prefix + index)
 
-                    job = work {
-                        for (i in 1..254) {
-                            if (job.isCancelled) break
-
-                            val ip = firstThree + i
-
-                            ipLeft.value--
-
-                            if (!last.contains(i.toString())) runCatching {
-                                ip.pingServer(settings)
-
-                                ipSearchData.ipList.add(ServerInfo(ip = firstThree + i))
-                            }
+                            ipSearchData.ipList.add(ServerInfo(ip = prefix + index))
                         }
 
-                        isSearching.value--
+                        ipLeft.value--
                     }
+
+                    isSearching.value = false
                 }
             }
         }
@@ -58,5 +51,5 @@ fun isValidServerIP(string: String) = string.matches(
 )
 
 @ExperimentalGetImage
-fun String.pingServer(settings: Settings?, timeout: Int? = settings?.ipTimeout?.value) =
-    Socket().connect(InetSocketAddress(this, port), timeout ?: 150)
+fun Settings.pingServer(ip: String, timeout: Int? = ipTimeout.value) =
+    Socket().connect(InetSocketAddress(ip, port), timeout ?: 300)

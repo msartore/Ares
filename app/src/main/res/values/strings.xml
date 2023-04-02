@@ -110,4 +110,5 @@
     <string name="logo" translatable="false">Logo</string>
     <string name="error_update_server">Update server error</string>
     <string name="error_update_server_message">An error has occurred. It might be caused by the outdated ares app on the server side. Please update it and try again.</string>
+    <string name="transfer_in_progress">Transfer in progress</string>
 </resources>

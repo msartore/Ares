@@ -104,7 +104,6 @@ fun SettingsItemSwitch(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsItemInput(
     title: String,

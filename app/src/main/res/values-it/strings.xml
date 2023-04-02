@@ -105,4 +105,5 @@
     <string name="no_app_can_perform">Nessuna app può eseguire questa azione</string>
     <string name="error_update_server">Aggiornamento server errore</string>
     <string name="error_update_server_message">Si è verificato un errore. Potrebbe essere causato dall’app Ares obsoleta sul lato server. Si prega di aggiornarla e riprovare.</string>
+    <string name="transfer_in_progress">Trasferimento in corso</string>
 </resources>

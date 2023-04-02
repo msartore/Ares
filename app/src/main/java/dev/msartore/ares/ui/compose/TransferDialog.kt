@@ -33,9 +33,7 @@ fun TransferDialog(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextAuto(
-                text = "Transfer in progress"
-            )
+            TextAuto(id = R.string.transfer_in_progress)
 
             if (progress.value > 0) LinearProgressIndicator(
                 modifier = Modifier.fillMaxWidth(), progress = progress.value

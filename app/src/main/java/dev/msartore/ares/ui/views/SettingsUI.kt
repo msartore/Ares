@@ -4,9 +4,14 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
@@ -23,13 +28,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.msartore.ares.R
 import dev.msartore.ares.models.Settings
 import dev.msartore.ares.server.KtorService
-import dev.msartore.ares.ui.compose.*
+import dev.msartore.ares.ui.compose.Icon
+import dev.msartore.ares.ui.compose.SettingsItem
+import dev.msartore.ares.ui.compose.SettingsItemInput
+import dev.msartore.ares.ui.compose.SettingsItemSwitch
+import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.SettingsViewModel
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 @androidx.camera.core.ExperimentalGetImage
 fun SettingsUI(

@@ -3,7 +3,6 @@ package dev.msartore.ares.ui.views
 import androidx.activity.compose.BackHandler
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -43,7 +42,6 @@ import dev.msartore.ares.utils.isWideView
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.ServerFinderViewModel
 
-@OptIn(ExperimentalAnimationApi::class)
 @ExperimentalGetImage
 @Composable
 fun ServerFinderUI(
@@ -94,7 +92,7 @@ fun ServerFinderUI(
                             }
                         }
 
-                        serverFinderViewModel.ipSearchData.isSearching.value == 1 -> {
+                        serverFinderViewModel.ipSearchData.isSearching.value -> {
                             CircularProgressIndicator(modifier = Modifier.size(50.dp))
                         }
 
@@ -151,7 +149,7 @@ fun ServerFinderUI(
                                 verticalArrangement = Arrangement.Center,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                if (serverFinderViewModel.ipSearchData.isSearching.value == 0) {
+                                if (!serverFinderViewModel.ipSearchData.isSearching.value) {
                                     CardIcon(
                                         iconId = R.drawable.wifi_find_24px,
                                         textId = R.string.scan_network_for_servers,
@@ -165,14 +163,14 @@ fun ServerFinderUI(
                                     }
 
                                     Spacer(modifier = Modifier.height(8.dp))
-                                }
 
-                                if (mainViewModel.hasCamera()) CardIcon(
-                                    iconId = R.drawable.qr_code_scanner_24px,
-                                    textId = R.string.scan_qrcode,
-                                    contentDescription = stringResource(id = R.string.scan_qrcode),
-                                ) {
-                                    serverFinderViewModel.scanQRCode()
+                                    if (mainViewModel.hasCamera()) CardIcon(
+                                        iconId = R.drawable.qr_code_scanner_24px,
+                                        textId = R.string.scan_qrcode,
+                                        contentDescription = stringResource(id = R.string.scan_qrcode),
+                                    ) {
+                                        serverFinderViewModel.scanQRCode()
+                                    }
                                 }
                             }
                         }
@@ -189,7 +187,7 @@ fun ServerFinderUI(
                         mainContent(Modifier.weight(8f))
 
                         mainViewModel.networkInfo.run {
-                            if (serverFinderViewModel.ipSearchData.isSearching.value == 0 && isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)) {
+                            if (!serverFinderViewModel.ipSearchData.isSearching.value && isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxHeight()

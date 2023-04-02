@@ -4,7 +4,6 @@ import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -69,7 +68,6 @@ import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
 
 @OptIn(
-    ExperimentalAnimationApi::class,
     ExperimentalPermissionsApi::class,
     ExperimentalMaterial3Api::class
 )
@@ -155,7 +153,7 @@ fun MainUI(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp),
-                visible = serverFinderViewModel.ipSearchData.isSearching.value != 0
+                visible = serverFinderViewModel.ipSearchData.isSearching.value
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -173,8 +171,8 @@ fun MainUI(
                     ) {
                         scope.launch {
                             serverFinderViewModel.run {
-                                ipSearchData.job.cancelAndJoin()
-                                ipSearchData.isSearching.value = 0
+                                ipSearchData.job?.cancelAndJoin()
+                                ipSearchData.isSearching.value = false
                             }
                         }
                     }
@@ -349,8 +347,8 @@ fun MainUI(
 
                         work {
                             runCatching {
-                                ip.pingServer(
-                                    settings = mainViewModel.settings, 2000
+                                mainViewModel.settings?.pingServer(
+                                    ip, 2000
                                 )
 
                                 serverFinderViewModel.ipSearchData.ipList.apply {
