@@ -65,7 +65,7 @@ import kotlinx.html.ButtonType
 import kotlinx.html.FormEncType
 import kotlinx.html.FormMethod
 import kotlinx.html.InputFormEncType
-import kotlinx.html.InputType
+import kotlinx.html.InputFormMethod
 import kotlinx.html.a
 import kotlinx.html.b
 import kotlinx.html.body
@@ -74,11 +74,11 @@ import kotlinx.html.dd
 import kotlinx.html.div
 import kotlinx.html.dl
 import kotlinx.html.dt
+import kotlinx.html.fileInput
 import kotlinx.html.form
 import kotlinx.html.h2
 import kotlinx.html.head
 import kotlinx.html.img
-import kotlinx.html.input
 import kotlinx.html.li
 import kotlinx.html.link
 import kotlinx.html.ol
@@ -376,10 +376,10 @@ class KtorService : Service() {
                                     encType = FormEncType.multipartFormData
                                 ) {
                                     div {
-                                        input(
-                                            type = InputType.file,
-                                            name = "upload",
-                                            formEncType = InputFormEncType.multipartFormData
+                                        fileInput(
+                                            formEncType = InputFormEncType.multipartFormData,
+                                            formMethod = InputFormMethod.post,
+                                            name = "/upload"
                                         )
                                     }
 

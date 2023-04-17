@@ -211,8 +211,6 @@ class MainActivity : ComponentActivity() {
                         )
                     )
                 }
-
-                if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true) homeViewModel.onStartServerClick()
             } else if (intent.clipData != null) {
                 runBlocking {
                     val listUri = mutableListOf<Uri>()
@@ -225,11 +223,11 @@ class MainActivity : ComponentActivity() {
 
                     if (listUri.isNotEmpty()) {
                         filesDataHandler(homeViewModel.isLoading, listUri)
-
-                        if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true) homeViewModel.onStartServerClick()
                     }
                 }
             }
+
+            if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true) homeViewModel.onStartServerClick()
         }
 
         setContent {

@@ -1,9 +1,8 @@
 package dev.msartore.ares.ui.views
 
 import androidx.camera.core.ExperimentalGetImage
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,8 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -45,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -63,6 +59,7 @@ import dev.msartore.ares.ui.compose.DialogContainer
 import dev.msartore.ares.ui.compose.ExpandableCard
 import dev.msartore.ares.ui.compose.FileItem
 import dev.msartore.ares.ui.compose.Icon
+import dev.msartore.ares.ui.compose.IconCard
 import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.utils.isWideView
 import dev.msartore.ares.viewmodels.HomeViewModel
@@ -110,23 +107,6 @@ fun HomeUI(
                             fontWeight = FontWeight.Medium,
                             color = if (isServerOn.value) Color.Green else Color.Red
                         )
-
-                        if (isServerOn.value) Column(
-                            Modifier.padding(end = 10.dp)
-                        ) {
-                            if (mainViewModel.networkInfo.bitmap.value != null) Image(
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .clickable {
-                                        mainViewModel.qrCodeDialog.value = true
-                                    },
-                                painter = painterResource(id = R.drawable.qr_code_2_24px),
-                                contentDescription = stringResource(id = R.string.qr_code)
-                            )
-                            else CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                            )
-                        }
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -150,35 +130,47 @@ fun HomeUI(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = if (isServerOn.value) Arrangement.SpaceBetween
-                    else Arrangement.End,
+                    horizontalArrangement = Arrangement.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (isServerOn.value) {
-                        Icon(
-                            id = R.drawable.share_24px
-                        ) {
-                            mainViewModel.run {
-                                context.shareText("http://${networkInfo.ipAddress.value}:$port")
-                            }
-                        }
+                    mainViewModel.networkInfo.run {
+                        if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)) {
+                            if (isServerOn.value) {
+                                if (mainViewModel.networkInfo.bitmap.value != null) {
+                                    IconCard(
+                                        id = R.drawable.qr_code_2_24px,
+                                        contentDescription = stringResource(id = R.string.qr_code)
+                                    ) {
+                                        mainViewModel.qrCodeDialog.value = true
+                                    }
 
-                        Icon(
-                            id = R.drawable.stop_circle_24px,
-                            contentDescription = stringResource(id = R.string.stop_server),
-                        ) {
-                            if (isServerOn.value) homeViewModel.onStopServerClick()
-                        }
-                    } else {
-                        mainViewModel.networkInfo.run {
-                            if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)) Icon(
-                                id = R.drawable.power_rounded_24px,
-                                contentDescription = stringResource(id = R.string.start_server),
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                }
+
+                                IconCard(
+                                    id = R.drawable.share_24px,
+                                    contentDescription = stringResource(id = R.string.share)
+                                ) {
+                                    mainViewModel.run {
+                                        context.shareText("http://${networkInfo.ipAddress.value}:$port")
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.width(8.dp))
+                            
+                            IconCard(
+                                id = if (isServerOn.value) R.drawable.stop_circle_24px else R.drawable.power_rounded_24px,
+                                contentDescription = if (isServerOn.value) stringResource(id = R.string.stop_server) else stringResource(
+                                    id = R.string.start_server
+                                )
                             ) {
-                                homeViewModel.onStartServerClick()
+                                if (isServerOn.value) homeViewModel.onStopServerClick()
+                                else homeViewModel.onStartServerClick()
                             }
                         }
                     }
@@ -187,7 +179,10 @@ fun HomeUI(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(2.dp, MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp), RoundedCornerShape(16.dp))
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -201,9 +196,9 @@ fun HomeUI(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     if (concurrentMutableList.list.any { it.selected.value }) {
-                        Icon(
+                        IconCard(
                             id = R.drawable.delete_24px,
-                            contentDescription = stringResource(id = R.string.delete_selected),
+                            contentDescription = stringResource(id = R.string.delete_selected)
                         ) {
                             scope.launch {
                                 concurrentMutableList.removeIf { it.selected.value }
@@ -214,7 +209,7 @@ fun HomeUI(
                     if (concurrentMutableList.size.value > 0) {
                         val countSelected = runCatching { concurrentMutableList.list.count { it.selected.value } }.getOrElse { 0 }
 
-                        Icon(
+                        IconCard(
                             id = when (countSelected) {
                                 concurrentMutableList.size.value -> R.drawable.check_box_24px
                                 in 1..concurrentMutableList.size.value -> R.drawable.indeterminate_check_box_24px
@@ -238,8 +233,8 @@ fun HomeUI(
 
                     if (!isLoading.value)
                         Box {
-                            Icon(
-                                imageVector = Icons.Rounded.Add,
+                            IconCard(
+                                id = R.drawable.add_24px,
                                 contentDescription = stringResource(id = androidx.compose.ui.R.string.dropdown_menu)
                             ) {
                                 expanded.value = true
@@ -275,7 +270,7 @@ fun HomeUI(
                         }
                     else
                         Row(
-                            modifier = Modifier.padding(horizontal = 8.dp),
+                            modifier = Modifier.padding(12.dp),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -302,9 +297,10 @@ fun HomeUI(
             }) { index ->
 
                 concurrentMutableList.list.elementAt(index).run {
-                    ExpandableCard(modifier = Modifier
-                        .fillMaxWidth()
-                        .background(if (selected.value) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer),
+                    ExpandableCard(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(if (selected.value) MaterialTheme.colorScheme.tertiaryContainer else MaterialTheme.colorScheme.secondaryContainer),
                         onLongClick = {
                             selected.value = !selected.value
                         }) {
@@ -331,6 +327,7 @@ fun HomeUI(
         modifier = Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         homeUIContent1(Modifier.wrapContentHeight())
+        Spacer(modifier = Modifier.height(8.dp))
         homeUIContent2(Modifier)
     }
 

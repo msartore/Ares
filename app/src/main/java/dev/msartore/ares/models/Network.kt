@@ -45,9 +45,10 @@ class NetworkCallback(
 
             ip
         }.getOrElse {
-            networkInfo.isNetworkAvailable.value = false
             null
         }
+
+        networkInfo.isNetworkAvailable.value = !networkInfo.ipAddress.value.isNullOrEmpty()
     }
 
     override fun onLost(network: Network) {

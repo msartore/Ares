@@ -7,6 +7,7 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -143,7 +144,7 @@ fun ServerUI(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    if (!error.value && !isRefreshing.value) {
+                    if (!error.value && !isRefreshing.value && !serverFiles.isEmpty()) {
                         Icon(
                             modifier = Modifier.size(40.dp),
                             id = R.drawable.folder_zip_24px,
@@ -243,8 +244,11 @@ fun ServerUI(
                         serverFiles.elementAt(it).run {
                             val url = "http://${serverInfo.ip}:$port/$UUID"
 
-                            ExpandableCard { expanded ->
-                                FileItem(fileDataJson = this,
+                            ExpandableCard(
+                                modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
+                            ) { expanded ->
+                                FileItem(
+                                    fileDataJson = this,
                                     maxLines = if (expanded) Int.MAX_VALUE else 1,
                                     onDownload = {
                                         mainViewModel.run {
