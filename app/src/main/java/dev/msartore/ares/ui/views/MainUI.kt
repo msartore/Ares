@@ -4,6 +4,7 @@ import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -69,7 +70,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalPermissionsApi::class,
-    ExperimentalMaterial3Api::class
+    ExperimentalMaterial3Api::class,
+    ExperimentalAnimationApi::class
 )
 @ExperimentalGetImage
 @Composable

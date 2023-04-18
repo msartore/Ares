@@ -27,6 +27,7 @@ import dev.msartore.ares.server.KtorService.KtorServer.server
 import dev.msartore.ares.ui.theme.Theme.background
 import dev.msartore.ares.ui.theme.Theme.container
 import dev.msartore.ares.ui.theme.Theme.darkTheme
+import dev.msartore.ares.utils.checkAvailableSpace
 import dev.msartore.ares.utils.getByteArrayFromDrawable
 import dev.msartore.ares.utils.main
 import dev.msartore.ares.utils.packageInfo
@@ -156,30 +157,35 @@ class KtorService : Service() {
                 get("/download_all") {
                     val fileDataList = concurrentMutableList.list.filter { it.text.isNullOrEmpty() }
 
-                    File(applicationContext.cacheDir.path + "/all.zip").run {
-                        runCatching {
-                            if (exists()) delete()
+                    if (fileDataList.sumOf { it.size ?: 0 } < checkAvailableSpace()) {
+                        File(applicationContext.cacheDir.path + "/all.zip").run {
+                            runCatching {
+                                if (exists()) delete()
 
-                            createNewFile()
+                                createNewFile()
 
-                            ZipOutputStream(outputStream().buffered()).use { out ->
-                                for (fileData in fileDataList) {
-                                    fileData.uri?.let {
-                                        contentResolver.openInputStream(it)?.buffered().use { origin ->
-                                            val entry = ZipEntry(fileData.name)
-                                            out.putNextEntry(entry)
-                                            origin?.copyTo(out, 1024)
+                                ZipOutputStream(outputStream().buffered()).use { out ->
+                                    for (fileData in fileDataList) {
+                                        fileData.uri?.let {
+                                            contentResolver.openInputStream(it)?.buffered().use { origin ->
+                                                val entry = ZipEntry(fileData.name)
+                                                out.putNextEntry(entry)
+                                                origin?.copyTo(out, 1024)
+                                            }
                                         }
                                     }
                                 }
+
+                                call.respondFile(this)
+                            }.onFailure {
+                                call.respond(HttpStatusCode.InternalServerError)
                             }
 
-                            call.respondFile(this)
-                        }.onFailure {
-                            call.respond(HttpStatusCode.InternalServerError)
+                            if (exists()) delete()
                         }
-
-                        if (exists()) delete()
+                    }
+                    else  {
+                        call.respond(HttpStatusCode.InsufficientStorage)
                     }
                 }
                 get("/{name}") {
@@ -274,84 +280,89 @@ class KtorService : Service() {
                     var fileSizeRemaining = 0
                     var result = false
 
-                    fileTransfer.isActive.value = true
+                    if ((contentLength?.toIntOrNull() ?: 0) < checkAvailableSpace()) {
+                        fileTransfer.isActive.value = true
 
-                    runCatching {
-                        multipartData.forEachPart { part ->
-                            when (part) {
-                                is PartData.FileItem -> {
-                                    fileName = part.originalFileName as String
+                        runCatching {
+                            multipartData.forEachPart { part ->
+                                when (part) {
+                                    is PartData.FileItem -> {
+                                        fileName = part.originalFileName as String
 
-                                    val (n, e) = splitFileTypeFromName(fileName)
-                                    var counter = 1
+                                        val (n, e) = splitFileTypeFromName(fileName)
+                                        var counter = 1
 
-                                    file = File(
-                                        "${
-                                            Environment.getExternalStoragePublicDirectory(
-                                                Environment.DIRECTORY_DOWNLOADS
-                                            )
-                                        }/$fileName"
-                                    )
-
-                                    while (file?.exists() == true) {
                                         file = File(
                                             "${
                                                 Environment.getExternalStoragePublicDirectory(
                                                     Environment.DIRECTORY_DOWNLOADS
                                                 )
-                                            }/$n($counter)$e"
+                                            }/$fileName"
                                         )
-                                        counter++
-                                    }
 
-                                    file?.createNewFile()
-
-                                    fileTransfer.run {
-                                        if (name == null) {
-                                            name = fileName
-                                            size = contentLength?.toInt()
+                                        while (file?.exists() == true) {
+                                            file = File(
+                                                "${
+                                                    Environment.getExternalStoragePublicDirectory(
+                                                        Environment.DIRECTORY_DOWNLOADS
+                                                    )
+                                                }/$n($counter)$e"
+                                            )
+                                            counter++
                                         }
 
-                                        file?.outputStream()?.channel.use {
-                                            part.streamProvider().toByteReadChannel()
-                                                .consumeEachBufferRange { buffer, last ->
+                                        file?.createNewFile()
 
-                                                    it?.write(buffer)
+                                        fileTransfer.run {
+                                            if (name == null) {
+                                                name = fileName
+                                                size = contentLength?.toInt()
+                                            }
 
-                                                    fileSizeRemaining += buffer.capacity()
+                                            file?.outputStream()?.channel.use {
+                                                part.streamProvider().toByteReadChannel()
+                                                    .consumeEachBufferRange { buffer, last ->
 
-                                                    sizeTransferred.value =
-                                                        fileSizeRemaining / (contentLength?.toFloatOrNull()
-                                                            ?: 0f)
+                                                        it?.write(buffer)
 
-                                                    !last
-                                                }
+                                                        fileSizeRemaining += buffer.capacity()
+
+                                                        sizeTransferred.value =
+                                                            fileSizeRemaining / (contentLength?.toFloatOrNull()
+                                                                ?: 0f)
+
+                                                        !last
+                                                    }
+                                            }
                                         }
+
+                                        part.dispose()
                                     }
 
-                                    part.dispose()
+                                    else -> {}
                                 }
-
-                                else -> {}
                             }
+
+                            main {
+                                file?.let { it1 -> fileTransfer.onFileTransferred?.invoke(it1) }
+                            }
+
+                            result = true
+                        }.getOrElse {
+                            it.printStackTrace()
+                            file?.delete()
                         }
 
-                        main {
-                            file?.let { it1 -> fileTransfer.onFileTransferred?.invoke(it1) }
+                        fileTransfer.run {
+                            isActive.value = false
+                            sizeTransferred.value = 0f
                         }
 
-                        result = true
-                    }.getOrElse {
-                        it.printStackTrace()
-                        file?.delete()
+                        call.respondRedirect("/?success=$result")
                     }
-
-                    fileTransfer.run {
-                        isActive.value = false
-                        sizeTransferred.value = 0f
+                    else {
+                        call.respondRedirect("/?success=false")
                     }
-
-                    call.respondRedirect("/?success=$result")
                 }
                 get("/") {
                     val result = call.parameters["success"]

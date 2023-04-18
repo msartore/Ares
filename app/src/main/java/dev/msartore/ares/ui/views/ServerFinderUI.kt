@@ -3,6 +3,7 @@ package dev.msartore.ares.ui.views
 import androidx.activity.compose.BackHandler
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +45,7 @@ import dev.msartore.ares.viewmodels.ServerFinderViewModel
 
 @ExperimentalGetImage
 @Composable
+@OptIn(ExperimentalAnimationApi::class)
 fun ServerFinderUI(
     maxWidth: Dp, mainViewModel: MainViewModel, serverFinderViewModel: ServerFinderViewModel
 ) {

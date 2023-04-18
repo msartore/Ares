@@ -9,6 +9,8 @@ import android.graphics.Bitmap
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
+import android.os.StatFs
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
@@ -29,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.util.Locale
 
 
@@ -196,3 +199,10 @@ fun Context.packageInfo(): PackageInfo =
     } else {
         packageManager.getPackageInfo(packageName, 0)
     }
+
+fun checkAvailableSpace(): Long {
+    val iStat = StatFs(Environment.getDataDirectory().path)
+    val iBlockSize = iStat.blockSizeLong
+    val iAvailableBlocks = iStat.availableBlocksLong
+    return iAvailableBlocks * iBlockSize
+}
