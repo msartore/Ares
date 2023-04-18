@@ -272,6 +272,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        KtorService.KtorServer.run {
+            downloadAllFileCompress.reset()
+            fileTransfer.reset()
+        }
         mainViewModel.client.close()
         networkCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
         unregisterReceiver(receiver)

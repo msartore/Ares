@@ -20,6 +20,7 @@ import dev.msartore.ares.models.FileType
 import dev.msartore.ares.server.KtorService.KtorServer.CHANNEL_ID
 import dev.msartore.ares.server.KtorService.KtorServer.ONGOING_NOTIFICATION_ID
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
+import dev.msartore.ares.server.KtorService.KtorServer.downloadAllFileCompress
 import dev.msartore.ares.server.KtorService.KtorServer.fileTransfer
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.port
@@ -29,6 +30,7 @@ import dev.msartore.ares.ui.theme.Theme.container
 import dev.msartore.ares.ui.theme.Theme.darkTheme
 import dev.msartore.ares.utils.checkAvailableSpace
 import dev.msartore.ares.utils.getByteArrayFromDrawable
+import dev.msartore.ares.utils.getCurrentDate
 import dev.msartore.ares.utils.main
 import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.printableSize
@@ -62,6 +64,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import io.ktor.utils.io.consumeEachBufferRange
 import io.ktor.utils.io.jvm.javaio.toByteReadChannel
+import kotlinx.coroutines.CancellationException
 import kotlinx.html.ButtonType
 import kotlinx.html.FormEncType
 import kotlinx.html.FormMethod
@@ -104,6 +107,7 @@ class KtorService : Service() {
 
         var server: ApplicationEngine? = null
         var fileTransfer = FileTransfer()
+        var downloadAllFileCompress = FileTransfer()
     }
 
     override fun onBind(intent: Intent?) = null
@@ -155,37 +159,68 @@ class KtorService : Service() {
             install(AutoHeadResponse)
             routing {
                 get("/download_all") {
+                    var fileSizeTransferred = 0
                     val fileDataList = concurrentMutableList.list.filter { it.text.isNullOrEmpty() }
+                    downloadAllFileCompress.pipelineContext = this
+                    downloadAllFileCompress.run {
+                        size = fileDataList.sumOf { it.size ?: 0 }
 
-                    if (fileDataList.sumOf { it.size ?: 0 } < checkAvailableSpace()) {
-                        File(applicationContext.cacheDir.path + "/all.zip").run {
-                            runCatching {
-                                if (exists()) delete()
+                        if ((size ?: 0) < checkAvailableSpace()) {
+                            file = File(applicationContext.cacheDir.path + "/all.zip").apply {
+                                isActive.value = true
 
-                                createNewFile()
+                                runCatching {
+                                    if (fileDataList.isEmpty()) throw Exception("No file available")
 
-                                ZipOutputStream(outputStream().buffered()).use { out ->
-                                    for (fileData in fileDataList) {
-                                        fileData.uri?.let {
-                                            contentResolver.openInputStream(it)?.buffered().use { origin ->
-                                                val entry = ZipEntry(fileData.name)
-                                                out.putNextEntry(entry)
-                                                origin?.copyTo(out, 1024)
+                                    if (exists()) delete()
+
+                                    createNewFile()
+
+                                    ZipOutputStream(outputStream().buffered()).use { out ->
+                                        for (fileData in fileDataList) {
+
+                                            if (cancelled) throw CancellationException()
+
+                                            downloadAllFileCompress.name.value = fileData.name ?: ""
+
+                                            runCatching {
+                                                fileData.uri?.let {
+                                                    contentResolver.openInputStream(it)?.buffered().use { origin ->
+                                                        val entry = ZipEntry(fileData.name)
+                                                        out.putNextEntry(entry)
+                                                        origin?.copyTo(out, 1024)
+                                                    }
+                                                }
+                                            }.getOrElse {
+                                                it.printStackTrace()
                                             }
+
+                                            fileSizeTransferred += fileData.size ?: 0
+                                            sizeTransferred.value =
+                                                (fileSizeTransferred / (size ?: 0).toFloat())
                                         }
                                     }
+
+                                    call.response.header(
+                                        HttpHeaders.ContentDisposition, "attachment; filename=\"${getCurrentDate()}_all.zip\""
+                                    )
+
+                                    isActive.value = false
+
+                                    call.respondFile(this)
+                                }.onFailure {
+                                    isActive.value = false
+                                    call.respond(HttpStatusCode.InternalServerError)
                                 }
 
-                                call.respondFile(this)
-                            }.onFailure {
-                                call.respond(HttpStatusCode.InternalServerError)
+                                if (exists()) delete()
                             }
-
-                            if (exists()) delete()
                         }
-                    }
-                    else  {
-                        call.respond(HttpStatusCode.InsufficientStorage)
+                        else  {
+                            call.respond(HttpStatusCode.InsufficientStorage)
+                        }
+
+                        reset()
                     }
                 }
                 get("/{name}") {
@@ -277,7 +312,7 @@ class KtorService : Service() {
                     var file: File? = null
                     val multipartData = call.receiveMultipart()
                     val contentLength = call.request.header(HttpHeaders.ContentLength)
-                    var fileSizeRemaining = 0
+                    var fileSizeTransferred = 0
                     var result = false
 
                     if ((contentLength?.toIntOrNull() ?: 0) < checkAvailableSpace()) {
@@ -314,10 +349,8 @@ class KtorService : Service() {
                                         file?.createNewFile()
 
                                         fileTransfer.run {
-                                            if (name == null) {
-                                                name = fileName
-                                                size = contentLength?.toInt()
-                                            }
+                                            name.value = fileName
+                                            size = contentLength?.toInt()
 
                                             file?.outputStream()?.channel.use {
                                                 part.streamProvider().toByteReadChannel()
@@ -325,10 +358,10 @@ class KtorService : Service() {
 
                                                         it?.write(buffer)
 
-                                                        fileSizeRemaining += buffer.capacity()
+                                                        fileSizeTransferred += buffer.capacity()
 
                                                         sizeTransferred.value =
-                                                            fileSizeRemaining / (contentLength?.toFloatOrNull()
+                                                            fileSizeTransferred / (contentLength?.toFloatOrNull()
                                                                 ?: 0f)
 
                                                         !last
@@ -359,6 +392,8 @@ class KtorService : Service() {
                         }
 
                         call.respondRedirect("/?success=$result")
+
+                        fileTransfer.reset()
                     }
                     else {
                         call.respondRedirect("/?success=false")

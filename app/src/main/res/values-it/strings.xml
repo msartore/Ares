@@ -108,4 +108,5 @@
     <string name="transfer_in_progress">Trasferimento in corso</string>
     <string name="share">Condividi</string>
     <string name="open_in_browser">Apri nel browser</string>
+    <string name="compression_in_progress">Compressione in progresso</string>
 </resources>

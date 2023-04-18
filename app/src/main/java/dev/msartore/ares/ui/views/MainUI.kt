@@ -51,7 +51,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dev.msartore.ares.R
-import dev.msartore.ares.server.KtorService
+import dev.msartore.ares.server.KtorService.KtorServer.downloadAllFileCompress
+import dev.msartore.ares.server.KtorService.KtorServer.fileTransfer
 import dev.msartore.ares.server.ServerInfo
 import dev.msartore.ares.ui.compose.DialogContainer
 import dev.msartore.ares.ui.compose.Icon
@@ -230,8 +231,11 @@ fun MainUI(
             }
 
             TransferDialog(
-                status = KtorService.KtorServer.fileTransfer.isActive,
-                progress = KtorService.KtorServer.fileTransfer.sizeTransferred
+                fileTransfer = downloadAllFileCompress
+            )
+
+            TransferDialog(
+                fileTransfer = fileTransfer
             )
 
             DialogContainer(

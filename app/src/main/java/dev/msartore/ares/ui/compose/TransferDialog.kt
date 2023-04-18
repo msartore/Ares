@@ -12,45 +12,52 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
-import dev.msartore.ares.server.KtorService.KtorServer.fileTransfer
+import dev.msartore.ares.models.FileTransfer
 import kotlinx.coroutines.cancel
 
 @Composable
 fun TransferDialog(
-    status: MutableState<Boolean>, progress: MutableState<Float>
+    fileTransfer: FileTransfer,
 ) {
-    DialogContainer(status = status) {
-        Column(
-            modifier = Modifier
-                .wrapContentSize()
-                .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TextAuto(id = R.string.transfer_in_progress)
-
-            if (progress.value > 0) LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(), progress = progress.value
-            )
-            else LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
+    fileTransfer.run {
+        DialogContainer(status = isActive) {
+            Column(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                TextButton(onClick = {
-                    fileTransfer.pipelineContext?.cancel()
-                }) {
-                    TextAuto(id = R.string.cancel)
+                TextAuto(id = if (file == null) R.string.transfer_in_progress else R.string.compression_in_progress)
+
+                if (sizeTransferred.value > 0) LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(), progress = sizeTransferred.value
+                )
+                else LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                TextAuto(text = name.value)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = {
+                        runCatching {
+                            fileTransfer.pipelineContext?.cancel()
+                            fileTransfer.cancelled = true
+                        }.getOrElse {
+                            it.printStackTrace()
+                        }
+                    }) {
+                        TextAuto(id = R.string.cancel)
+                    }
                 }
             }
         }

@@ -31,7 +31,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
-import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 
@@ -206,3 +207,6 @@ fun checkAvailableSpace(): Long {
     val iAvailableBlocks = iStat.availableBlocksLong
     return iAvailableBlocks * iBlockSize
 }
+
+fun getCurrentDate(): String =
+    SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())

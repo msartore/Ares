@@ -113,4 +113,5 @@
     <string name="transfer_in_progress">Transfer in progress</string>
     <string name="share">Share</string>
     <string name="open_in_browser">Open in browser</string>
+    <string name="compression_in_progress">Compression in progress</string>
 </resources>

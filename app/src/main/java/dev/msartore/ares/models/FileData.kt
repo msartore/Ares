@@ -6,6 +6,7 @@ import androidx.annotation.Keep
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
+import dev.msartore.ares.utils.work
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
 import java.io.File
@@ -57,11 +58,26 @@ data class FileDownload(
     }
 )
 
-data class FileTransfer(
+class FileTransfer(
     var pipelineContext: PipelineContext<Unit, ApplicationCall>? = null,
     val isActive: MutableState<Boolean> = mutableStateOf(false),
     var sizeTransferred: MutableState<Float> = mutableStateOf(0f),
     var size: Int? = null,
-    var name: String? = null,
-    var onFileTransferred: ((File) -> Unit)? = null
-)
+    var name: MutableState<String> = mutableStateOf(""),
+    var onFileTransferred: ((File) -> Unit)? = null,
+    var file: File? = null,
+    var cancelled: Boolean = false
+) {
+    fun reset() {
+        work {
+            if (file?.exists() == true) file?.delete()
+            pipelineContext = null
+            isActive.value = false
+            sizeTransferred.value = 0f
+            size = null
+            name.value = ""
+            file = null
+            cancelled = false
+        }
+    }
+}
