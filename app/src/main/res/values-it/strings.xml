@@ -109,4 +109,6 @@
     <string name="share">Condividi</string>
     <string name="open_in_browser">Apri nel browser</string>
     <string name="compression_in_progress">Compressione in progresso</string>
+    <string name="download_all_zip">Scarica file compressi</string>
+    <string name="download_options">Opzioni di download</string>
 </resources>

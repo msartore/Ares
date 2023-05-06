@@ -114,4 +114,6 @@
     <string name="share">Share</string>
     <string name="open_in_browser">Open in browser</string>
     <string name="compression_in_progress">Compression in progress</string>
+    <string name="download_all_zip">Download zipped files</string>
+    <string name="download_options">Download options</string>
 </resources>

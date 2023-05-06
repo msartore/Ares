@@ -46,7 +46,7 @@ fun FileItem(
                     }
 
                     Icon(
-                        modifier = Modifier.size(40.dp), id = R.drawable.file_download_48px
+                        modifier = Modifier.size(40.dp), id = R.drawable.download_24px
                     ) {
                         onDownload()
                     }

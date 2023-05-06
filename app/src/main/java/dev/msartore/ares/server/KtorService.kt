@@ -151,7 +151,7 @@ class KtorService : Service() {
         )
         val downloadIcon = getByteArrayFromDrawable(
             applicationContext,
-            R.drawable.file_download_48px,
+            R.drawable.download_24px,
             if (darkTheme) Color.WHITE else Color.BLACK
         )
 

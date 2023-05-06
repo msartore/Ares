@@ -9,6 +9,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -19,6 +20,8 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +58,7 @@ fun ServerUI(
 ) {
     val context = LocalContext.current
     val lowerVersion = remember { mutableStateOf(false) }
+    val expanded = remember { mutableStateOf(false) }
 
     serverFinderViewModel.run {
         if (serverInfo != null) {
@@ -136,7 +140,7 @@ fun ServerUI(
                     TextAuto(
                         text = serverInfo.ip,
                         fontWeight = FontWeight.SemiBold,
-                        style = MaterialTheme.typography.headlineSmall,
+                        style = MaterialTheme.typography.labelLarge,
                     )
                 }
 
@@ -145,43 +149,66 @@ fun ServerUI(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     if (!error.value && !isRefreshing.value && !serverFiles.isEmpty()) {
-                        Icon(
-                            modifier = Modifier.size(40.dp),
-                            id = R.drawable.folder_zip_24px,
-                            contentDescription = stringResource(id = R.string.download_all)
-                        ) {
-                            work {
-                                mainViewModel.run {
-                                    downloadManager?.downloadFile(
-                                        url = "http://${serverInfo.ip}:$port/download_all",
-                                        mimeType = "application/zip",
-                                        fileName = "download_all.zip",
-                                        context = context
-                                    )
-                                }
+                        Box {
+                            Icon(
+                                id = R.drawable.more_vert_24px,
+                                contentDescription = stringResource(id = androidx.compose.ui.R.string.dropdown_menu),
+                            ) {
+                                expanded.value = true
                             }
-                        }
 
-                        Icon(
-                            modifier = Modifier.size(40.dp),
-                            id = R.drawable.file_download_48px,
-                            contentDescription = stringResource(id = R.string.download_all)
-                        ) {
-                            work {
-                                serverFiles.forEach {
-                                    it.run {
-                                        mainViewModel.run {
-                                            downloadManager?.downloadFile(
-                                                url = "http://${serverInfo.ip}:$port/$UUID",
-                                                mimeType = mimeType,
-                                                fileName = "$name",
-                                                context = context
+                            DropdownMenu(
+                                expanded = expanded.value,
+                                onDismissRequest = { expanded.value = false }) {
+
+                                    DropdownMenuItem(
+                                        text = { TextAuto(id = R.string.download_all_zip) },
+                                        onClick = {
+                                            work {
+                                                mainViewModel.run {
+                                                    downloadManager?.downloadFile(
+                                                        url = "http://${serverInfo.ip}:$port/download_all",
+                                                        mimeType = "application/zip",
+                                                        fileName = "download_all.zip",
+                                                        context = context
+                                                    )
+                                                }
+                                            }
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                id = R.drawable.folder_zip_24px,
+                                                contentDescription = stringResource(id = R.string.download_all_zip)
                                             )
-                                        }
-                                    }
+                                        })
+
+                                    DropdownMenuItem(
+                                        text = { TextAuto(id = R.string.download_all) },
+                                        onClick = {
+                                            work {
+                                                serverFiles.forEach {
+                                                    it.run {
+                                                        mainViewModel.run {
+                                                            downloadManager?.downloadFile(
+                                                                url = "http://${serverInfo.ip}:$port/$UUID",
+                                                                mimeType = mimeType,
+                                                                fileName = "$name",
+                                                                context = context
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        leadingIcon = {
+                                            Icon(
+                                                id = R.drawable.download_24px,
+                                                contentDescription = stringResource(id = R.string.download_all)
+                                            )
+                                        })
+
                                 }
                             }
-                        }
                     }
 
                     Icon(

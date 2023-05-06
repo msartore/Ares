@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        compose_version = '1.5.0-alpha02'
+        compose_version = '1.5.0-alpha03'
         kotlin_version = '1.8.20'
     }
     repositories {
