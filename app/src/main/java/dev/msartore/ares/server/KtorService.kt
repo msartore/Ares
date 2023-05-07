@@ -163,7 +163,7 @@ class KtorService : Service() {
                     val fileDataList = concurrentMutableList.list.filter { it.text.isNullOrEmpty() }
                     downloadAllFileCompress.pipelineContext = this
                     downloadAllFileCompress.run {
-                        size = fileDataList.sumOf { it.size ?: 0 }
+                        size = fileDataList.filter { it.fileType != FileType.TEXT }.sumOf { it.size ?: 0 }
 
                         if ((size ?: 0) < checkAvailableSpace()) {
                             file = File(applicationContext.cacheDir.path + "/all.zip").apply {
@@ -444,7 +444,7 @@ class KtorService : Service() {
                                     else R.string.files
                                 )
                             }
-                            if (concurrentMutableList.list.isNotEmpty())
+                            if (concurrentMutableList.list.any { it.fileType != FileType.TEXT })
                                 a(href = "/download_all") {
                                     +getString(R.string.download_all)
                                 }
