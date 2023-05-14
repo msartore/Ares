@@ -151,7 +151,7 @@ h3, h2 {
 button {
     padding: 10px;
     margin: 1%;
-    margin-top: 50px;
+    margin-top: 20px;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -181,7 +181,7 @@ button a:hover {
 
 .store img {
     margin: 10px;
-    width: 200px;
+    width: 12rem;
 }
 
 @media (min-width: 50em) {
