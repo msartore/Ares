@@ -175,6 +175,15 @@ button a:hover {
     padding-right: 5px;
 }
 
+.store {
+    display:flex;
+}
+
+.store img {
+    margin: 10px;
+    width: 200px;
+}
+
 @media (min-width: 50em) {
     body {
         grid: 
