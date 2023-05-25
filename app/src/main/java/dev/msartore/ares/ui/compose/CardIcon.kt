@@ -23,7 +23,7 @@ fun CardIcon(
 ) {
     Row(
         modifier = Modifier
-            .size(125.dp)
+            .size(120.dp)
             .background(
                 MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(16.dp)
             )
@@ -43,7 +43,7 @@ fun CardIcon(
             modifier = Modifier.fillMaxWidth(),
             id = textId,
             textAlign = TextAlign.End,
-            maxLines = 3,
+            maxLines = Int.MAX_VALUE,
             fontSize = 12.sp
         )
     }

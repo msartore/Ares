@@ -14,7 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
 import dev.msartore.ares.models.FileDownload
@@ -31,7 +30,6 @@ fun SnackBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .shadow(6.dp)
                 .background(
                     color = MaterialTheme.colorScheme.secondaryContainer,
                     shape = RoundedCornerShape(16.dp)

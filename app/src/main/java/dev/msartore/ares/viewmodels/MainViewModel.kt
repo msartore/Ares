@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
@@ -16,6 +17,7 @@ import dev.msartore.ares.models.FileDownload
 import dev.msartore.ares.models.FileType
 import dev.msartore.ares.models.NetworkInfo
 import dev.msartore.ares.models.Settings
+import dev.msartore.ares.utils.BackgroundPStatus
 import dev.msartore.ares.viewmodels.MainViewModel.MVM.dataStore
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -45,6 +47,8 @@ class MainViewModel : ViewModel() {
     var onOpenUrl: ((String) -> Unit)? = null
     var downloadManager: DownloadManager? = null
     var onFindServers: ((NetworkInfo, Settings?) -> Unit)? = null
+    var backgroundPStatus: MutableState<BackgroundPStatus?> = mutableStateOf(null)
+    var onBackgroundClick: (() -> Unit)? = null
 
     @androidx.camera.core.ExperimentalGetImage
     suspend fun Context.startSettings() {

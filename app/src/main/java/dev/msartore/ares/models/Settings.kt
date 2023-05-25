@@ -23,6 +23,7 @@ class Settings(
     var serverPortNumber: MutableState<Int> = mutableStateOf(port)
     var removeWifiRestriction: MutableState<Boolean> = mutableStateOf(false)
     var serverAutoStartup: MutableState<Boolean> = mutableStateOf(false)
+    var requestBackgroundActivity: MutableState<Int> = mutableStateOf(0)
 
     @androidx.camera.core.ExperimentalGetImage
     suspend fun update() {
@@ -32,6 +33,7 @@ class Settings(
         removeWifiRestriction.value = dataStore.readBool(Keys.RemoveWifiRestriction.key) == true
         serverAutoStartup.value = dataStore.readBool(Keys.ServerAutoStartup.key) == true
         serverPortNumber.value = dataStore.readInt(Keys.ServerPortNumber.key) ?: port
+        requestBackgroundActivity.value = dataStore.readInt(Keys.RequestBackgroundActivity.key) ?: 0
         KtorService.KtorServer.port = serverPortNumber.value
     }
 
@@ -40,11 +42,12 @@ class Settings(
     }
 
     enum class Keys(val key: String) {
-        FindServersAtStart("find_servers_at_start"), ServerPortNumber("server_port_number"), IPTimeout(
-            "ip_timeout"
-        ),
-        RemoveWifiRestriction("remove_wifi_restriction"), ServerAutoStartup("server_auto_startup"), MaterialYou(
-            "material_you"
-        )
+        FindServersAtStart("find_servers_at_start"),
+        ServerPortNumber("server_port_number"),
+        IPTimeout("ip_timeout"),
+        RemoveWifiRestriction("remove_wifi_restriction"),
+        ServerAutoStartup("server_auto_startup"),
+        MaterialYou("material_you"),
+        RequestBackgroundActivity("requestBackgroundActivity")
     }
 }

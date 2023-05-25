@@ -130,7 +130,8 @@ fun ServerFinderUI(
 
     transition.AnimatedContent {
         Column(
-            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (it) {
                 ServerFinderPages.SCAN_WIFI -> {
@@ -144,37 +145,38 @@ fun ServerFinderUI(
                         )
 
                         mainViewModel.networkInfo.run {
-                            if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)) Column(
-                                modifier = Modifier
-                                    .weight(2f)
-                                    .fillMaxHeight(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                if (!serverFinderViewModel.ipSearchData.isSearching.value) {
-                                    CardIcon(
-                                        iconId = R.drawable.wifi_find_24px,
-                                        textId = R.string.scan_network_for_servers,
-                                        contentDescription = stringResource(id = R.string.scan_network_for_servers),
-                                    ) {
-                                        context.findServers(
-                                            settings = mainViewModel.settings,
-                                            networkInfo = mainViewModel.networkInfo,
-                                            ipSearchData = serverFinderViewModel.ipSearchData
-                                        )
-                                    }
+                            if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true))
+                                Column(
+                                    modifier = Modifier
+                                        .weight(2f)
+                                        .fillMaxHeight(),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    if (!serverFinderViewModel.ipSearchData.isSearching.value) {
+                                        CardIcon(
+                                            iconId = R.drawable.wifi_find_24px,
+                                            textId = R.string.scan_network_for_servers,
+                                            contentDescription = stringResource(id = R.string.scan_network_for_servers),
+                                        ) {
+                                            context.findServers(
+                                                settings = mainViewModel.settings,
+                                                networkInfo = mainViewModel.networkInfo,
+                                                ipSearchData = serverFinderViewModel.ipSearchData
+                                            )
+                                        }
 
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                        Spacer(modifier = Modifier.height(8.dp))
 
-                                    if (mainViewModel.hasCamera()) CardIcon(
-                                        iconId = R.drawable.qr_code_scanner_24px,
-                                        textId = R.string.scan_qrcode,
-                                        contentDescription = stringResource(id = R.string.scan_qrcode),
-                                    ) {
-                                        serverFinderViewModel.scanQRCode()
+                                        if (mainViewModel.hasCamera()) CardIcon(
+                                            iconId = R.drawable.qr_code_scanner_24px,
+                                            textId = R.string.scan_qrcode,
+                                            contentDescription = stringResource(id = R.string.scan_qrcode),
+                                        ) {
+                                            serverFinderViewModel.scanQRCode()
+                                        }
                                     }
                                 }
-                            }
                         }
                     }
                     else Column(
@@ -184,8 +186,6 @@ fun ServerFinderUI(
                         verticalArrangement = Arrangement.SpaceEvenly,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        val scrollState = rememberScrollState()
-
                         mainContent(Modifier.weight(8f))
 
                         mainViewModel.networkInfo.run {
@@ -193,8 +193,7 @@ fun ServerFinderUI(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxHeight()
-                                        .verticalScroll(scrollState)
-                                        .weight(2f),
+                                        .weight(2.5f),
                                     horizontalArrangement = Arrangement.SpaceEvenly,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {

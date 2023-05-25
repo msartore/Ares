@@ -1,5 +1,8 @@
 package dev.msartore.ares.utils
 
+import android.app.ActivityManager
+import android.os.Build
+import android.os.PowerManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,4 +67,18 @@ fun DialogPermissionRejected(
         onConfirm = {
             navigateToSettingsScreen()
         })
+}
+
+fun checkForBackgroundPermission(powerManager: PowerManager?, activityManager: ActivityManager?, packageName: String): BackgroundPStatus {
+    return when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && activityManager?.isBackgroundRestricted == true ->  BackgroundPStatus.RESTRICTED
+        powerManager?.isIgnoringBatteryOptimizations(packageName) == true -> BackgroundPStatus.UNRESTRICTED
+        else -> BackgroundPStatus.NOT_OPTIMIZED
+    }
+}
+
+enum class BackgroundPStatus {
+    UNRESTRICTED,
+    NOT_OPTIMIZED,
+    RESTRICTED
 }

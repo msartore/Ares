@@ -111,4 +111,7 @@
     <string name="compression_in_progress">Compressione in progresso</string>
     <string name="download_all_zip">Scarica file compressi</string>
     <string name="download_options">Opzioni di download</string>
+    <string name="fix">Ripara</string>
+    <string name="background_permission_restriction_error">Disattiva l\'ottimizzazione della batteria per trasferimenti fluidi</string>
+    <string name="background_permission_restriction_description">Per offrirti la migliore esperienza, la nostra app ha bisogno del tuo permesso per disattivare la funzione di ottimizzazione della batteria. Ciò garantirà che la nostra app funzioni senza interruzioni e senza problemi. Tocca "Consenti" quando richiesto per concedere questo permesso.</string>
 </resources>

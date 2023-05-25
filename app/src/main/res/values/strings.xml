@@ -116,4 +116,7 @@
     <string name="compression_in_progress">Compression in progress</string>
     <string name="download_all_zip">Download zipped files</string>
     <string name="download_options">Download options</string>
+    <string name="fix">Fix</string>
+    <string name="background_permission_restriction_error">Disable battery optimization for smooth transfers</string>
+    <string name="background_permission_restriction_description">To provide you with the best experience, our app needs your permission to disable the battery optimization feature. This will ensure that our app runs smoothly and without interruptions. Please tap ‘Allow’ when prompted to grant this permission.</string>
 </resources>

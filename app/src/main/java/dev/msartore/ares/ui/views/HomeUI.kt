@@ -24,6 +24,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -39,6 +41,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -61,6 +64,7 @@ import dev.msartore.ares.ui.compose.FileItem
 import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.IconCard
 import dev.msartore.ares.ui.compose.TextAuto
+import dev.msartore.ares.utils.BackgroundPStatus
 import dev.msartore.ares.utils.isWideView
 import dev.msartore.ares.viewmodels.HomeViewModel
 import dev.msartore.ares.viewmodels.MainViewModel
@@ -162,7 +166,7 @@ fun HomeUI(
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
-                            
+
                             IconCard(
                                 id = if (isServerOn.value) R.drawable.stop_circle_24px else R.drawable.power_rounded_24px,
                                 contentDescription = if (isServerOn.value) stringResource(id = R.string.stop_server) else stringResource(
@@ -176,12 +180,50 @@ fun HomeUI(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
+
+                mainViewModel.backgroundPStatus.run {
+                    if (value == BackgroundPStatus.NOT_OPTIMIZED || value == BackgroundPStatus.RESTRICTED) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(16.dp))
+                                .border(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.onErrorContainer,
+                                    RoundedCornerShape(16.dp)
+                                )
+                                .background(MaterialTheme.colorScheme.errorContainer)
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            TextAuto(
+                                modifier = Modifier.weight(2f),
+                                id = R.string.background_permission_restriction_error,
+                                maxLines = Int.MAX_VALUE
+                            )
+
+                            Button(
+                                modifier = Modifier.weight(1f),
+                                onClick = { mainViewModel.onBackgroundClick?.invoke() },
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onErrorContainer)
+                            ) {
+                                TextAuto(id = R.string.fix)
+                            }
+                        }
+                    }
+                }
             }
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(2.dp, MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp), RoundedCornerShape(16.dp))
+                    .border(
+                        2.dp,
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
+                        RoundedCornerShape(16.dp)
+                    )
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
