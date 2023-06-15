@@ -4,7 +4,6 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -41,7 +40,6 @@ import dev.msartore.ares.viewmodels.SettingsViewModel
 
 @Composable
 @androidx.camera.core.ExperimentalGetImage
-@OptIn(ExperimentalAnimationApi::class)
 fun SettingsUI(
     mainViewModel: MainViewModel, settingsViewModel: SettingsViewModel = viewModel()
 ) {
@@ -73,7 +71,7 @@ fun SettingsUI(
                         SettingsItemSwitch(
                             title = stringResource(id = R.string.find_servers),
                             description = stringResource(id = R.string.find_servers_description),
-                            icon = painterResource(id = R.drawable.wifi_find_24px),
+                            icon = painterResource(id = R.drawable.device_mobile_search),
                             item = findServersAtStart,
                         ) {
                             work { save(Settings.Keys.FindServersAtStart, findServersAtStart) }
@@ -82,7 +80,7 @@ fun SettingsUI(
                         SettingsItemInput(
                             title = stringResource(id = R.string.ip_timeout),
                             description = stringResource(id = R.string.ip_timeout_description),
-                            icon = painterResource(id = R.drawable.timer_24px),
+                            icon = painterResource(id = R.drawable.hourglass),
                             item = ipTimeout,
                         ) {
                             work { save(Settings.Keys.IPTimeout, ipTimeout) }
@@ -104,7 +102,7 @@ fun SettingsUI(
                             id = R.string.server_port
                         ),
                             description = stringResource(id = R.string.server_port_description),
-                            icon = painterResource(id = R.drawable.dns_24px),
+                            icon = painterResource(id = R.drawable.server),
                             item = serverPortNumber,
                             onCheck = {
                                 if ((it.toIntOrNull() ?: 0) in 1024..49151) true
@@ -124,7 +122,7 @@ fun SettingsUI(
                         SettingsItemSwitch(
                             title = stringResource(id = R.string.server_auto_startup),
                             description = stringResource(id = R.string.server_auto_startup_description),
-                            icon = painterResource(id = R.drawable.start_24px),
+                            icon = painterResource(id = R.drawable.arrow_move_right),
                             item = serverAutoStartup,
                         ) {
                             work { save(Settings.Keys.ServerAutoStartup, serverAutoStartup) }
@@ -146,7 +144,7 @@ fun SettingsUI(
                             SettingsItemSwitch(
                                 title = stringResource(id = R.string.material_you),
                                 description = stringResource(id = R.string.material_you_description),
-                                icon = painterResource(id = R.drawable.palette_24px),
+                                icon = painterResource(id = R.drawable.palette),
                                 item = isMaterialYouEnabled,
                             ) {
                                 work { save(Settings.Keys.MaterialYou, isMaterialYouEnabled) }
@@ -168,7 +166,7 @@ fun SettingsUI(
                         SettingsItemSwitch(
                             title = stringResource(id = R.string.remove_wifi_restriction_title),
                             description = stringResource(id = R.string.remove_wifi_restriction_description),
-                            icon = painterResource(id = R.drawable.wifi_off_24px),
+                            icon = painterResource(id = R.drawable.wifi),
                             item = removeWifiRestriction,
                         ) {
                             work {
@@ -192,13 +190,13 @@ fun SettingsUI(
                     )
 
                     SettingsItem(title = stringResource(R.string.license),
-                        icon = painterResource(id = R.drawable.description_24px),
+                        icon = painterResource(id = R.drawable.file_description),
                         onClick = {
                             settingsViewModel.selectedItem.value = SettingsPages.ABOUT
                         })
 
                     SettingsItem(title = stringResource(R.string.open_source_licenses),
-                        icon = painterResource(id = R.drawable.description_24px),
+                        icon = painterResource(id = R.drawable.file_description),
                         onClick = {
                             settingsViewModel.openThirdLicenses()
                         })

@@ -293,7 +293,7 @@ fun HomeUI(
                                     leadingIcon = {
                                         Icon(
                                             modifier = Modifier.size(25.dp),
-                                            id = R.drawable.file_earmark_arrow_up,
+                                            id = R.drawable.file_upload,
                                             contentDescription = stringResource(id = R.string.import_files),
                                         )
                                     })
@@ -304,7 +304,7 @@ fun HomeUI(
                                 }, leadingIcon = {
                                     Icon(
                                         modifier = Modifier.size(25.dp),
-                                        id = R.drawable.input_cursor_text,
+                                        id = R.drawable.forms,
                                         contentDescription = stringResource(id = R.string.text_input),
                                     )
                                 })
@@ -335,7 +335,7 @@ fun HomeUI(
             state = lazyGridState
         ) {
             items(count = concurrentMutableList.size.value, key = {
-                concurrentMutableList.list.elementAt(it).UUID
+                concurrentMutableList.list.elementAt(it).uuid
             }) { index ->
 
                 concurrentMutableList.list.elementAt(index).run {

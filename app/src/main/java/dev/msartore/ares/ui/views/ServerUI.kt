@@ -75,7 +75,7 @@ fun ServerUI(
                                 ?: 0) < (context.packageInfo().versionName.filter { it.isDigit() }
                                 .toIntOrNull() ?: 0)
 
-                            if (list.none { it.UUID == null }) serverFiles.addAll(list)
+                            if (list.none { it.uuid == null }) serverFiles.addAll(list)
                             else error.value = true
                         }
                         isRefreshing.value = false
@@ -190,7 +190,7 @@ fun ServerUI(
                                                     it.run {
                                                         mainViewModel.run {
                                                             downloadManager?.downloadFile(
-                                                                url = "http://${serverInfo.ip}:$port/$UUID",
+                                                                url = "http://${serverInfo.ip}:$port/$uuid",
                                                                 mimeType = mimeType,
                                                                 fileName = "$name",
                                                                 context = context
@@ -267,9 +267,9 @@ fun ServerUI(
                 ) {
                     items(
                         count = serverFiles.size,
-                        key = { serverFiles.elementAt(it).UUID.hashCode() }) {
+                        key = { serverFiles.elementAt(it).uuid.hashCode() }) {
                         serverFiles.elementAt(it).run {
-                            val url = "http://${serverInfo.ip}:$port/$UUID"
+                            val url = "http://${serverInfo.ip}:$port/$uuid"
 
                             ExpandableCard(
                                 modifier = Modifier.background(MaterialTheme.colorScheme.secondaryContainer)

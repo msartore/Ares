@@ -31,6 +31,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -62,18 +63,19 @@ fun ContentResolver.extractFileInformation(uri: Uri): FileData? {
                             ?: "application/octet-stream"
                 }
                 icon = when (fileType) {
-                    FileType.VIDEO -> R.drawable.file_earmark_play
-                    FileType.IMAGE -> R.drawable.file_earmark_image
-                    FileType.COMPRESSED_ARCHIVE -> R.drawable.file_earmark_zip
-                    FileType.TEXT -> R.drawable.file_earmark_text
-                    FileType.CODE -> R.drawable.file_earmark_code
-                    FileType.BINARY -> R.drawable.file_earmark_binary
-                    FileType.FONT -> R.drawable.file_earmark_font
-                    FileType.RICHTEXT -> R.drawable.file_earmark_richtext
-                    FileType.PDF -> R.drawable.file_earmark_pdf
-                    FileType.AUDIO -> R.drawable.file_earmark_music
-                    FileType.EASEL -> R.drawable.file_earmark_easel
-                    else -> R.drawable.file_earmark
+                    FileType.VIDEO -> R.drawable.movie
+                    FileType.IMAGE -> R.drawable.photo
+                    FileType.COMPRESSED_ARCHIVE -> R.drawable.file_zip_icon
+                    FileType.TEXT -> R.drawable.file_description
+                    FileType.CODE -> R.drawable.file_code
+                    FileType.BINARY -> R.drawable.file_digit
+                    FileType.FONT -> R.drawable.file_typography
+                    FileType.RICH_TEXT -> R.drawable.file_text
+                    FileType.PDF -> R.drawable.pdf
+                    FileType.AUDIO -> R.drawable.file_music
+                    FileType.EASEL -> R.drawable.file_vector
+                    FileType.APK -> R.drawable.brand_android
+                    else -> R.drawable.file_unknown
                 }
             }
         }
@@ -94,11 +96,12 @@ fun fileType(name: String): FileType {
         "jpg", "png", "jpeg", "gif", "bmp", "wbmp", "webp" -> FileType.IMAGE
         "cs", "cpp", "c", "java", "js", "py", "rb", "xml" -> FileType.CODE
         "aif", "cda", "mid", "midi", "mp3", "mpa", "ogg", "wav", "wma", "wpl" -> FileType.AUDIO
-        "7z", "arj", "deb", "pkg", "rar", "rpm", "tar.gz", "z", "zip", "apk" -> FileType.COMPRESSED_ARCHIVE
+        "7z", "arj", "deb", "pkg", "rar", "rpm", "tar.gz", "z", "zip" -> FileType.COMPRESSED_ARCHIVE
+        "apk" -> FileType.APK
         "dxf", "stl", "svg" -> FileType.EASEL
         "fnt", "fon", "otf", "ttf" -> FileType.FONT
         "ppt", "pptx", "key", "odp" -> FileType.PRESENTATION
-        "doc", "docx", "odt", "rtf" -> FileType.RICHTEXT
+        "doc", "docx", "odt", "rtf" -> FileType.RICH_TEXT
         "bin", "dat", "exe", "out" -> FileType.BINARY
         "text" -> FileType.TEXT
         "pdf" -> FileType.PDF
@@ -129,7 +132,7 @@ fun FileData.toFileDataJson() = FileDataJson(
     fileType = this.fileType,
     mimeType = this.mimeType,
     icon = this.icon,
-    UUID = this.UUID
+    uuid = this.uuid
 )
 
 fun Any.toJson(): String = Gson().toJson(this)
@@ -210,3 +213,21 @@ fun checkAvailableSpace(): Long {
 
 fun getCurrentDate(): String =
     SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+
+fun Context.cleanCache() {
+    runCatching {
+        work {
+            deleteDir(cacheDir)
+        }
+    }.onFailure {
+        it.printStackTrace()
+    }
+}
+
+fun deleteDir(dir: File?) {
+    val files = dir?.listFiles()
+
+    if (files != null) {
+        for (file in files) file.delete()
+    }
+}

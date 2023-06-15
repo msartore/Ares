@@ -4,7 +4,6 @@ import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,7 +50,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dev.msartore.ares.R
-import dev.msartore.ares.server.KtorService.KtorServer.downloadAllFileCompress
 import dev.msartore.ares.server.KtorService.KtorServer.fileTransfer
 import dev.msartore.ares.server.ServerInfo
 import dev.msartore.ares.ui.compose.DialogContainer
@@ -71,8 +69,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalPermissionsApi::class,
-    ExperimentalMaterial3Api::class,
-    ExperimentalAnimationApi::class
+    ExperimentalMaterial3Api::class
 )
 @ExperimentalGetImage
 @Composable
@@ -229,10 +226,6 @@ fun MainUI(
                     }
                 }
             }
-
-            TransferDialog(
-                fileTransfer = downloadAllFileCompress
-            )
 
             TransferDialog(
                 fileTransfer = fileTransfer

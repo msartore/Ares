@@ -5,6 +5,7 @@ import android.net.LinkProperties
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.TRANSPORT_WIFI
+import android.util.Log
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -53,8 +54,11 @@ class NetworkCallback(
 
     override fun onLost(network: Network) {
         super.onLost(network)
-        networkInfo.isNetworkAvailable.value = false
-        onNetworkLost()
+        if (!networkInfo.isWifiNetwork.value) {
+            Log.e("Connection", "Connection lost")
+            networkInfo.isNetworkAvailable.value = false
+            onNetworkLost()
+        }
     }
 
     private fun findIPV4(linkProperties: LinkProperties): String? {

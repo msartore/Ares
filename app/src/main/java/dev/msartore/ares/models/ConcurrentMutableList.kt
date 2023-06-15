@@ -6,9 +6,11 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class ConcurrentMutableList<T> {
     val list = ConcurrentLinkedQueue<T>()
     val size = mutableStateOf(list.size)
+    var version = 0
 
     private fun updateSize() {
         size.value = list.size
+        version++
     }
 
     fun add(item: T) {

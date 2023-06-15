@@ -12,11 +12,15 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
 import dev.msartore.ares.models.FileTransfer
+import dev.msartore.ares.models.FileTransferStages
 import kotlinx.coroutines.cancel
 
 @Composable
@@ -24,7 +28,13 @@ fun TransferDialog(
     fileTransfer: FileTransfer,
 ) {
     fileTransfer.run {
-        DialogContainer(status = isActive) {
+        val statusDialog = remember { mutableStateOf(true) }
+
+        LaunchedEffect(key1 = status.value) {
+            statusDialog.value = status.value != FileTransferStages.INACTIVE
+        }
+
+        DialogContainer(status = statusDialog) {
             Column(
                 modifier = Modifier
                     .wrapContentSize()
@@ -32,7 +42,12 @@ fun TransferDialog(
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                TextAuto(id = if (file == null) R.string.transfer_in_progress else R.string.compression_in_progress)
+                TextAuto(id = when(status.value) {
+                    FileTransferStages.INITIALIZING -> R.string.initializing
+                    FileTransferStages.ARCHIVING -> R.string.archiving_in_progress
+                    FileTransferStages.TRANSMITTING -> R.string.transmission_in_progress
+                    else -> R.string.finalizing
+                })
 
                 if (sizeTransferred.value > 0) LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth(), progress = sizeTransferred.value
@@ -52,9 +67,15 @@ fun TransferDialog(
                         runCatching {
                             fileTransfer.pipelineContext?.cancel()
                             fileTransfer.cancelled = true
-                        }.getOrElse {
+                        }.onFailure {
                             it.printStackTrace()
                         }
+
+                        fileTransfer.run {
+                            if (file?.exists() == true) file!!.delete()
+                        }
+
+                        status.value = FileTransferStages.INACTIVE
                     }) {
                         TextAuto(id = R.string.cancel)
                     }

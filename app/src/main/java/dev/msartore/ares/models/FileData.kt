@@ -6,7 +6,7 @@ import androidx.annotation.Keep
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
-import dev.msartore.ares.utils.work
+import dev.msartore.ares.utils.cor
 import io.ktor.server.application.ApplicationCall
 import io.ktor.util.pipeline.PipelineContext
 import java.io.File
@@ -23,7 +23,7 @@ data class FileData(
     val uri: Uri? = null,
     var text: String? = null,
     val selected: MutableState<Boolean> = mutableStateOf(false),
-    val UUID: UUID = java.util.UUID.randomUUID(),
+    val uuid: UUID = UUID.randomUUID(),
     var name: String? = null,
     var size: Int? = null,
     var fileType: FileType? = null,
@@ -35,7 +35,7 @@ data class FileData(
 data class FileDataJson(
     var name: String? = null,
     var text: String? = null,
-    val UUID: UUID? = null,
+    val uuid: UUID? = null,
     var size: Int? = null,
     var fileType: FileType? = null,
     var mimeType: String? = null,
@@ -44,7 +44,7 @@ data class FileDataJson(
 
 @Keep
 enum class FileType {
-    VIDEO, IMAGE, TEXT, COMPRESSED_ARCHIVE, CODE, BINARY, FONT, RICHTEXT, PDF, AUDIO, EASEL, PRESENTATION, UNKNOWN,
+    VIDEO, IMAGE, TEXT, COMPRESSED_ARCHIVE, CODE, BINARY, FONT, RICH_TEXT, PDF, AUDIO, EASEL, PRESENTATION, APK, UNKNOWN,
 }
 
 data class FileDownload(
@@ -60,24 +60,36 @@ data class FileDownload(
 
 class FileTransfer(
     var pipelineContext: PipelineContext<Unit, ApplicationCall>? = null,
-    val isActive: MutableState<Boolean> = mutableStateOf(false),
+    val status: MutableState<FileTransferStages> = mutableStateOf(FileTransferStages.INACTIVE),
     var sizeTransferred: MutableState<Float> = mutableStateOf(0f),
     var size: Int? = null,
     var name: MutableState<String> = mutableStateOf(""),
     var onFileTransferred: ((File) -> Unit)? = null,
     var file: File? = null,
-    var cancelled: Boolean = false
+    var cancelled: Boolean = false,
 ) {
     fun reset() {
-        work {
-            if (file?.exists() == true) file?.delete()
+        cor {
+            status.value = FileTransferStages.INACTIVE
             pipelineContext = null
-            isActive.value = false
-            sizeTransferred.value = 0f
             size = null
-            name.value = ""
             file = null
+            sizeTransferred.value = 0f
+            name.value = ""
             cancelled = false
         }
     }
+}
+
+data class FileZip(
+    var file: File? = null,
+    var version: Int = -1
+)
+
+enum class FileTransferStages{
+    INITIALIZING,
+    ARCHIVING,
+    TRANSMITTING,
+    FINALIZING,
+    INACTIVE
 }

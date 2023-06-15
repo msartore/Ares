@@ -10,6 +10,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -46,6 +48,7 @@ import dev.msartore.ares.ui.views.MainUI
 import dev.msartore.ares.utils.BackgroundPStatus
 import dev.msartore.ares.utils.Permissions
 import dev.msartore.ares.utils.checkForBackgroundPermission
+import dev.msartore.ares.utils.cleanCache
 import dev.msartore.ares.utils.extractFileInformation
 import dev.msartore.ares.utils.filesDataHandler
 import dev.msartore.ares.utils.findServers
@@ -79,6 +82,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+        val permissionStateList = mutableListOf(Manifest.permission.WAKE_LOCK)
 
         receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent) {
@@ -129,6 +133,7 @@ class MainActivity : ComponentActivity() {
         activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
         powerManager = applicationContext.getSystemService(POWER_SERVICE) as PowerManager
         service = Intent(this, KtorService::class.java)
+        applicationContext.cleanCache()
 
         runBlocking {
             connectivityManager = getSystemService(ConnectivityManager::class.java)
@@ -137,8 +142,13 @@ class MainActivity : ComponentActivity() {
                     stopService(service)
                 })
 
+            val builder = NetworkRequest.Builder()
+            builder.addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
+
+            val networkRequest = builder.build()
+
             networkCallback?.let {
-                connectivityManager?.registerDefaultNetworkCallback(it)
+                connectivityManager?.registerNetworkCallback(networkRequest, it)
             }
 
             KtorService.KtorServer.fileTransfer.onFileTransferred = { file ->
@@ -273,8 +283,10 @@ class MainActivity : ComponentActivity() {
             val isNavBarColorSet = remember { mutableStateOf(false) }
             val resetStatusBarColor = remember { mutableStateOf({}) }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) permissionState =
-                rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.POST_NOTIFICATIONS))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                permissionStateList.add(Manifest.permission.POST_NOTIFICATIONS)
+
+            permissionState = rememberMultiplePermissionsState(permissions = permissionStateList)
 
             AresTheme(
                 changeStatusBarColor = resetStatusBarColor,
@@ -347,11 +359,14 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         KtorService.KtorServer.run {
-            downloadAllFileCompress.reset()
-            fileTransfer.reset()
+            fileTransfer.run {
+                if (file?.exists() == true) file?.delete()
+            }
         }
         mainViewModel.client.close()
         networkCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
         unregisterReceiver(receiver)
+
+        applicationContext.cleanCache()
     }
 }

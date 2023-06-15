@@ -110,13 +110,15 @@
     <string name="logo" translatable="false">Logo</string>
     <string name="error_update_server">Update server error</string>
     <string name="error_update_server_message">An error has occurred. It might be caused by the outdated ares app on the server side. Please update it and try again.</string>
-    <string name="transfer_in_progress">Transfer in progress</string>
     <string name="share">Share</string>
     <string name="open_in_browser">Open in browser</string>
-    <string name="compression_in_progress">Compression in progress</string>
     <string name="download_all_zip">Download zipped files</string>
     <string name="download_options">Download options</string>
     <string name="fix">Fix</string>
     <string name="background_permission_restriction_error">Disable battery optimization for smooth transfers</string>
     <string name="background_permission_restriction_description">To provide you with the best experience, our app needs your permission to disable the battery optimization feature. This will ensure that our app runs smoothly and without interruptions. Please tap ‘Allow’ when prompted to grant this permission.</string>
+    <string name="initializing">Initializing</string>
+    <string name="finalizing">Finalizing</string>
+    <string name="transmission_in_progress">Transmission in progress</string>
+    <string name="archiving_in_progress">Archiving in progress</string>
 </resources>
