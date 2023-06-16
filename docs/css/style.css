@@ -50,6 +50,11 @@ ul[id="sidenavul"], header nav ul {
     list-style: none;
 }
 
+
+ul[id="sidenavul"] li {
+    margin: 30px;
+}
+
 header a {
     height: 32px;
 }
@@ -175,14 +180,14 @@ button a:hover {
     padding-right: 5px;
 }
 
-.store {
-    display: inline-flex;
+.store img {
+    width: 160px;
 }
 
-.store img, .store a {
-    margin-top: 10px;
-    margin-right: 10px;
-    width: 100%;
+.store a {
+    margin-top: -1px;
+    margin-right: 20px;
+
 }
 
 @media (min-width: 50em) {
