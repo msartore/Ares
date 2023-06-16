@@ -4,6 +4,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.SettingsViewModel
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 @androidx.camera.core.ExperimentalGetImage
 fun SettingsUI(

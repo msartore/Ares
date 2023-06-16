@@ -176,12 +176,13 @@ button a:hover {
 }
 
 .store {
-    display:flex;
+    display: inline-flex;
 }
 
-.store img {
-    margin: 10px;
-    width: 12rem;
+.store img, .store a {
+    margin-top: 10px;
+    margin-right: 10px;
+    width: 100%;
 }
 
 @media (min-width: 50em) {
