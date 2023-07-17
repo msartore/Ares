@@ -116,4 +116,8 @@
     <string name="finalizing">Finalizzazione</string>
     <string name="transmission_in_progress">Trasmissione in corso</string>
     <string name="archiving_in_progress">Archiviazione in corso</string>
+    <string name="downloads">Downloads</string>
+    <string name="filter_by">Filtra per:</string>
+    <string name="all">Tutti</string>
+    <string name="transfers">Trasferimenti</string>
 </resources>

@@ -4,7 +4,6 @@ import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +22,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -70,7 +71,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalPermissionsApi::class,
-    ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class
+    ExperimentalMaterial3Api::class
 )
 @ExperimentalGetImage
 @Composable
@@ -81,28 +82,46 @@ fun MainUI(
     maxWidth: Dp
 ) {
     val selectedItem = remember { mutableStateOf(MainPages.HOME) }
-    val items = remember { listOf(MainPages.HOME, MainPages.SERVER_FINDER, MainPages.SETTINGS) }
+    val items = remember { listOf(MainPages.HOME, MainPages.SERVER_FINDER, MainPages.TRANSFERS, MainPages.SETTINGS) }
     val transition = updateTransition(selectedItem.value, label = selectedItem.value.name)
     val loadingStatusDialog = remember { mutableStateOf(false) }
-    val icon: @Composable (MainPages) -> Unit = {
-        Icon(
-            id = when (it) {
-                MainPages.HOME -> {
-                    if (selectedItem.value == it) R.drawable.home_filled_24px
-                    else R.drawable.home_24px
-                }
+    val icon: @Composable (MainPages) -> Unit = { page ->
 
-                MainPages.SERVER_FINDER -> {
-                    if (selectedItem.value == it) R.drawable.wifi_find_filled_24px
-                    else R.drawable.wifi_find_24px
-                }
+        if (page == MainPages.TRANSFERS) {
+            BadgedBox(
+                badge = {
+                    val count = mainViewModel.transferredFiles.count { !it.viewed.value }
 
-                else -> {
-                    if (selectedItem.value == it) R.drawable.settings_filled_24px
-                    else R.drawable.settings_24px
+                    if (count > 0)
+                        Badge {
+                            TextAuto(text = count.toString())
+                        }
                 }
-            }, contentDescription = stringResource(id = it.stringId)
-        )
+            ) {
+                Icon(
+                    id = R.drawable.download_24px
+                )
+            }
+        }
+        else
+            Icon(
+                id = when (page) {
+                    MainPages.HOME -> {
+                        if (selectedItem.value == page) R.drawable.home_filled_24px
+                        else R.drawable.home_24px
+                    }
+
+                    MainPages.SERVER_FINDER -> {
+                        if (selectedItem.value == page) R.drawable.wifi_find_filled_24px
+                        else R.drawable.wifi_find_24px
+                    }
+
+                    else -> {
+                        if (selectedItem.value == page) R.drawable.settings_filled_24px
+                        else R.drawable.settings_24px
+                    }
+                }, contentDescription = stringResource(id = page.stringId)
+            )
     }
     val label: @Composable (MainPages) -> Unit = {
         TextAuto(
@@ -143,7 +162,13 @@ fun MainUI(
 
                         MainPages.SETTINGS -> {
                             SettingsUI(
-                                mainViewModel = mainViewModel,
+                                mainViewModel = mainViewModel
+                            )
+                        }
+
+                        MainPages.TRANSFERS -> {
+                            TransferHistoryUI(
+                                mainViewModel = mainViewModel
                             )
                         }
                     }
@@ -213,10 +238,10 @@ fun MainUI(
                                                     .padding(bottom = 16.dp),
                                                 fileDownload = this,
                                                 onOpenFile = {
-                                                    openFile?.invoke(this)
+                                                    onOpenFileDownload?.invoke(this)
                                                 },
                                                 onShareFile = {
-                                                    shareFile?.invoke(this)
+                                                    onShareFileDownload?.invoke(this)
                                                 }
                                             )
                                         }
@@ -409,5 +434,5 @@ fun MainUI(
 }
 
 enum class MainPages(val stringId: Int) {
-    HOME(R.string.home), SERVER_FINDER(R.string.server_finder), SETTINGS(R.string.settings)
+    HOME(R.string.home), SERVER_FINDER(R.string.server_finder), SETTINGS(R.string.settings), TRANSFERS(R.string.transfers)
 }

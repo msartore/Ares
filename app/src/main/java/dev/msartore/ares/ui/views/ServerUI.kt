@@ -255,7 +255,7 @@ fun ServerUI(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TextAuto(id = R.string.no_file_available)
+                    TextAuto(id = R.string.no_file_available, fontWeight = FontWeight.Bold)
                 }
             } else {
                 LazyVerticalGrid(

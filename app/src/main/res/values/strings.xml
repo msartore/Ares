@@ -121,4 +121,8 @@
     <string name="finalizing">Finalizing</string>
     <string name="transmission_in_progress">Transmission in progress</string>
     <string name="archiving_in_progress">Archiving in progress</string>
+    <string name="downloads">Downloads</string>
+    <string name="filter_by">Filter by:</string>
+    <string name="all">All</string>
+    <string name="transfers">Transfers</string>
 </resources>

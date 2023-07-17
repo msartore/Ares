@@ -40,6 +40,8 @@ import dev.msartore.ares.models.FileData
 import dev.msartore.ares.models.FileDownload
 import dev.msartore.ares.models.FileType
 import dev.msartore.ares.models.NetworkCallback
+import dev.msartore.ares.models.TransferFile
+import dev.msartore.ares.models.TransferFileType
 import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.ui.compose.Dialog
@@ -89,12 +91,20 @@ class MainActivity : ComponentActivity() {
                 val reference = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
                 val fileData = mainViewModel.downloadManager?.getUriForDownloadedFile(reference)
                     ?.let { context?.contentResolver?.extractFileInformation(it) }
-                if (!fileData?.name.isNullOrEmpty()) mainViewModel.listFileDownload.add(FileDownload(fileData = fileData,
-                    onFinish = {
-                        mainViewModel.listFileDownload.removeIf { it.fileData?.uri == fileData?.uri }
-                    }).also {
-                    it.timerScheduler?.start()
-                })
+                if (!fileData?.name.isNullOrEmpty()) {
+                    fileData?.let {
+                        mainViewModel.transferredFiles.add(
+                            TransferFile(it, TransferFileType.DOWNLOAD)
+                        )
+                    }
+                    mainViewModel.listFileDownload.add(FileDownload(
+                        fileData = fileData,
+                        onFinish = {
+                            mainViewModel.listFileDownload.removeIf { it.fileData?.uri == fileData?.uri }
+                        }).also {
+                        it.timerScheduler?.start()
+                    })
+                }
             }
         }
 
@@ -156,6 +166,9 @@ class MainActivity : ComponentActivity() {
                     applicationContext, applicationContext.packageName + ".provider", file
                 ).run {
                     contentResolver.extractFileInformation(this).run {
+                        this?.let { mainViewModel.transferredFiles.add(
+                            TransferFile(it, TransferFileType.UPLOAD)
+                        )}
                         mainViewModel.listFileDownload.add(FileDownload(fileData = this,
                             onFinish = {
                                 mainViewModel.listFileDownload.removeIf { it.fileData?.uri == this?.uri }
@@ -187,17 +200,34 @@ class MainActivity : ComponentActivity() {
                             it.printStackTrace()
                         }
                     }
-                    openFile = { fileDownload ->
+
+                    onOpenFile = {
+                        startActivity(Intent(Intent.ACTION_VIEW).apply {
+                            it.run {
+                                setDataAndType(
+                                    uri, mimeType
+                                )
+                            }
+                            flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        })
+                    }
+                    onShareFile = {
+                        it.run {
+                            val intent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                                type = mimeType
+                                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            }
+                            startActivity(Intent.createChooser(intent, getString(R.string.send_to)))
+                        }
+                    }
+                    onOpenFileDownload = { fileDownload ->
                         fileDownload.timerScheduler?.cancel()
                         runCatching {
-                            startActivity(Intent(Intent.ACTION_VIEW).apply {
-                                fileDownload.fileData?.run {
-                                    setDataAndType(
-                                        uri, mimeType
-                                    )
-                                }
-                                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            })
+                            fileDownload.fileData?.let {
+                                onOpenFile?.invoke(it)
+                            }
                         }.onFailure {
                             Toast.makeText(
                                 applicationContext,
@@ -207,17 +237,10 @@ class MainActivity : ComponentActivity() {
                         }
                         listFileDownload.removeIf { it == fileDownload }
                     }
-                    shareFile = { fileDownload ->
-                        fileDownload.fileData?.run {
-                            val intent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_STREAM, uri)
-                                type = mimeType
-                                flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            }
-                            startActivity(Intent.createChooser(intent, getString(R.string.send_to)))
+                    onShareFileDownload = { fileDownload ->
+                        fileDownload.fileData?.let {
+                            onShareFile?.invoke(it)
                         }
-
                         listFileDownload.removeIf { it == fileDownload }
                     }
                     onDismiss = { fileDownload ->

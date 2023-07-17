@@ -86,10 +86,21 @@ data class FileZip(
     var version: Int = -1
 )
 
-enum class FileTransferStages{
+enum class FileTransferStages {
     INITIALIZING,
     ARCHIVING,
     TRANSMITTING,
     FINALIZING,
     INACTIVE
+}
+
+data class TransferFile(
+    val fileData: FileData,
+    val transferStages: TransferFileType,
+    val viewed: MutableState<Boolean> = mutableStateOf(false)
+)
+
+enum class TransferFileType {
+    UPLOAD,
+    DOWNLOAD
 }
