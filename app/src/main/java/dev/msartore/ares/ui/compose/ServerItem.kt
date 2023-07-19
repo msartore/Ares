@@ -16,7 +16,7 @@ import dev.msartore.ares.R
 
 @Composable
 fun ServerItem(
-    IP: String, url: String, openUrl: (String) -> Unit, serverSelected: () -> Unit
+    ip: String, url: String, openUrl: (String) -> Unit, serverSelected: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -47,7 +47,7 @@ fun ServerItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            TextAuto(text = IP)
+            TextAuto(text = ip)
 
             IconCard(
                 modifier = Modifier.size(35.dp),

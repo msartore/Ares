@@ -1,6 +1,5 @@
 package dev.msartore.ares.ui.compose
 
-import android.util.Size
 import androidx.camera.core.CameraControl
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
@@ -84,7 +83,7 @@ fun CameraPreview(
 }
 
 private fun setupImageAnalysis(executor: Executor, analyzer: ImageAnalysis.Analyzer) =
-    ImageAnalysis.Builder().setTargetResolution(Size(720, 1280))
+    ImageAnalysis.Builder()
         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST).build().apply {
             setAnalyzer(executor, analyzer)
         }

@@ -19,9 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,7 +43,6 @@ import dev.msartore.ares.viewmodels.ServerFinderViewModel
 
 @ExperimentalGetImage
 @Composable
-@OptIn(ExperimentalAnimationApi::class)
 fun ServerFinderUI(
     maxWidth: Dp, mainViewModel: MainViewModel, serverFinderViewModel: ServerFinderViewModel
 ) {
@@ -82,7 +79,7 @@ fun ServerFinderUI(
                                         key = {
                                             ipSearchData.ipList.list.elementAt(it).hashCode()
                                         }) {
-                                        ServerItem(IP = ipSearchData.ipList.list.elementAt(it).ip,
+                                        ServerItem(ip = ipSearchData.ipList.list.elementAt(it).ip,
                                             url = "http://${ipSearchData.ipList.list.elementAt(it).ip}:$port",
                                             openUrl = { url ->
                                                 mainViewModel.openUrl(url)

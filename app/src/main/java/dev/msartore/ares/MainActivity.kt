@@ -108,7 +108,8 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        registerReceiver(receiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) registerReceiver(receiver, filter, RECEIVER_EXPORTED)
+        else registerReceiver(receiver, filter)
 
         val getContent =
             registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
@@ -387,9 +388,9 @@ class MainActivity : ComponentActivity() {
             }
         }
         mainViewModel.client.close()
+        homeViewModel.onStopServerClick()
         networkCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
         unregisterReceiver(receiver)
-
         applicationContext.cleanCache()
     }
 }

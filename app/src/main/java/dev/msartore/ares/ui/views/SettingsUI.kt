@@ -4,8 +4,11 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -33,6 +37,7 @@ import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.SettingsItem
 import dev.msartore.ares.ui.compose.SettingsItemInput
 import dev.msartore.ares.ui.compose.SettingsItemSwitch
+import dev.msartore.ares.ui.compose.SettingsItemTimer
 import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.work
@@ -40,6 +45,7 @@ import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.SettingsViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
+
 @Composable
 @androidx.camera.core.ExperimentalGetImage
 fun SettingsUI(
@@ -128,6 +134,32 @@ fun SettingsUI(
                             item = serverAutoStartup,
                         ) {
                             work { save(Settings.Keys.ServerAutoStartup, serverAutoStartup) }
+                        }
+
+                        SettingsItemSwitch(
+                            title = stringResource(id = R.string.server_shutdown_timer),
+                            description = stringResource(id = R.string.server_shutdown_timer_description),
+                            icon = painterResource(id = R.drawable.arrow_move_left),
+                            item = mutableStateOf(millsToWait.value.isNotEmpty()),
+                        ) {
+                            millsToWait.value =
+                                if (millsToWait.value.isNotEmpty()) ""
+                                else "05:mm"
+                            work { save(Settings.Keys.MillsToWait, millsToWait) }
+                        }
+
+                        AnimatedVisibility(
+                            visible = millsToWait.value.isNotEmpty(),
+                        ) {
+                            SettingsItemTimer(
+                                title = stringResource(id = R.string.timer),
+                                description = stringResource(id = R.string.timer_description),
+                                icon = painterResource(id = R.drawable.clock_cancel),
+                                item = millsToWait,
+                            ) {
+                                millsToWait.value = it
+                                work { save(Settings.Keys.MillsToWait, millsToWait) }
+                            }
                         }
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {

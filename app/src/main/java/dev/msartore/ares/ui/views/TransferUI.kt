@@ -32,7 +32,7 @@ import dev.msartore.ares.viewmodels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TransferHistoryUI(
+fun TransferUI(
     mainViewModel: MainViewModel = viewModel()
 ) {
     val state = rememberLazyListState()

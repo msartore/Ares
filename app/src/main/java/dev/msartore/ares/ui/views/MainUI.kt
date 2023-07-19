@@ -167,7 +167,7 @@ fun MainUI(
                         }
 
                         MainPages.TRANSFERS -> {
-                            TransferHistoryUI(
+                            TransferUI(
                                 mainViewModel = mainViewModel
                             )
                         }

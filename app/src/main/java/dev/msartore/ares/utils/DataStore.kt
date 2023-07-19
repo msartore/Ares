@@ -20,3 +20,6 @@ suspend fun DataStore<Preferences>.readBool(key: String) =
 
 suspend fun DataStore<Preferences>.readInt(key: String) =
     data.map { it.toPreferences() }.first()[intPreferencesKey(key)]
+
+suspend fun DataStore<Preferences>.readString(key: String) =
+    data.map { it.toPreferences() }.first()[stringPreferencesKey(key)]

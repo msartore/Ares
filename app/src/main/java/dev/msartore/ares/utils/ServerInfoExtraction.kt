@@ -26,3 +26,17 @@ suspend fun serverInfoExtraction(
         }
     } else null
 }
+
+fun timeToMillis(timeString: String): Long {
+
+    if (timeString.isEmpty()) return 0
+
+    val parts = timeString.split(":")
+    val time = parts[0].toInt()
+
+    return when (val unit = parts[1]) {
+        "hr" -> time * 60 * 60 * 1000L
+        "mm" -> time * 60 * 1000L
+        else -> throw IllegalArgumentException("Invalid time unit: $unit")
+    }
+}

@@ -1,5 +1,6 @@
 package dev.msartore.ares.ui.theme
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -90,6 +91,7 @@ object Theme {
     var background = Rgb()
 }
 
+
 @Composable
 fun AresTheme(
     mainViewModel: MainViewModel,
@@ -99,18 +101,21 @@ fun AresTheme(
 ) {
     darkTheme = isSystemInDarkTheme()
     val systemUiController = rememberSystemUiController()
-    val colorScheme = when {
-        mainViewModel.settings?.isMaterialYouEnabled?.value == true && darkTheme -> dynamicDarkColorScheme(
-            LocalContext.current
-        )
+    val colorScheme =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            when {
+                mainViewModel.settings?.isMaterialYouEnabled?.value == true && darkTheme -> dynamicDarkColorScheme(
+                    LocalContext.current
+                )
 
-        mainViewModel.settings?.isMaterialYouEnabled?.value == true && !darkTheme -> dynamicLightColorScheme(
-            LocalContext.current
-        )
-
-        darkTheme -> DarkColors
-        else -> LightColors
-    }
+                mainViewModel.settings?.isMaterialYouEnabled?.value == true && !darkTheme -> dynamicLightColorScheme(
+                    LocalContext.current
+                )
+                darkTheme -> DarkColors
+                else -> LightColors
+            }
+        }
+        else if (darkTheme) DarkColors else LightColors
     val surfaceColor = colorScheme.surfaceColorAtElevation(3.dp)
 
     container.run {

@@ -120,4 +120,9 @@
     <string name="filter_by">Filtra per:</string>
     <string name="all">Tutti</string>
     <string name="transfers">Trasferimenti</string>
+    <string name="auto_turn_off">Spegnimento automatico</string>
+    <string name="server_shutdown_timer">Timer spegnimento server</string>
+    <string name="server_shutdown_timer_description">Spegnimento automatico del server dopo un periodo di tempo predefinito</string>
+    <string name="timer">Timer</string>
+    <string name="timer_description">Scegli l\'intervallo di tempo dopo il quale il server verrà chiuso automaticamente.</string>
 </resources>

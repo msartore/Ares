@@ -125,4 +125,9 @@
     <string name="filter_by">Filter by:</string>
     <string name="all">All</string>
     <string name="transfers">Transfers</string>
+    <string name="auto_turn_off">Auto turn off</string>
+    <string name="server_shutdown_timer">Server shutdown timer</string>
+    <string name="server_shutdown_timer_description">Automatically shut down the server after a predetermined time period</string>
+    <string name="timer">Timer</string>
+    <string name="timer_description">Choose the specific time duration after which the server will be automatically closed</string>
 </resources>

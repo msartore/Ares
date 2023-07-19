@@ -8,6 +8,8 @@ import androidx.datastore.preferences.core.Preferences
 import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.utils.readBool
 import dev.msartore.ares.utils.readInt
+import dev.msartore.ares.utils.readString
+import dev.msartore.ares.utils.timeToMillis
 import dev.msartore.ares.utils.write
 
 class Settings(
@@ -24,6 +26,7 @@ class Settings(
     var removeWifiRestriction: MutableState<Boolean> = mutableStateOf(false)
     var serverAutoStartup: MutableState<Boolean> = mutableStateOf(false)
     var requestBackgroundActivity: MutableState<Int> = mutableStateOf(0)
+    var millsToWait: MutableState<String> = mutableStateOf("")
 
     @androidx.camera.core.ExperimentalGetImage
     suspend fun update() {
@@ -34,11 +37,15 @@ class Settings(
         serverAutoStartup.value = dataStore.readBool(Keys.ServerAutoStartup.key) == true
         serverPortNumber.value = dataStore.readInt(Keys.ServerPortNumber.key) ?: port
         requestBackgroundActivity.value = dataStore.readInt(Keys.RequestBackgroundActivity.key) ?: 0
+        millsToWait.value = dataStore.readString(Keys.MillsToWait.key) ?: ""
         KtorService.KtorServer.port = serverPortNumber.value
+        KtorService.KtorServer.serverTimer.millsToWait = timeToMillis(millsToWait.value)
     }
 
+    @androidx.camera.core.ExperimentalGetImage
     suspend fun <T> save(key: Keys, value: MutableState<T>) {
         dataStore.write(key.key, value.value)
+        update()
     }
 
     enum class Keys(val key: String) {
@@ -48,6 +55,7 @@ class Settings(
         RemoveWifiRestriction("remove_wifi_restriction"),
         ServerAutoStartup("server_auto_startup"),
         MaterialYou("material_you"),
-        RequestBackgroundActivity("requestBackgroundActivity")
+        RequestBackgroundActivity("requestBackgroundActivity"),
+        MillsToWait("MillsToWait")
     }
 }

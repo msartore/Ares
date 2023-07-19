@@ -105,6 +105,19 @@ fun SettingsItemSwitch(
 }
 
 @Composable
+fun SettingsItemTimer(
+    title: String,
+    description: String? = null,
+    icon: Painter,
+    item: MutableState<String>,
+    onChange: (String) -> Unit
+) {
+    SettingsItem(title = title, description = description, icon = icon, onClick = {}) {
+        TimeDropdown(item, onChange)
+    }
+}
+
+@Composable
 fun SettingsItemInput(
     title: String,
     description: String? = null,

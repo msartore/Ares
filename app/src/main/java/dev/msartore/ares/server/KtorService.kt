@@ -11,8 +11,10 @@ import android.content.Intent
 import android.graphics.Color
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.CountDownTimer
 import android.os.Environment
 import android.os.PowerManager
+import android.util.Log
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.mutableStateOf
 import dev.msartore.ares.MainActivity
@@ -32,6 +34,7 @@ import dev.msartore.ares.server.KtorService.KtorServer.fileZip
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.KtorService.KtorServer.server
+import dev.msartore.ares.server.KtorService.KtorServer.serverTimer
 import dev.msartore.ares.ui.theme.Theme.background
 import dev.msartore.ares.ui.theme.Theme.container
 import dev.msartore.ares.ui.theme.Theme.darkTheme
@@ -116,6 +119,7 @@ class KtorService : Service() {
 
         var server: ApplicationEngine? = null
         var fileTransfer = FileTransfer()
+        val serverTimer: ServerTimer = ServerTimer()
     }
 
     override fun onBind(intent: Intent?) = null
@@ -152,6 +156,18 @@ class KtorService : Service() {
     @SuppressLint("WakelockTimeout")
     override fun onCreate() {
         super.onCreate()
+
+        serverTimer.run {
+            if (millsToWait > 0) {
+                timerScheduler = object : CountDownTimer(millsToWait, millsToWait) {
+                    override fun onTick(millisUntilFinished: Long) {}
+                    override fun onFinish() {
+                        stopSelf()
+                    }
+                }
+                timerScheduler?.start()
+            }
+        }
 
         val favIcon = getByteArrayFromDrawable(applicationContext, R.drawable.logo)
         val openNew = getByteArrayFromDrawable(
