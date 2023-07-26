@@ -41,6 +41,7 @@ import dev.msartore.ares.utils.isWideView
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.ServerFinderViewModel
 
+@OptIn(ExperimentalAnimationApi::class)
 @ExperimentalGetImage
 @Composable
 fun ServerFinderUI(
