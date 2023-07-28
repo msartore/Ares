@@ -87,14 +87,14 @@
     <string name="streaming">Streaming\n</string>
     <string name="upload">Upload</string>
     <string name="file_sent">file sent</string>
-    <string name="server_port">Server port</string>
+    <string name="server_port">Port</string>
     <string name="server_port_description">Set a custom port number in the range: 1024–49151</string>
     <string name="server_port_error">The port number must be in the range stated</string>
     <string name="experimental">Experimental</string>
     <string name="remove_wifi_restriction_title">Remove WIFI restriction</string>
     <string name="remove_wifi_restriction_description">Remove the Wi-Fi restriction to access all features without using a Wi-Fi connection.</string>
     <string name="files">Files</string>
-    <string name="server_auto_startup">Server auto startup</string>
+    <string name="server_auto_startup">Auto startup</string>
     <string name="server_auto_startup_description">Start the server when the app receive a file</string>
     <string name="ares" translatable="false">Ares</string>
     <string name="made_by">Made by</string>
@@ -126,7 +126,7 @@
     <string name="all">All</string>
     <string name="transfers">Transfers</string>
     <string name="auto_turn_off">Auto turn off</string>
-    <string name="server_shutdown_timer">Server shutdown timer</string>
+    <string name="server_shutdown_timer">Shutdown timer</string>
     <string name="server_shutdown_timer_description">Automatically shut down the server after a predetermined time period</string>
     <string name="timer">Timer</string>
     <string name="timer_description">Choose the specific time duration after which the server will be automatically closed</string>

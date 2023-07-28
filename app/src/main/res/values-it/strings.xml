@@ -86,14 +86,14 @@
     <string name="streaming">Streaming\n</string>
     <string name="upload">Carica</string>
     <string name="file_sent">file inviato</string>
-    <string name="server_port">Porta del server</string>
+    <string name="server_port">Porta</string>
     <string name="server_port_description">Imposta un numero di porta personalizzato in un intervallo: 1024–49151</string>
     <string name="server_port_error">Il numero di porta deve essere compreso nell\'intervallo indicato</string>
     <string name="experimental">Sperimentale</string>
     <string name="remove_wifi_restriction_title">Rimuovi la restrizione WIFI</string>
     <string name="remove_wifi_restriction_description">Rimuovi la restrizione Wi-Fi per accedere a tutte le funzionalità senza utilizzare una connessione Wi-Fi.</string>
     <string name="files">File</string>
-    <string name="server_auto_startup">Avvio automatico del server</string>
+    <string name="server_auto_startup">Avvio automatico</string>
     <string name="server_auto_startup_description">Avvia il server quando l\'app riceve un file</string>
     <string name="made_by">Creato da</string>
     <string name="text_input">Immissione di testo</string>
@@ -121,7 +121,7 @@
     <string name="all">Tutti</string>
     <string name="transfers">Trasferimenti</string>
     <string name="auto_turn_off">Spegnimento automatico</string>
-    <string name="server_shutdown_timer">Timer spegnimento server</string>
+    <string name="server_shutdown_timer">Timer spegnimento</string>
     <string name="server_shutdown_timer_description">Spegnimento automatico del server dopo un periodo di tempo predefinito</string>
     <string name="timer">Timer</string>
     <string name="timer_description">Scegli l\'intervallo di tempo dopo il quale il server verrà chiuso automaticamente.</string>
