@@ -16,6 +16,7 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.camera.core.ExperimentalGetImage
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -164,6 +165,7 @@ fun getByteArrayFromDrawable(context: Context, id: Int, color: Int? = null) =
         stream.toByteArray()
     }
 
+@ExperimentalGetImage
 suspend fun Context.filesDataHandler(isLoading: MutableStateFlow<Boolean>, uris: List<Uri>?) {
     val listFileSizeB = KtorService.KtorServer.concurrentMutableList.size.value
 

@@ -299,7 +299,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true)
+            if (!KtorService.KtorServer.isServerOn.value && mainViewModel.settings?.serverAutoStartup?.value == true && intent.type?.isNotEmpty() == true)
                 homeViewModel.onStartServerClick()
         }
 
