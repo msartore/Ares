@@ -14,7 +14,6 @@ import android.os.Build
 import android.os.CountDownTimer
 import android.os.Environment
 import android.os.PowerManager
-import android.util.Log
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.mutableStateOf
 import dev.msartore.ares.MainActivity
@@ -169,6 +168,8 @@ class KtorService : Service() {
             }
         }
 
+        val urlPattern = Regex("^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w .-]*)*/?$")
+        val httpPattern = Regex("^https?://.*$")
         val favIcon = getByteArrayFromDrawable(applicationContext, R.drawable.logo)
         val openNew = getByteArrayFromDrawable(
             applicationContext,
@@ -563,9 +564,21 @@ class KtorService : Service() {
                                                         }
                                                     }
                                                 } else {
-                                                    dt {
-                                                        +"$text"
+                                                    text?.let {
+                                                        if (it.lowercase().matches(urlPattern)) {
+                                                            dt {
+                                                                val hrefValue = if (it.matches(httpPattern)) it else "http://$it"
+                                                                a(href = hrefValue, target = "_blank") {
+                                                                    +it
+                                                                }
+                                                            }
+                                                        } else {
+                                                            dt {
+                                                                +it
+                                                            }
+                                                        }
                                                     }
+
                                                 }
                                             }
                                         }
