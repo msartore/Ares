@@ -13,7 +13,7 @@ fun encodeAsBitmap(
     desiredWidth: Int,
     desiredHeight: Int,
     format: BarcodeFormat = BarcodeFormat.QR_CODE
-): Bitmap? {
+): Bitmap {
     val hints: Hashtable<EncodeHintType, Any> = Hashtable<EncodeHintType, Any>(2).apply {
         this[EncodeHintType.CHARACTER_SET] = "UTF-8"
     }

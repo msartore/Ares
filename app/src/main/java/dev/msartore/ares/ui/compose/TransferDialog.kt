@@ -50,7 +50,10 @@ fun TransferDialog(
                 })
 
                 if (sizeTransferred.value > 0) LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth(), progress = sizeTransferred.value
+                    progress = {
+                        sizeTransferred.value
+                    },
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 else LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth()

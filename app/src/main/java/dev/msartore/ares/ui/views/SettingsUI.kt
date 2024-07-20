@@ -6,9 +6,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,7 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -43,8 +40,6 @@ import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.SettingsViewModel
-
-@OptIn(ExperimentalAnimationApi::class)
 
 @Composable
 @androidx.camera.core.ExperimentalGetImage
@@ -94,7 +89,7 @@ fun SettingsUI(
                             work { save(Settings.Keys.IPTimeout, ipTimeout) }
                         }
 
-                        Divider(
+                        HorizontalDivider(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 16.dp)
@@ -163,7 +158,7 @@ fun SettingsUI(
                         }
 
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                            Divider(
+                            HorizontalDivider(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 16.dp)
@@ -185,7 +180,7 @@ fun SettingsUI(
                             }
                         }
 
-                        Divider(
+                        HorizontalDivider(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 16.dp)
@@ -211,7 +206,7 @@ fun SettingsUI(
                         }
                     }
 
-                    Divider(
+                    HorizontalDivider(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp)
@@ -238,7 +233,7 @@ fun SettingsUI(
                     SettingsItem(title = stringResource(R.string.privacy_policy),
                         icon = painterResource(id = R.drawable.policy_24px),
                         onClick = {
-                            mainViewModel.openUrl("https://msartore.dev/ares/privacy/")
+                            mainViewModel.openUrl("https://msartore.dev/projects/ares/privacy")
                         })
 
                     SettingsItem(title = stringResource(id = R.string.illustrations_credit),
@@ -262,7 +257,7 @@ fun SettingsUI(
                     SettingsItem(title = stringResource(R.string.more_about_me),
                         icon = painterResource(id = R.drawable.favorite_24px),
                         onClick = {
-                            mainViewModel.openUrl("https://msartore.dev/#projects")
+                            mainViewModel.openUrl("https://msartore.dev/")
                         })
 
                     Column(
