@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -34,9 +33,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDismissState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -72,7 +72,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalPermissionsApi::class,
-    ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class
+    ExperimentalMaterial3Api::class
 )
 @ExperimentalGetImage
 @Composable
@@ -217,38 +217,37 @@ fun MainUI(
                     key = { mainViewModel.listFileDownload.list.elementAt(it).fileData?.uri ?: it }
                 ) { index ->
                     mainViewModel.let {
-                        val dismissState = rememberDismissState()
+                        val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
 
-                        LaunchedEffect(key1 = dismissState.currentValue) {
-                            if (dismissState.currentValue != DismissValue.Default) {
+                        LaunchedEffect(key1 = swipeToDismissBoxState.currentValue) {
+                            if (swipeToDismissBoxState.currentValue != SwipeToDismissBoxValue.Settled) {
                                 mainViewModel.run {
                                     onDismiss?.invoke(listFileDownload.list.elementAt(index))
                                 }
                             }
                         }
 
-                        if (dismissState.currentValue != DismissValue.DismissedToEnd) {
-                            SwipeToDismiss(
-                                state = dismissState,
-                                background = { },
-                                dismissContent = {
-                                    mainViewModel.run {
-                                        listFileDownload.list.elementAt(index).run {
-                                            SnackBarDownload(
-                                                modifier = Modifier
-                                                    .padding(bottom = 16.dp),
-                                                fileDownload = this,
-                                                onOpenFile = {
-                                                    onOpenFileDownload?.invoke(this)
-                                                },
-                                                onShareFile = {
-                                                    onShareFileDownload?.invoke(this)
-                                                }
-                                            )
-                                        }
+                        if (swipeToDismissBoxState.currentValue == SwipeToDismissBoxValue.Settled) {
+                            SwipeToDismissBox(
+                                state = swipeToDismissBoxState,
+                                backgroundContent = {}
+                            ) {
+                                mainViewModel.run {
+                                    listFileDownload.list.elementAt(index).run {
+                                        SnackBarDownload(
+                                            modifier = Modifier
+                                                .padding(bottom = 16.dp),
+                                            fileDownload = this,
+                                            onOpenFile = {
+                                                onOpenFileDownload?.invoke(this)
+                                            },
+                                            onShareFile = {
+                                                onShareFileDownload?.invoke(this)
+                                            }
+                                        )
                                     }
                                 }
-                            )
+                            }
                         }
                     }
                 }

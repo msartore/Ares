@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.graphics.Color
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -146,7 +147,8 @@ class KtorService : Service() {
                 .setSmallIcon(R.drawable.logo).setContentIntent(pendingIntent)
                 .setTicker(getText(R.string.ticker_text)).build()
 
-        startForeground(ONGOING_NOTIFICATION_ID, notification)
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) startForeground(ONGOING_NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        else startForeground(ONGOING_NOTIFICATION_ID, notification)
 
         return super.onStartCommand(intent, flags, startId)
     }
