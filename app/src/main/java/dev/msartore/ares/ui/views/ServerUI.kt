@@ -72,8 +72,8 @@ fun ServerUI(
                             serverInfo.ip, client = mainViewModel.client
                         )?.let { (version, list) ->
                             lowerVersion.value = (version.filter { it.isDigit() }.toIntOrNull()
-                                ?: 0) < (context.packageInfo().versionName.filter { it.isDigit() }
-                                .toIntOrNull() ?: 0)
+                                ?: 0) < (context.packageInfo().versionName?.filter { it.isDigit() }
+                                ?.toIntOrNull() ?: 0)
 
                             if (list.none { it.uuid == null }) serverFiles.addAll(list)
                             else error.value = true
@@ -152,7 +152,7 @@ fun ServerUI(
                         Box {
                             Icon(
                                 id = R.drawable.more_vert_24px,
-                                contentDescription = stringResource(id = androidx.compose.ui.R.string.dropdown_menu),
+                                contentDescription = stringResource(id = R.string.dropdown_menu),
                             ) {
                                 expanded.value = true
                             }

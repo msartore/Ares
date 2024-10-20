@@ -41,7 +41,7 @@ class NetworkCallback(
 
             cor {
                 networkInfo.bitmap.value =
-                    encodeAsBitmap("http://$ip:$port", 500, 500)?.asImageBitmap()
+                    encodeAsBitmap("http://$ip:$port", 500, 500).asImageBitmap()
             }
 
             ip

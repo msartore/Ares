@@ -13,6 +13,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.net.Uri
+import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
@@ -20,17 +21,25 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
@@ -40,27 +49,35 @@ import dev.msartore.ares.models.FileData
 import dev.msartore.ares.models.FileDownload
 import dev.msartore.ares.models.FileType
 import dev.msartore.ares.models.NetworkCallback
+import dev.msartore.ares.models.NetworkDiscoveryService
 import dev.msartore.ares.models.TransferFile
 import dev.msartore.ares.models.TransferFileType
 import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
+import dev.msartore.ares.server.ServerInfo
 import dev.msartore.ares.ui.compose.Dialog
+import dev.msartore.ares.ui.compose.Icon
+import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.ui.theme.AresTheme
+import dev.msartore.ares.ui.views.MainPages
 import dev.msartore.ares.ui.views.MainUI
 import dev.msartore.ares.utils.BackgroundPStatus
 import dev.msartore.ares.utils.Permissions
 import dev.msartore.ares.utils.checkForBackgroundPermission
 import dev.msartore.ares.utils.cleanCache
+import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.extractFileInformation
 import dev.msartore.ares.utils.filesDataHandler
-import dev.msartore.ares.utils.findServers
-import dev.msartore.ares.utils.isWideView
+import dev.msartore.ares.utils.getIpAndPort
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.HomeViewModel
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.ServerFinderViewModel
 import dev.msartore.ares.viewmodels.SettingsViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.runBlocking
 
 
@@ -77,13 +94,15 @@ class MainActivity : ComponentActivity() {
     private var receiver: BroadcastReceiver? = null
     private var activityManager: ActivityManager? = null
     private var powerManager: PowerManager? = null
+    private var networkDiscoveryService: NetworkDiscoveryService? = null
+    private val servers: MutableSharedFlow<NsdServiceInfo?> = MutableStateFlow(null)
+
 
     @SuppressLint("BatteryLife")
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
         val permissionStateList = mutableListOf(Manifest.permission.WAKE_LOCK)
 
         receiver = object : BroadcastReceiver() {
@@ -107,9 +126,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) registerReceiver(receiver, filter, RECEIVER_EXPORTED)
-        else registerReceiver(receiver, filter)
 
         val getContent =
             registerForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
@@ -138,6 +154,19 @@ class MainActivity : ComponentActivity() {
             work {
                 delay(500)
                 mainViewModel.backgroundPStatus.value = checkForBackgroundPermission(powerManager, activityManager, packageName)
+            }
+        }
+
+        cor {
+            servers.collectLatest {
+                if (it == null) serverFinderViewModel.clearServers()
+                else {
+                    getIpAndPort(it).let { pair ->
+                        pair.first?.let { ip ->
+                            serverFinderViewModel.addServer(ServerInfo(ip = ip, port = pair.second.toString()))
+                        }
+                    }
+                }
             }
         }
 
@@ -186,11 +215,6 @@ class MainActivity : ComponentActivity() {
                 work {
                     clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager?
                     pm = packageManager
-                    onFindServers = { s, n ->
-                        findServers(
-                            n, s, serverFinderViewModel.ipSearchData
-                        )
-                    }
                     downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager?
                     onOpenUrl = { url ->
                         runCatching {
@@ -303,23 +327,85 @@ class MainActivity : ComponentActivity() {
                 homeViewModel.onStartServerClick()
         }
 
-        setContent {
-            val isNavBarColorSet = remember { mutableStateOf(false) }
-            val resetStatusBarColor = remember { mutableStateOf({}) }
+        networkDiscoveryService = NetworkDiscoveryService(servers)
+        networkDiscoveryService?.createServices(applicationContext)
 
+        enableEdgeToEdge()
+        setContent {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                 permissionStateList.add(Manifest.permission.POST_NOTIFICATIONS)
 
             permissionState = rememberMultiplePermissionsState(permissions = permissionStateList)
 
             AresTheme(
-                changeStatusBarColor = resetStatusBarColor,
-                isNavBarColorSet = isNavBarColorSet,
                 mainViewModel = mainViewModel
             ) {
-                Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
-                ) {
+                val items = remember { listOf(MainPages.HOME, MainPages.SERVER_FINDER, MainPages.TRANSFERS, MainPages.SETTINGS) }
+                val selectedItem = remember { mutableStateOf(MainPages.HOME) }
+                val icon: @Composable (MainPages) -> Unit = { page ->
+
+                    if (page == MainPages.TRANSFERS) {
+                        BadgedBox(
+                            badge = {
+                                val count = mainViewModel.transferredFiles.count { !it.viewed.value }
+
+                                if (count > 0)
+                                    Badge {
+                                        TextAuto(text = count.toString())
+                                    }
+                            }
+                        ) {
+                            Icon(
+                                id = R.drawable.download_24px
+                            )
+                        }
+                    }
+                    else
+                        Icon(
+                            id = when (page) {
+                                MainPages.HOME -> {
+                                    if (selectedItem.value == page) R.drawable.home_filled_24px
+                                    else R.drawable.home_24px
+                                }
+
+                                MainPages.SERVER_FINDER -> {
+                                    if (selectedItem.value == page) R.drawable.wifi_find_filled_24px
+                                    else R.drawable.wifi_find_24px
+                                }
+
+                                else -> {
+                                    if (selectedItem.value == page) R.drawable.settings_filled_24px
+                                    else R.drawable.settings_24px
+                                }
+                            }, contentDescription = stringResource(id = page.stringId)
+                        )
+                }
+                val onClick: (MainPages) -> Unit = { page ->
+                    if (selectedItem.value != page) selectedItem.value = page
+                }
+
+                NavigationSuiteScaffold(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    navigationSuiteColors = NavigationSuiteDefaults.colors(
+                        navigationBarContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        navigationRailContentColor = MaterialTheme.colorScheme.secondaryContainer,
+                        navigationDrawerContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                    navigationSuiteItems = {
+                        items.forEach { item ->
+                            item(
+                                icon = {
+                                    icon(item)
+                                },
+                                label = { Text(stringResource(item.stringId)) },
+                                selected = selectedItem.value == item,
+                                onClick = { onClick(item) }
+                            )
+                        }
+                    },
+                )  {
                     Permissions(permissionState = permissionState,
                         settingsStringId = R.string.notification_permission_rejected_text,
                         requestStringId = R.string.notification_permission_request_text,
@@ -331,12 +417,11 @@ class MainActivity : ComponentActivity() {
                             BoxWithConstraints {
                                 val maxWidth = this.maxWidth
 
-                                isNavBarColorSet.value = !maxWidth.isWideView()
-
                                 MainUI(
                                     navigateToSettingsScreen = navigateToSettingsScreen,
                                     mainViewModel = mainViewModel,
-                                    maxWidth = maxWidth
+                                    maxWidth = maxWidth,
+                                    selectedItem = selectedItem
                                 )
                             }
                         })
@@ -373,15 +458,24 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     override fun onResume() {
         super.onResume()
+        val filter = IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE)
+
         work {
             mainViewModel.backgroundPStatus.value = checkForBackgroundPermission(powerManager, activityManager, packageName)
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(receiver, filter, RECEIVER_EXPORTED)
+        }
+        else {
+            registerReceiver(receiver, filter)
         }
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         KtorService.KtorServer.run {
             fileTransfer.run {
                 if (file?.exists() == true) file?.delete()
@@ -392,5 +486,7 @@ class MainActivity : ComponentActivity() {
         networkCallback?.let { connectivityManager?.unregisterNetworkCallback(it) }
         unregisterReceiver(receiver)
         applicationContext.cleanCache()
+        networkDiscoveryService?.tearDown()
+        super.onDestroy()
     }
 }

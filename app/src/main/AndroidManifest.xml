@@ -8,9 +8,6 @@
     <uses-feature
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
-    <uses-permission
-        android:name="${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-        tools:node="remove" />
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -35,7 +32,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:targetApi="33">
+        tools:targetApi="35">
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
@@ -61,6 +58,13 @@
                 <data android:mimeType="*/*" />
             </intent-filter>
         </activity>
+        <receiver
+            android:name=".MainActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
+            </intent-filter>
+        </receiver>
         <service
             android:name=".server.KtorService"
             android:foregroundServiceType="dataSync"

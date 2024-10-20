@@ -374,14 +374,16 @@ class KtorService : Service() {
                     }
                 }
                 get("/info") {
-                    call.respond(
-                        APIData(
-                            collection = concurrentMutableList.list.map { fileData ->
-                                fileData.toFileDataJson()
-                            }.toJsonArray(),
-                            appVersion = applicationContext.packageInfo().versionName
-                        ).toJson()
-                    )
+                    applicationContext.packageInfo().versionName?.let {
+                        call.respond(
+                            APIData(
+                                collection = concurrentMutableList.list.map { fileData ->
+                                    fileData.toFileDataJson()
+                                }.toJsonArray(),
+                                appVersion = it
+                            ).toJson()
+                        )
+                    }
                 }
                 post("/upload") {
                     fileTransfer.pipelineContext = this
@@ -537,7 +539,7 @@ class KtorService : Service() {
                                     +getString(R.string.download_all)
                                 }
                             ol {
-                                for (i in 0 until concurrentMutableList.size.value) {
+                                for (i in 0 until concurrentMutableList.size.intValue) {
                                     concurrentMutableList.list.elementAt(i).run {
                                         li(classes = "file") {
                                             dl {

@@ -28,7 +28,7 @@ import dev.msartore.ares.ui.compose.Icon
 @Composable
 fun CameraUI(
     visibility: MutableState<Boolean>,
-    onQRFound: ((String) -> Unit)? = null,
+    onQRFound: ((String, String) -> Unit)? = null,
 ) {
     val isFlashEnabled = remember { mutableStateOf(false) }
     val cameraControl = remember { mutableStateOf<CameraControl?>(null) }

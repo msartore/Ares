@@ -95,12 +95,10 @@ object Theme {
 @Composable
 fun AresTheme(
     mainViewModel: MainViewModel,
-    changeStatusBarColor: MutableState<() -> Unit>,
-    isNavBarColorSet: MutableState<Boolean>,
     content: @Composable () -> Unit
 ) {
     darkTheme = isSystemInDarkTheme()
-    val systemUiController = rememberSystemUiController()
+
     val colorScheme =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             when {
@@ -130,21 +128,7 @@ fun AresTheme(
         r = colorScheme.background.red * 255
     }
 
-    changeStatusBarColor.value = {
-        systemUiController.setSystemBarsColor(
-            color = colorScheme.background, darkIcons = !darkTheme
-        )
-    }
-
     cor { mainViewModel.isDarkTheme.emit(darkTheme) }
-
-    systemUiController.setSystemBarsColor(
-        color = colorScheme.background, darkIcons = !darkTheme
-    )
-
-    if (isNavBarColorSet.value) systemUiController.setNavigationBarColor(
-        color = colorScheme.surfaceColorAtElevation(3.dp), darkIcons = !darkTheme
-    )
 
     MaterialTheme(
         colorScheme = colorScheme, typography = AppTypography, content = content

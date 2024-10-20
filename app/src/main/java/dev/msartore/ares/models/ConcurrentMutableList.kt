@@ -1,11 +1,12 @@
 package dev.msartore.ares.models
 
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import java.util.concurrent.ConcurrentLinkedQueue
 
 class ConcurrentMutableList<T> {
     val list = ConcurrentLinkedQueue<T>()
-    val size = mutableStateOf(list.size)
+    val size = mutableIntStateOf(list.size)
     var version = 0
 
     private fun updateSize() {

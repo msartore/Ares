@@ -2,6 +2,7 @@ package dev.msartore.ares.models
 
 import android.os.Build
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -19,13 +20,13 @@ class Settings(
     private val port = 7070
 
     var findServersAtStart: MutableState<Boolean> = mutableStateOf(false)
-    var ipTimeout: MutableState<Int> = mutableStateOf(timeout)
+    var ipTimeout: MutableState<Int> = mutableIntStateOf(timeout)
     var isMaterialYouEnabled: MutableState<Boolean> =
         mutableStateOf(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-    var serverPortNumber: MutableState<Int> = mutableStateOf(port)
+    var serverPortNumber: MutableState<Int> = mutableIntStateOf(port)
     var removeWifiRestriction: MutableState<Boolean> = mutableStateOf(false)
     var serverAutoStartup: MutableState<Boolean> = mutableStateOf(false)
-    var requestBackgroundActivity: MutableState<Int> = mutableStateOf(0)
+    var requestBackgroundActivity: MutableState<Int> = mutableIntStateOf(0)
     var millsToWait: MutableState<String> = mutableStateOf("")
 
     @androidx.camera.core.ExperimentalGetImage

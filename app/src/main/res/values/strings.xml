@@ -130,4 +130,5 @@
     <string name="server_shutdown_timer_description">Automatically shut down the server after a predetermined time period</string>
     <string name="timer">Timer</string>
     <string name="timer_description">Choose the specific time duration after which the server will be automatically closed</string>
+    <string name="dropdown_menu" translatable="false">Dropdown menu</string>
 </resources>

@@ -53,7 +53,6 @@ class MainViewModel : ViewModel() {
     var settings: Settings? = null
     var onOpenUrl: ((String) -> Unit)? = null
     var downloadManager: DownloadManager? = null
-    var onFindServers: ((NetworkInfo, Settings?) -> Unit)? = null
     var backgroundPStatus: MutableState<BackgroundPStatus?> = mutableStateOf(null)
     var onBackgroundClick: (() -> Unit)? = null
 
@@ -65,11 +64,6 @@ class MainViewModel : ViewModel() {
         }
 
         settings?.update()
-
-        if (settings?.findServersAtStart?.value == true) onFindServers?.invoke(
-            networkInfo,
-            settings
-        )
     }
 
     fun copyText(label: String, string: String) {

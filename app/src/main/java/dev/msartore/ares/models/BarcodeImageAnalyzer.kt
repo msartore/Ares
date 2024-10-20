@@ -11,7 +11,7 @@ import dev.msartore.ares.utils.isValidServerIP
 
 @ExperimentalGetImage
 class BarcodeImageAnalyzer(
-    private val onQRFound: ((String) -> Unit)? = null,
+    private val onQRFound: ((String, String) -> Unit)? = null,
 ) : ImageAnalysis.Analyzer {
     private var isIPFound = false
     private val scanner = BarcodeScanning.getClient(
@@ -33,10 +33,10 @@ class BarcodeImageAnalyzer(
                             Barcode.TYPE_URL -> {
                                 barcode.url?.url.toString().let {
 
-                                    it.substring(7, it.length - 5).let { ip ->
-                                        if (isValidServerIP(ip) && !isIPFound) {
+                                    it.substring(7).split(":").let { server ->
+                                        if (isValidServerIP(server[0]) && !isIPFound) {
                                             isIPFound = true
-                                            onQRFound?.invoke(ip)
+                                            onQRFound?.invoke(server[0], server[1])
                                             return@addOnSuccessListener
                                         }
                                     }

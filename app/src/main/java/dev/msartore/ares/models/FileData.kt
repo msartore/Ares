@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.CountDownTimer
 import androidx.annotation.Keep
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import dev.msartore.ares.utils.cor
@@ -61,7 +62,7 @@ data class FileDownload(
 class FileTransfer(
     var pipelineContext: PipelineContext<Unit, ApplicationCall>? = null,
     val status: MutableState<FileTransferStages> = mutableStateOf(FileTransferStages.INACTIVE),
-    var sizeTransferred: MutableState<Float> = mutableStateOf(0f),
+    var sizeTransferred: MutableState<Float> = mutableFloatStateOf(0f),
     var size: Int? = null,
     var name: MutableState<String> = mutableStateOf(""),
     var onFileTransferred: ((File) -> Unit)? = null,
