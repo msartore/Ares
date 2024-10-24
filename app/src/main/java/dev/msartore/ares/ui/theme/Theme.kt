@@ -114,6 +114,7 @@ fun AresTheme(
             }
         }
         else if (darkTheme) DarkColors else LightColors
+
     val surfaceColor = colorScheme.surfaceColorAtElevation(3.dp)
 
     container.run {

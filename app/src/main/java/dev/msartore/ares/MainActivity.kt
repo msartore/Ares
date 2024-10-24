@@ -25,6 +25,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.camera.core.ExperimentalGetImage
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -32,6 +33,7 @@ import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
@@ -41,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.window.core.layout.WindowWidthSizeClass
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -383,11 +386,14 @@ class MainActivity : ComponentActivity() {
                 val onClick: (MainPages) -> Unit = { page ->
                     if (selectedItem.value != page) selectedItem.value = page
                 }
+                var maxWidth = remember { mutableStateOf(0.dp) }
+                val adaptiveInfo = currentWindowAdaptiveInfo()
 
                 NavigationSuiteScaffold(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp),
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(if (adaptiveInfo.windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.EXPANDED) 16.dp else 0.dp),
                     navigationSuiteColors = NavigationSuiteDefaults.colors(
                         navigationBarContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                         navigationRailContentColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -415,12 +421,12 @@ class MainActivity : ComponentActivity() {
                         },
                         onPermissionGranted = {
                             BoxWithConstraints {
-                                val maxWidth = this.maxWidth
+                                maxWidth.value = this.maxWidth
 
                                 MainUI(
                                     navigateToSettingsScreen = navigateToSettingsScreen,
                                     mainViewModel = mainViewModel,
-                                    maxWidth = maxWidth,
+                                    maxWidth = maxWidth.value,
                                     selectedItem = selectedItem
                                 )
                             }

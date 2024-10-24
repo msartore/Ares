@@ -70,7 +70,6 @@ import dev.msartore.ares.viewmodels.HomeViewModel
 import dev.msartore.ares.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalComposeUiApi::class)
 @ExperimentalGetImage
 @Composable
 fun HomeUI(
@@ -85,7 +84,6 @@ fun HomeUI(
     val homeUIContent1: @Composable (Modifier) -> Unit = { modifier ->
         Column(
             modifier = modifier
-                .padding(top = 16.dp)
                 .verticalScroll(home1State),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {

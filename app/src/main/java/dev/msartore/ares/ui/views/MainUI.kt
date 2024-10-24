@@ -85,6 +85,7 @@ fun MainUI(
                 .padding(
                     16.dp
                 )
+                .padding(top = 16.dp)
         ) {
             transition.AnimatedContent {
                 Column {

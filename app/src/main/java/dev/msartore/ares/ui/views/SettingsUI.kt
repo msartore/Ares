@@ -57,7 +57,6 @@ fun SettingsUI(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     TextAuto(
-                        modifier = Modifier.padding(top = 16.dp),
                         id = R.string.settings,
                         style = MaterialTheme.typography.displaySmall,
                     )
