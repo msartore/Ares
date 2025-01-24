@@ -19,7 +19,6 @@ class Settings(
     private val timeout = 300
     private val port = 7070
 
-    var findServersAtStart: MutableState<Boolean> = mutableStateOf(false)
     var ipTimeout: MutableState<Int> = mutableIntStateOf(timeout)
     var isMaterialYouEnabled: MutableState<Boolean> =
         mutableStateOf(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
@@ -31,7 +30,6 @@ class Settings(
 
     @androidx.camera.core.ExperimentalGetImage
     suspend fun update() {
-        findServersAtStart.value = dataStore.readBool(Keys.FindServersAtStart.key) == true
         ipTimeout.value = dataStore.readInt(Keys.IPTimeout.key) ?: timeout
         isMaterialYouEnabled.value = dataStore.readBool(Keys.MaterialYou.key) == true
         removeWifiRestriction.value = dataStore.readBool(Keys.RemoveWifiRestriction.key) == true
@@ -50,7 +48,6 @@ class Settings(
     }
 
     enum class Keys(val key: String) {
-        FindServersAtStart("find_servers_at_start"),
         ServerPortNumber("server_port_number"),
         IPTimeout("ip_timeout"),
         RemoveWifiRestriction("remove_wifi_restriction"),

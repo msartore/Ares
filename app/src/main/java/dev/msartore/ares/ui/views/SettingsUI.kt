@@ -70,15 +70,6 @@ fun SettingsUI(
                     )
 
                     mainViewModel.settings?.run {
-                        SettingsItemSwitch(
-                            title = stringResource(id = R.string.find_servers),
-                            description = stringResource(id = R.string.find_servers_description),
-                            icon = painterResource(id = R.drawable.device_mobile_search),
-                            item = findServersAtStart,
-                        ) {
-                            work { save(Settings.Keys.FindServersAtStart, findServersAtStart) }
-                        }
-
                         SettingsItemInput(
                             title = stringResource(id = R.string.ip_timeout),
                             description = stringResource(id = R.string.ip_timeout_description),
