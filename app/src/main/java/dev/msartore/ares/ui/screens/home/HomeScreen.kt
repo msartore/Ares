@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.home
+package dev.msartore.ares.ui.screens.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

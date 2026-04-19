@@ -39,8 +39,8 @@ import dev.msartore.ares.models.NetworkCallback
 import dev.msartore.ares.models.NetworkDiscoveryService
 import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
-import dev.msartore.ares.ui.main.MainEvent
-import dev.msartore.ares.ui.main.MainSideEffect
+import dev.msartore.ares.ui.screens.main.MainEvent
+import dev.msartore.ares.ui.screens.main.MainSideEffect
 import dev.msartore.ares.ui.navigation.AresNavHost
 import dev.msartore.ares.ui.theme.AresTheme
 import dev.msartore.ares.utils.BackgroundPStatus

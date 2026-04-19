@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.home
+package dev.msartore.ares.ui.screens.home
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.msartore.ares.base.MviViewModel

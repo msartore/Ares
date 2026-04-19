@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.views
+package dev.msartore.ares.ui.components.views
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.rememberScrollState

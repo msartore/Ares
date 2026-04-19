@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.serverFinder
+package dev.msartore.ares.ui.screens.serverFinder
 
 import android.net.nsd.NsdServiceInfo
 import androidx.activity.compose.BackHandler
@@ -29,12 +29,12 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dev.msartore.ares.R
 import dev.msartore.ares.server.ServerInfo
-import dev.msartore.ares.ui.compose.DialogContainer
-import dev.msartore.ares.ui.compose.TextAuto
-import dev.msartore.ares.ui.views.CameraUI
-import dev.msartore.ares.ui.views.ServerFinderUI
+import dev.msartore.ares.ui.components.DialogContainer
+import dev.msartore.ares.ui.components.TextAuto
+import dev.msartore.ares.ui.components.views.CameraUI
 import dev.msartore.ares.utils.Permissions
 import dev.msartore.ares.utils.getIpAndPort
+import dev.msartore.ares.utils.pingServer
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
 import io.ktor.client.HttpClient
@@ -108,7 +108,7 @@ fun ServerFinderDestination(
                         isPingingServer.value = true
                         work {
                             runCatching {
-                                mainViewModel.settings?.pingServer(ip, 2000)
+                                mainViewModel.settings.pingServer(ip, 2000)
                                 viewModel.onEvent(ServerFinderEvent.ServerDiscovered(ServerInfo(ip = ip, port = port)))
                             }.onFailure {
                                 errorStatusDialog.value = true

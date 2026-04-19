@@ -1,7 +1,8 @@
-package dev.msartore.ares.ui.serverFinder
+package dev.msartore.ares.ui.screens.serverFinder
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.msartore.ares.base.MviViewModel
 import dev.msartore.ares.models.QrReadingProcess
@@ -12,8 +13,8 @@ import javax.inject.Inject
 class ServerFinderViewModel @Inject constructor() : MviViewModel<ServerFinderState, ServerFinderEvent, ServerFinderSideEffect>(ServerFinderState()) {
 
     val qrReadingProcess = QrReadingProcess()
-    var currentRotation by mutableFloatStateOf(0f)
-    val rotation = Animatable(currentRotation)
+    var currentRotation: MutableState<Float> = mutableStateOf(0f)
+    val rotation = Animatable(0f)
 
     override suspend fun reduce(event: ServerFinderEvent) {
         when (event) {

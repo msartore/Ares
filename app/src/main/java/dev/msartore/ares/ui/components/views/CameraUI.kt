@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.views
+package dev.msartore.ares.ui.components.views
 
 import androidx.camera.core.CameraControl
 import androidx.compose.foundation.background

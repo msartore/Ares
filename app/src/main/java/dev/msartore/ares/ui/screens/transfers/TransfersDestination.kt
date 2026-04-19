@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.transfers
+package dev.msartore.ares.ui.screens.transfers
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

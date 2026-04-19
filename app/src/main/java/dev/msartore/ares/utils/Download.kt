@@ -5,11 +5,12 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import dev.msartore.ares.R
+import androidx.core.net.toUri
 
 fun DownloadManager.downloadFile(
     url: String, fileName: String, mimeType: String?, context: Context
 ): Long {
-    val request = DownloadManager.Request(Uri.parse(url))
+    val request = DownloadManager.Request(url.toUri())
 
     request.run {
         setAllowedOverRoaming(false)

@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.transfers
+package dev.msartore.ares.ui.screens.transfers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,10 +28,10 @@ import androidx.lifecycle.viewmodel.compose.*
 import dev.msartore.ares.R
 import dev.msartore.ares.models.TransferFile
 import dev.msartore.ares.models.TransferFileType
-import dev.msartore.ares.ui.compose.ExpandableCard
-import dev.msartore.ares.ui.compose.Icon
-import dev.msartore.ares.ui.compose.TextAuto
-import dev.msartore.ares.ui.home.MainEvent
+import dev.msartore.ares.ui.components.ExpandableCard
+import dev.msartore.ares.ui.components.Icon
+import dev.msartore.ares.ui.components.TextAuto
+import dev.msartore.ares.ui.screens.main.MainEvent
 import dev.msartore.ares.viewmodels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)

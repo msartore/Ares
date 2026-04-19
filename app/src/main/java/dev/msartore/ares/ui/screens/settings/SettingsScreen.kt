@@ -1,5 +1,6 @@
-package dev.msartore.ares.ui.settings
+package dev.msartore.ares.ui.screens.settings
 
+import android.widget.Toast.makeText
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,12 +25,14 @@ import androidx.compose.ui.unit.sp
 import dev.msartore.ares.R
 import dev.msartore.ares.models.Settings
 import dev.msartore.ares.server.KtorService
-import dev.msartore.ares.ui.compose.SettingsItem
-import dev.msartore.ares.ui.compose.SettingsItemInput
-import dev.msartore.ares.ui.compose.SettingsItemSwitch
-import dev.msartore.ares.ui.compose.SettingsItemTimer
-import dev.msartore.ares.ui.compose.TextAuto
-import dev.msartore.ares.ui.views.LicenseUI
+import dev.msartore.ares.ui.components.SettingsItem
+import dev.msartore.ares.ui.components.SettingsItemInput
+import dev.msartore.ares.ui.components.SettingsItemSwitch
+import dev.msartore.ares.ui.components.SettingsItemTimer
+import dev.msartore.ares.ui.components.TextAuto
+import dev.msartore.ares.ui.components.Icon
+import dev.msartore.ares.ui.components.views.LicenseUI
+
 import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
@@ -95,7 +98,7 @@ internal fun SettingsScreen(
                         onCheck = {
                             if ((it.toIntOrNull() ?: 0) in 1024..49151) true
                             else {
-                                android.widget.Toast.makeText(
+                                makeText(
                                     context,
                                     context.getString(R.string.server_port_error),
                                     android.widget.Toast.LENGTH_SHORT
@@ -280,7 +283,7 @@ internal fun SettingsScreen(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    dev.msartore.ares.ui.compose.Icon(
+                    Icon(
                         painter = painterResource(id = R.drawable.arrow_back_24px),
                         contentDescription = stringResource(id = R.string.back),
                     ) {

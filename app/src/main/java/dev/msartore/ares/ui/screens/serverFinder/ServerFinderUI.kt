@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.serverFinder
+package dev.msartore.ares.ui.screens.serverFinder
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
@@ -29,10 +29,11 @@ import android.content.pm.PackageManager
 import androidx.compose.ui.platform.LocalContext
 import dev.msartore.ares.R
 import dev.msartore.ares.server.KtorService.KtorServer.port
-import dev.msartore.ares.ui.compose.CardIcon
-import dev.msartore.ares.ui.compose.ServerItem
-import dev.msartore.ares.ui.compose.TextAuto
-import dev.msartore.ares.ui.home.MainEvent
+import dev.msartore.ares.ui.components.CardIcon
+import dev.msartore.ares.ui.components.ServerItem
+import dev.msartore.ares.ui.components.TextAuto
+import dev.msartore.ares.ui.components.views.ServerUI
+import dev.msartore.ares.ui.screens.main.MainEvent
 import dev.msartore.ares.viewmodels.MainViewModel
 
 @Composable
@@ -80,7 +81,7 @@ fun ServerFinderUI(
                                             mainViewModel.onEvent(MainEvent.UrlOpened(url))
                                         }) {
                                             serverFinderViewModel.onEvent(ServerFinderEvent.ServerSelected(server))
-                                    }
+                                        }
                                 }
                             }
                         }
@@ -142,7 +143,7 @@ fun ServerFinderUI(
 
                 ServerFinderPages.SERVER -> {
                     serverFinderViewModel.state.value.serverSelected?.let { serverInfo ->
-                        dev.msartore.ares.ui.views.ServerUI(
+                        ServerUI(
                             serverInfo = serverInfo,
                             mainViewModel = mainViewModel,
                             serverFinderViewModel = serverFinderViewModel

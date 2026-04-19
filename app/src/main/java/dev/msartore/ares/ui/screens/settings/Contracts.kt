@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.settings
+package dev.msartore.ares.ui.screens.settings
 
 import dev.msartore.ares.base.UiEvent
 import dev.msartore.ares.base.UiSideEffect

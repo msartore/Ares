@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.serverFinder
+package dev.msartore.ares.ui.screens.serverFinder
 
 import dev.msartore.ares.base.UiEvent
 import dev.msartore.ares.base.UiSideEffect

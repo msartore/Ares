@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.settings
+package dev.msartore.ares.ui.screens.settings
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
