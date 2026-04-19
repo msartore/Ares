@@ -84,4 +84,7 @@ lint/tmp/
 keystore.properties
 
 .idea/
+/docs/mvi-migration/
+/CLAUDE.md
+/nul
 docs/mvi-migration
