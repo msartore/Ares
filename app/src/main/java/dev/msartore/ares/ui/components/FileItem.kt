@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.compose
+package dev.msartore.ares.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

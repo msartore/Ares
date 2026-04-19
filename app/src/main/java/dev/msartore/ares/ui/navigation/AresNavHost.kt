@@ -49,11 +49,11 @@ import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.SnackBarDownload
 import dev.msartore.ares.ui.compose.TextAuto
 import dev.msartore.ares.ui.compose.TransferDialog
-import dev.msartore.ares.ui.destinations.HomeDestination
-import dev.msartore.ares.ui.destinations.MainEvent
-import dev.msartore.ares.ui.destinations.ServerFinderDestination
-import dev.msartore.ares.ui.destinations.SettingsDestination
-import dev.msartore.ares.ui.destinations.TransfersDestination
+import dev.msartore.ares.ui.home.HomeDestination
+import dev.msartore.ares.ui.main.MainEvent
+import dev.msartore.ares.ui.serverFinder.ServerFinderDestination
+import dev.msartore.ares.ui.settings.SettingsDestination
+import dev.msartore.ares.ui.transfers.TransfersDestination
 import dev.msartore.ares.viewmodels.MainViewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow

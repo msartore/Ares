@@ -39,8 +39,8 @@ import dev.msartore.ares.models.NetworkCallback
 import dev.msartore.ares.models.NetworkDiscoveryService
 import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
-import dev.msartore.ares.ui.destinations.MainEvent
-import dev.msartore.ares.ui.destinations.MainSideEffect
+import dev.msartore.ares.ui.main.MainEvent
+import dev.msartore.ares.ui.main.MainSideEffect
 import dev.msartore.ares.ui.navigation.AresNavHost
 import dev.msartore.ares.ui.theme.AresTheme
 import dev.msartore.ares.utils.BackgroundPStatus
@@ -242,7 +242,7 @@ class MainActivity : ComponentActivity() {
                     }
                 )
 
-                dev.msartore.ares.ui.compose.Dialog(
+                dev.msartore.ares.ui.components.Dialog(
                     status = isBackgroundDialogVisible,
                     title = getString(R.string.permission_request),
                     text = getString(R.string.background_permission_restriction_description),

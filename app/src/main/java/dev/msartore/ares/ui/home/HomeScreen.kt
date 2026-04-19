@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.screens
+package dev.msartore.ares.ui.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,7 +42,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -55,14 +54,12 @@ import dev.msartore.ares.models.FileType
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.port
-import dev.msartore.ares.ui.compose.DialogContainer
-import dev.msartore.ares.ui.compose.ExpandableCard
-import dev.msartore.ares.ui.compose.FileItem
-import dev.msartore.ares.ui.compose.Icon
-import dev.msartore.ares.ui.compose.IconCard
-import dev.msartore.ares.ui.compose.TextAuto
-import dev.msartore.ares.ui.destinations.HomeEvent
-import dev.msartore.ares.ui.destinations.HomeState
+import dev.msartore.ares.ui.components.DialogContainer
+import dev.msartore.ares.ui.components.ExpandableCard
+import dev.msartore.ares.ui.components.FileItem
+import dev.msartore.ares.ui.components.Icon
+import dev.msartore.ares.ui.components.IconCard
+import dev.msartore.ares.ui.components.TextAuto
 import dev.msartore.ares.utils.BackgroundPStatus
 import dev.msartore.ares.utils.isWideView
 import dev.msartore.ares.utils.shareText
@@ -133,84 +130,84 @@ fun HomeScreen(
                             }
                         )
                     }
-                }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    mainViewModel.networkInfo.run {
-                        if (isNetworkAvailable.value && (isWifiNetwork.value || settings?.removeWifiRestriction?.value == true)) {
-                            if (isServerOn.value) {
-                                if (mainViewModel.networkInfo.bitmap.value != null) {
-                                    IconCard(
-                                        id = R.drawable.qr_code_2_24px,
-                                        contentDescription = stringResource(id = R.string.qr_code)
-                                    ) {
-                                        mainViewModel.qrCodeDialog.value = true
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        mainViewModel.networkInfo.run {
+                            if (isNetworkAvailable.value && (isWifiNetwork.value || settings?.removeWifiRestriction?.value == true)) {
+                                if (isServerOn.value) {
+                                    if (mainViewModel.networkInfo.bitmap.value != null) {
+                                        IconCard(
+                                            id = R.drawable.qr_code_2_24px,
+                                            contentDescription = stringResource(id = R.string.qr_code)
+                                        ) {
+                                            mainViewModel.qrCodeDialog.value = true
+                                        }
+
+                                        Spacer(modifier = Modifier.width(8.dp))
                                     }
 
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                    IconCard(
+                                        id = R.drawable.share_24px,
+                                        contentDescription = stringResource(id = R.string.share)
+                                    ) {
+                                        mainViewModel.run {
+                                            context.shareText("http://${networkInfo.ipAddress.value}:$port")
+                                        }
+                                    }
                                 }
+
+                                Spacer(modifier = Modifier.width(8.dp))
 
                                 IconCard(
-                                    id = R.drawable.share_24px,
-                                    contentDescription = stringResource(id = R.string.share)
+                                    id = if (isServerOn.value) R.drawable.stop_circle_24px else R.drawable.power_rounded_24px,
+                                    contentDescription = if (isServerOn.value) stringResource(id = R.string.stop_server) else stringResource(
+                                        id = R.string.start_server
+                                    )
                                 ) {
-                                    mainViewModel.run {
-                                        context.shareText("http://${networkInfo.ipAddress.value}:$port")
-                                    }
+                                    if (isServerOn.value) onEvent(HomeEvent.StopServerClicked)
+                                    else onEvent(HomeEvent.StartServerClicked)
                                 }
-                            }
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            IconCard(
-                                id = if (isServerOn.value) R.drawable.stop_circle_24px else R.drawable.power_rounded_24px,
-                                contentDescription = if (isServerOn.value) stringResource(id = R.string.stop_server) else stringResource(
-                                    id = R.string.start_server
-                                )
-                            ) {
-                                if (isServerOn.value) onEvent(HomeEvent.StopServerClicked)
-                                else onEvent(HomeEvent.StartServerClicked)
                             }
                         }
                     }
-                }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                mainViewModel.backgroundPStatus.run {
-                    if (value == BackgroundPStatus.NOT_OPTIMIZED || value == BackgroundPStatus.RESTRICTED) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(16.dp))
-                                .border(
-                                    2.dp,
-                                    MaterialTheme.colorScheme.onErrorContainer,
-                                    RoundedCornerShape(16.dp)
-                                )
-                                .background(MaterialTheme.colorScheme.errorContainer)
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            TextAuto(
-                                modifier = Modifier.weight(2f),
-                                id = R.string.background_permission_restriction_error,
-                                maxLines = Int.MAX_VALUE
-                            )
-
-                            Button(
-                                modifier = Modifier.weight(1f),
-                                onClick = onBackgroundClick,
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onErrorContainer)
+                    mainViewModel.backgroundPStatus.run {
+                        if (value == BackgroundPStatus.NOT_OPTIMIZED || value == BackgroundPStatus.RESTRICTED) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .border(
+                                        2.dp,
+                                        MaterialTheme.colorScheme.onErrorContainer,
+                                        RoundedCornerShape(16.dp)
+                                    )
+                                    .background(MaterialTheme.colorScheme.errorContainer)
+                                    .padding(8.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                TextAuto(id = R.string.fix)
+                                TextAuto(
+                                    modifier = Modifier.weight(2f),
+                                    id = R.string.background_permission_restriction_error,
+                                    maxLines = Int.MAX_VALUE
+                                )
+
+                                Button(
+                                    modifier = Modifier.weight(1f),
+                                    onClick = onBackgroundClick,
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onErrorContainer)
+                                ) {
+                                    TextAuto(id = R.string.fix)
+                                }
                             }
                         }
                     }

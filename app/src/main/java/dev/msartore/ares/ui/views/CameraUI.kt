@@ -20,8 +20,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
 import dev.msartore.ares.models.BarcodeImageAnalyzer
-import dev.msartore.ares.ui.compose.CameraPreview
-import dev.msartore.ares.ui.compose.Icon
+import dev.msartore.ares.ui.components.CameraPreview
+import dev.msartore.ares.ui.components.Icon
 
 @Composable
 fun CameraUI(

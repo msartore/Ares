@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.compose
+package dev.msartore.ares.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
 import dev.msartore.ares.models.FileTransfer
 import dev.msartore.ares.models.FileTransferStages
-import kotlinx.coroutines.cancel
 
 @Composable
 fun TransferDialog(

@@ -11,7 +11,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.shouldShowRationale
 import dev.msartore.ares.R
-import dev.msartore.ares.ui.compose.Dialog
+import dev.msartore.ares.ui.components.Dialog
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable

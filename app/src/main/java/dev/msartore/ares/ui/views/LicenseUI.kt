@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import dev.msartore.ares.R
-import dev.msartore.ares.ui.compose.LicenseItem
+import dev.msartore.ares.ui.components.LicenseItem
 
 @Composable
 fun LicenseUI() {

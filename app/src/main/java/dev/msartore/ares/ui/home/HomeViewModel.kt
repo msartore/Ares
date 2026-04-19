@@ -1,10 +1,7 @@
-package dev.msartore.ares.viewmodels
+package dev.msartore.ares.ui.home
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.msartore.ares.base.MviViewModel
-import dev.msartore.ares.ui.destinations.HomeEvent
-import dev.msartore.ares.ui.destinations.HomeSideEffect
-import dev.msartore.ares.ui.destinations.HomeState
 import javax.inject.Inject
 
 @HiltViewModel

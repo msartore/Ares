@@ -38,11 +38,11 @@ import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
 import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.ServerInfo
-import dev.msartore.ares.ui.compose.ExpandableCard
-import dev.msartore.ares.ui.compose.FileItem
-import dev.msartore.ares.ui.compose.Icon
-import dev.msartore.ares.ui.compose.TextAuto
-import dev.msartore.ares.ui.destinations.MainEvent
+import dev.msartore.ares.ui.components.ExpandableCard
+import dev.msartore.ares.ui.components.FileItem
+import dev.msartore.ares.ui.components.Icon
+import dev.msartore.ares.ui.components.TextAuto
+import dev.msartore.ares.ui.home.MainEvent
 import dev.msartore.ares.utils.downloadFile
 import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.serverInfoExtraction

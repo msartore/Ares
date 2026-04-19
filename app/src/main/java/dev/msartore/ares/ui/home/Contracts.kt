@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.destinations
+package dev.msartore.ares.ui.home
 
 import dev.msartore.ares.base.UiEvent
 import dev.msartore.ares.base.UiSideEffect

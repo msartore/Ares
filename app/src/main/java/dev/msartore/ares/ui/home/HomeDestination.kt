@@ -1,4 +1,4 @@
-package dev.msartore.ares.ui.destinations
+package dev.msartore.ares.ui.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,8 +8,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.msartore.ares.server.KtorService
-import dev.msartore.ares.ui.screens.HomeScreen
-import dev.msartore.ares.viewmodels.HomeViewModel
 import dev.msartore.ares.viewmodels.MainViewModel
 
 @Composable

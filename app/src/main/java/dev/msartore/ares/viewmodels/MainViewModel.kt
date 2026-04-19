@@ -20,9 +20,9 @@ import dev.msartore.ares.models.NetworkInfo
 import dev.msartore.ares.models.Settings
 import dev.msartore.ares.models.TransferFile
 import dev.msartore.ares.models.TransferFileType
-import dev.msartore.ares.ui.destinations.MainEvent
-import dev.msartore.ares.ui.destinations.MainSideEffect
-import dev.msartore.ares.ui.destinations.MainState
+import dev.msartore.ares.ui.main.MainEvent
+import dev.msartore.ares.ui.main.MainSideEffect
+import dev.msartore.ares.ui.main.MainState
 import dev.msartore.ares.utils.BackgroundPStatus
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.MutableStateFlow
