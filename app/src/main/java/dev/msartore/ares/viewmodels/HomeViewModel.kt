@@ -1,27 +1,25 @@
 package dev.msartore.ares.viewmodels
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.msartore.ares.base.MviViewModel
+import dev.msartore.ares.ui.destinations.HomeEvent
+import dev.msartore.ares.ui.destinations.HomeSideEffect
+import dev.msartore.ares.ui.destinations.HomeState
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor() : MviViewModel<HomeState, HomeEvent, HomeSideEffect>(HomeState()) {
 
-    val isLoading = MutableStateFlow(false)
-    val dialogInput = mutableStateOf(false)
-    val inputText = mutableStateOf("")
-    var onImportFiles: (() -> Unit)? = null
-    var onStartServer: (() -> Unit)? = null
-    var onStopServer: (() -> Unit)? = null
-
-    fun onImportFilesClick() {
-        onImportFiles?.invoke()
-    }
-
-    fun onStartServerClick() {
-        onStartServer?.invoke()
-    }
-
-    fun onStopServerClick() {
-        onStopServer?.invoke()
+    override suspend fun reduce(event: HomeEvent) {
+        when (event) {
+            is HomeEvent.ImportFilesClicked -> emitSideEffect(HomeSideEffect.LaunchFilePicker)
+            is HomeEvent.StartServerClicked -> emitSideEffect(HomeSideEffect.StartKtorService)
+            is HomeEvent.StopServerClicked -> emitSideEffect(HomeSideEffect.StopKtorService)
+            is HomeEvent.ShowInputDialog -> updateState { copy(inputDialogVisible = true) }
+            is HomeEvent.DismissInputDialog -> updateState { copy(inputDialogVisible = false, inputText = "") }
+            is HomeEvent.InputTextChanged -> updateState { copy(inputText = event.text) }
+            is HomeEvent.ServerStateChanged -> updateState { copy(isServerRunning = event.isRunning) }
+            is HomeEvent.LoadingChanged -> updateState { copy(isLoading = event.isLoading) }
+        }
     }
 }

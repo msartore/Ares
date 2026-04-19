@@ -3,17 +3,15 @@ package dev.msartore.ares.viewmodels
 import android.app.DownloadManager
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.msartore.ares.R
+import dev.msartore.ares.base.MviViewModel
 import dev.msartore.ares.models.ConcurrentMutableList
 import dev.msartore.ares.models.FileData
 import dev.msartore.ares.models.FileDownload
@@ -21,90 +19,101 @@ import dev.msartore.ares.models.FileType
 import dev.msartore.ares.models.NetworkInfo
 import dev.msartore.ares.models.Settings
 import dev.msartore.ares.models.TransferFile
+import dev.msartore.ares.models.TransferFileType
+import dev.msartore.ares.ui.destinations.MainEvent
+import dev.msartore.ares.ui.destinations.MainSideEffect
+import dev.msartore.ares.ui.destinations.MainState
 import dev.msartore.ares.utils.BackgroundPStatus
-import dev.msartore.ares.viewmodels.MainViewModel.MVM.dataStore
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.HttpTimeout
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
-class MainViewModel : ViewModel() {
-
-    object MVM {
-        val Context.dataStore by preferencesDataStore(name = "user_preferences_settings")
-    }
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    val settings: Settings,
+    val client: HttpClient,
+    val downloadManager: DownloadManager,
+    private val clipboard: ClipboardManager,
+) : MviViewModel<MainState, MainEvent, MainSideEffect>(MainState()) {
 
     var transferredFiles: SnapshotStateList<TransferFile> = mutableStateListOf()
-    var clipboard: ClipboardManager? = null
     val networkInfo = NetworkInfo()
     val qrCodeDialog = mutableStateOf(false)
-    val listFileDownload = ConcurrentMutableList<FileDownload>()
+    var listFileDownload = ConcurrentMutableList<FileDownload>()
     val isDarkTheme = MutableStateFlow(false)
-    val client: HttpClient = HttpClient(CIO) {
-        install(HttpTimeout)
-    }
-    var onOpenFileDownload: ((FileDownload) -> Unit)? = null
-    var onDismiss: ((FileDownload) -> Unit)? = null
-    var onShareFileDownload: ((FileDownload) -> Unit)? = null
-    var onOpenFile: ((FileData) -> Unit)? = null
-    var onShareFile: ((FileData) -> Unit)? = null
-    var pm: PackageManager? = null
-    var settings: Settings? = null
-    var onOpenUrl: ((String) -> Unit)? = null
-    var downloadManager: DownloadManager? = null
     var backgroundPStatus: MutableState<BackgroundPStatus?> = mutableStateOf(null)
-    var onBackgroundClick: (() -> Unit)? = null
 
-    @androidx.camera.core.ExperimentalGetImage
-    suspend fun Context.startSettings() {
-
-        if (settings == null) {
-            settings = Settings(dataStore = dataStore)
+    override suspend fun reduce(event: MainEvent) {
+        when (event) {
+            is MainEvent.FileDownloadCompleted -> {
+                event.fileData?.let {
+                    transferredFiles.add(TransferFile(it, TransferFileType.DOWNLOAD))
+                }
+            }
+            is MainEvent.FileUploadCompleted -> {
+                event.fileData?.let {
+                    transferredFiles.add(TransferFile(it, TransferFileType.UPLOAD))
+                }
+            }
+            is MainEvent.OpenFileDownload -> {
+                val fileDownload = event.fileDownload
+                listFileDownload.removeIf { it == fileDownload }
+                fileDownload.fileData
+                    ?.let { emitSideEffect(MainSideEffect.OpenFile(it)) }
+                    ?: emitSideEffect(MainSideEffect.ShowToast(R.string.no_app_can_perform))
+            }
+            is MainEvent.ShareFileDownload -> {
+                val fileDownload = event.fileDownload
+                listFileDownload.removeIf { it == fileDownload }
+                fileDownload.fileData?.let { emitSideEffect(MainSideEffect.ShareFile(it)) }
+            }
+            is MainEvent.DismissFileDownload -> {
+                listFileDownload.removeIf { it == event.fileDownload }
+            }
+            is MainEvent.CopyTextRequested -> {
+                emitSideEffect(MainSideEffect.CopyToClipboard(event.label, event.text))
+            }
+            is MainEvent.ShareTextRequested -> {
+                emitSideEffect(MainSideEffect.ShareText(event.text))
+            }
+            is MainEvent.OpenFileRequested -> {
+                emitSideEffect(MainSideEffect.OpenFile(event.fileData))
+            }
+            is MainEvent.ShareFileRequested -> {
+                emitSideEffect(MainSideEffect.ShareFile(event.fileData))
+            }
+            is MainEvent.OpenStreamingRequested -> {
+                val mime = when (event.fileType) {
+                    FileType.VIDEO -> "video/*"
+                    FileType.IMAGE -> "image/*"
+                    else -> "*/*"
+                }
+                emitSideEffect(MainSideEffect.LaunchStreamingIntent(event.url, mime))
+            }
+            is MainEvent.UrlOpened -> {
+                emitSideEffect(MainSideEffect.OpenUrl(event.url))
+            }
+            MainEvent.BackgroundClick -> { /* handled by MainActivity via onBackgroundClick lambda */ }
+            MainEvent.DismissQrCodeDialog -> {
+                qrCodeDialog.value = false
+            }
         }
-
-        settings?.update()
     }
 
     fun copyText(label: String, string: String) {
         val clip = ClipData.newPlainText(label, string)
-        clipboard?.setPrimaryClip(clip)
-    }
-
-    fun Context.shareText(string: String) {
-        startActivity(
-            Intent.createChooser(
-                Intent(Intent.ACTION_SEND).apply {
-                    type = "text/plain"
-                    putExtra(Intent.EXTRA_TEXT, string)
-                }, getString(R.string.send_to)
-            )
-        )
-    }
-
-    fun openStreaming(context: Context, url: String, fileType: FileType?) {
-        context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-            setDataAndType(
-                Uri.parse(url), when (fileType) {
-                    FileType.VIDEO -> {
-                        "video/*"
-                    }
-
-                    FileType.IMAGE -> {
-                        "image/*"
-                    }
-
-                    else -> {
-                        "*/*"
-                    }
-                }
-            )
-        })
+        clipboard.setPrimaryClip(clip)
     }
 
     fun openUrl(url: String) {
-        onOpenUrl?.invoke(url)
+        viewModelScope.launch { onEvent(MainEvent.UrlOpened(url)) }
     }
 
-    fun hasCamera() = pm?.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) == true
+    fun openStreaming(url: String, fileType: FileType?) {
+        viewModelScope.launch { onEvent(MainEvent.OpenStreamingRequested(url, fileType)) }
+    }
+
+    fun hasCamera(packageManager: PackageManager): Boolean =
+        packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
 }

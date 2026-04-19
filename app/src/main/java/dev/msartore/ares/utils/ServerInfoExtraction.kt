@@ -1,6 +1,5 @@
 package dev.msartore.ares.utils
 
-import androidx.camera.core.ExperimentalGetImage
 import com.google.gson.Gson
 import dev.msartore.ares.models.APIData
 import dev.msartore.ares.models.FileDataJson
@@ -9,7 +8,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 
-@ExperimentalGetImage
 suspend fun serverInfoExtraction(
     ip: String, client: HttpClient
 ): Pair<String, List<FileDataJson>>? {

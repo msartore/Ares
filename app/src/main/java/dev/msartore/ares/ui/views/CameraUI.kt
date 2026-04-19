@@ -1,7 +1,6 @@
 package dev.msartore.ares.ui.views
 
 import androidx.camera.core.CameraControl
-import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +23,6 @@ import dev.msartore.ares.models.BarcodeImageAnalyzer
 import dev.msartore.ares.ui.compose.CameraPreview
 import dev.msartore.ares.ui.compose.Icon
 
-@ExperimentalGetImage
 @Composable
 fun CameraUI(
     visibility: MutableState<Boolean>,

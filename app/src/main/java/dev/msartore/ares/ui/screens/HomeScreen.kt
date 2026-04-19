@@ -1,6 +1,5 @@
-package dev.msartore.ares.ui.views
+package dev.msartore.ares.ui.screens
 
-import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -34,24 +33,22 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.msartore.ares.R
 import dev.msartore.ares.models.FileData
 import dev.msartore.ares.models.FileType
@@ -64,23 +61,29 @@ import dev.msartore.ares.ui.compose.FileItem
 import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.IconCard
 import dev.msartore.ares.ui.compose.TextAuto
+import dev.msartore.ares.ui.destinations.HomeEvent
+import dev.msartore.ares.ui.destinations.HomeState
 import dev.msartore.ares.utils.BackgroundPStatus
 import dev.msartore.ares.utils.isWideView
-import dev.msartore.ares.viewmodels.HomeViewModel
+import dev.msartore.ares.utils.shareText
 import dev.msartore.ares.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
 
-@ExperimentalGetImage
 @Composable
-fun HomeUI(
-    maxWidth: Dp, mainViewModel: MainViewModel, homeViewModel: HomeViewModel = viewModel()
+fun HomeScreen(
+    state: HomeState,
+    onEvent: (HomeEvent) -> Unit,
+    settings: dev.msartore.ares.models.Settings?,
+    mainViewModel: MainViewModel,
+    onBackgroundClick: () -> Unit,
+    maxWidth: Dp = 0.dp,
 ) {
     val lazyGridState = rememberLazyGridState()
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val isLoading = homeViewModel.isLoading.collectAsState()
     val home1State = rememberScrollState()
     val expanded = remember { mutableStateOf(false) }
+
     val homeUIContent1: @Composable (Modifier) -> Unit = { modifier ->
         Column(
             modifier = modifier
@@ -116,13 +119,13 @@ fun HomeUI(
                     mainViewModel.networkInfo.run {
                         TextAuto(
                             text = when {
-                                isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true) -> "${
+                                isNetworkAvailable.value && (isWifiNetwork.value || settings?.removeWifiRestriction?.value == true) -> "${
                                     stringResource(
                                         id = R.string.ip_address
                                     )
                                 }:" + " ${ipAddress.value}" + if (isServerOn.value) ":${port}" else ""
 
-                                !(isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true) && isNetworkAvailable.value -> stringResource(
+                                !(isWifiNetwork.value || settings?.removeWifiRestriction?.value == true) && isNetworkAvailable.value -> stringResource(
                                     id = R.string.wrong_network
                                 )
 
@@ -140,7 +143,7 @@ fun HomeUI(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     mainViewModel.networkInfo.run {
-                        if (isNetworkAvailable.value && (isWifiNetwork.value || mainViewModel.settings?.removeWifiRestriction?.value == true)) {
+                        if (isNetworkAvailable.value && (isWifiNetwork.value || settings?.removeWifiRestriction?.value == true)) {
                             if (isServerOn.value) {
                                 if (mainViewModel.networkInfo.bitmap.value != null) {
                                     IconCard(
@@ -171,8 +174,8 @@ fun HomeUI(
                                     id = R.string.start_server
                                 )
                             ) {
-                                if (isServerOn.value) homeViewModel.onStopServerClick()
-                                else homeViewModel.onStartServerClick()
+                                if (isServerOn.value) onEvent(HomeEvent.StopServerClicked)
+                                else onEvent(HomeEvent.StartServerClicked)
                             }
                         }
                     }
@@ -204,7 +207,7 @@ fun HomeUI(
 
                             Button(
                                 modifier = Modifier.weight(1f),
-                                onClick = { mainViewModel.onBackgroundClick?.invoke() },
+                                onClick = onBackgroundClick,
                                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onErrorContainer)
                             ) {
                                 TextAuto(id = R.string.fix)
@@ -271,7 +274,7 @@ fun HomeUI(
                         }
                     }
 
-                    if (!isLoading.value)
+                    if (!state.isLoading)
                         Box {
                             IconCard(
                                 id = R.drawable.add_24px,
@@ -285,7 +288,7 @@ fun HomeUI(
                                 onDismissRequest = { expanded.value = false }) {
                                 DropdownMenuItem(text = { TextAuto(id = R.string.import_files) },
                                     onClick = {
-                                        homeViewModel.onImportFilesClick()
+                                        onEvent(HomeEvent.ImportFilesClicked)
                                         expanded.value = false
                                     },
                                     leadingIcon = {
@@ -297,7 +300,7 @@ fun HomeUI(
                                     })
 
                                 DropdownMenuItem(text = { TextAuto(id = R.string.text_input) }, onClick = {
-                                    homeViewModel.dialogInput.value = true
+                                    onEvent(HomeEvent.ShowInputDialog)
                                     expanded.value = false
                                 }, leadingIcon = {
                                     Icon(
@@ -324,6 +327,7 @@ fun HomeUI(
             }
         }
     }
+
     val homeUIContent2: @Composable (Modifier) -> Unit = { modifier ->
         LazyVerticalGrid(
             modifier = modifier,
@@ -335,7 +339,6 @@ fun HomeUI(
             items(count = concurrentMutableList.size.value, key = {
                 concurrentMutableList.list.elementAt(it).uuid
             }) { index ->
-
                 concurrentMutableList.list.elementAt(index).run {
                     ExpandableCard(
                         modifier = Modifier
@@ -371,61 +374,57 @@ fun HomeUI(
         homeUIContent2(Modifier)
     }
 
-    homeViewModel.run {
-        DialogContainer(status = dialogInput) {
-            val keyboardController = LocalSoftwareKeyboardController.current
+    DialogContainer(status = state.inputDialogVisible) {
+        val keyboardController = LocalSoftwareKeyboardController.current
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TextAuto(
+                id = R.string.text_input
+            )
+
+            TextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.inputText,
+                onValueChange = { onEvent(HomeEvent.InputTextChanged(it)) },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
+                }),
+                maxLines = 1
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                TextAuto(
-                    id = R.string.text_input
-                )
+                TextButton(onClick = {
+                    onEvent(HomeEvent.DismissInputDialog)
+                }) {
+                    TextAuto(id = R.string.cancel)
+                }
 
-                TextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = inputText.value,
-                    onValueChange = { inputText.value = it },
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(onDone = {
-                        keyboardController?.hide()
-                    }),
-                    maxLines = 1
-                )
+                Spacer(modifier = Modifier.width(8.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(onClick = {
-                        dialogInput.value = false
-                        inputText.value = ""
-                    }) {
-                        TextAuto(id = R.string.cancel)
-                    }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    TextButton(onClick = {
-                        if (inputText.value.isNotBlank()) concurrentMutableList.add(
-                            FileData(
-                                text = inputText.value, fileType = FileType.TEXT
-                            )
+                TextButton(onClick = {
+                    if (state.inputText.isNotBlank()) concurrentMutableList.add(
+                        FileData(
+                            text = state.inputText, fileType = FileType.TEXT
                         )
+                    )
 
-                        dialogInput.value = false
-                        inputText.value = ""
-                    }) {
-                        TextAuto(id = R.string.save)
-                    }
+                    onEvent(HomeEvent.DismissInputDialog)
+                }) {
+                    TextAuto(id = R.string.save)
                 }
             }
         }

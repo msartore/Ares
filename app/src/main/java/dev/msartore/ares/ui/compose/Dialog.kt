@@ -86,6 +86,20 @@ fun Dialog(
 fun DialogContainer(
     dialogProperties: DialogProperties = DialogProperties(
         dismissOnBackPress = false, dismissOnClickOutside = false
+    ), status: Boolean, onDismissRequest: () -> Unit = {}, content: @Composable () -> Unit
+) {
+    if (status) androidx.compose.ui.window.Dialog(
+        properties = dialogProperties,
+        onDismissRequest = onDismissRequest,
+    ) {
+        content()
+    }
+}
+
+@Composable
+fun DialogContainer(
+    dialogProperties: DialogProperties = DialogProperties(
+        dismissOnBackPress = false, dismissOnClickOutside = false
     ), status: MutableState<Boolean>, content: @Composable () -> Unit
 ) {
     if (status.value) androidx.compose.ui.window.Dialog(

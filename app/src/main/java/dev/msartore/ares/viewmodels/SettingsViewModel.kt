@@ -1,17 +1,21 @@
 package dev.msartore.ares.viewmodels
 
-import androidx.compose.foundation.ScrollState
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
-import dev.msartore.ares.ui.views.SettingsPages
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.msartore.ares.base.MviViewModel
+import dev.msartore.ares.ui.destinations.SettingsEvent
+import dev.msartore.ares.ui.destinations.SettingsPages
+import dev.msartore.ares.ui.destinations.SettingsSideEffect
+import dev.msartore.ares.ui.destinations.SettingsState
+import javax.inject.Inject
 
-class SettingsViewModel : ViewModel() {
+@HiltViewModel
+class SettingsViewModel @Inject constructor() : MviViewModel<SettingsState, SettingsEvent, SettingsSideEffect>(SettingsState()) {
 
-    var onOpenThirdLicenses: (() -> Unit)? = null
-    val selectedItem = mutableStateOf(SettingsPages.SETTINGS)
-    val scrollState = ScrollState(0)
-
-    fun openThirdLicenses() {
-        onOpenThirdLicenses?.invoke()
+    override suspend fun reduce(event: SettingsEvent) {
+        when (event) {
+            is SettingsEvent.OpenThirdLicensesClicked -> emitSideEffect(SettingsSideEffect.LaunchOssLicensesActivity)
+            is SettingsEvent.BackClicked -> updateState { copy(selectedPage = SettingsPages.SETTINGS) }
+            is SettingsEvent.NavigateTo -> updateState { copy(selectedPage = event.page) }
+        }
     }
 }

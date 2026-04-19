@@ -16,7 +16,6 @@ import android.provider.OpenableColumns
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
-import androidx.camera.core.ExperimentalGetImage
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -29,7 +28,6 @@ import dev.msartore.ares.models.FileDataJson
 import dev.msartore.ares.models.FileType
 import dev.msartore.ares.server.KtorService
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -165,12 +163,11 @@ fun getByteArrayFromDrawable(context: Context, id: Int, color: Int? = null) =
         stream.toByteArray()
     }
 
-@ExperimentalGetImage
-suspend fun Context.filesDataHandler(isLoading: MutableStateFlow<Boolean>, uris: List<Uri>?) {
+fun Context.filesDataHandler(onLoadingChanged: (Boolean) -> Unit, uris: List<Uri>?) {
     val listFileSizeB = KtorService.KtorServer.concurrentMutableList.size.value
 
     if (!uris.isNullOrEmpty()) {
-        isLoading.value = true
+        onLoadingChanged(true)
 
         KtorService.KtorServer.concurrentMutableList.run {
             addAll(uris.filter { uri ->
@@ -188,7 +185,7 @@ suspend fun Context.filesDataHandler(isLoading: MutableStateFlow<Boolean>, uris:
             }
         }
 
-        isLoading.value = false
+        onLoadingChanged(false)
     }
 }
 
@@ -224,6 +221,15 @@ fun Context.cleanCache() {
     }.onFailure {
         it.printStackTrace()
     }
+}
+
+fun Context.shareText(text: String) {
+    val intent = android.content.Intent().apply {
+        action = android.content.Intent.ACTION_SEND
+        putExtra(android.content.Intent.EXTRA_TEXT, text)
+        type = "text/plain"
+    }
+    startActivity(android.content.Intent.createChooser(intent, null))
 }
 
 fun deleteDir(dir: File?) {

@@ -2,7 +2,6 @@ package dev.msartore.ares.utils
 
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
-import androidx.camera.core.ExperimentalGetImage
 import dev.msartore.ares.models.Settings
 import dev.msartore.ares.server.KtorService.KtorServer.port
 import java.net.InetSocketAddress
@@ -13,7 +12,6 @@ fun isValidServerIP(string: String) = string.matches(
     Regex("^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\$")
 )
 
-@ExperimentalGetImage
 fun Settings.pingServer(ip: String, timeout: Int? = ipTimeout.value) =
     Socket().connect(InetSocketAddress(ip, port), timeout ?: 300)
 

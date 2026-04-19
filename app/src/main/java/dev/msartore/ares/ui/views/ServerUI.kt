@@ -1,6 +1,5 @@
 package dev.msartore.ares.ui.views
 
-import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -18,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
@@ -42,6 +42,7 @@ import dev.msartore.ares.ui.compose.ExpandableCard
 import dev.msartore.ares.ui.compose.FileItem
 import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.TextAuto
+import dev.msartore.ares.ui.destinations.MainEvent
 import dev.msartore.ares.utils.downloadFile
 import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.serverInfoExtraction
@@ -49,7 +50,6 @@ import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.ServerFinderViewModel
 
-@ExperimentalGetImage
 @Composable
 fun ServerUI(
     serverInfo: ServerInfo?,
@@ -59,6 +59,7 @@ fun ServerUI(
     val context = LocalContext.current
     val lowerVersion = remember { mutableStateOf(false) }
     val expanded = remember { mutableStateOf(false) }
+    val gridState = rememberLazyGridState()
 
     serverFinderViewModel.run {
         if (serverInfo != null) {
@@ -165,14 +166,12 @@ fun ServerUI(
                                         text = { TextAuto(id = R.string.download_all_zip) },
                                         onClick = {
                                             work {
-                                                mainViewModel.run {
-                                                    downloadManager?.downloadFile(
+                                                mainViewModel.downloadManager.downloadFile(
                                                         url = "http://${serverInfo.ip}:$port/download_all",
                                                         mimeType = "application/zip",
                                                         fileName = "download_all.zip",
                                                         context = context
                                                     )
-                                                }
                                             }
                                         },
                                         leadingIcon = {
@@ -188,14 +187,12 @@ fun ServerUI(
                                             work {
                                                 serverFiles.forEach {
                                                     it.run {
-                                                        mainViewModel.run {
-                                                            downloadManager?.downloadFile(
-                                                                url = "http://${serverInfo.ip}:$port/$uuid",
-                                                                mimeType = mimeType,
-                                                                fileName = "$name",
-                                                                context = context
-                                                            )
-                                                        }
+                                                        mainViewModel.downloadManager.downloadFile(
+                                                            url = "http://${serverInfo.ip}:$port/$uuid",
+                                                            mimeType = mimeType,
+                                                            fileName = "$name",
+                                                            context = context
+                                                        )
                                                     }
                                                 }
                                             }
@@ -263,7 +260,7 @@ fun ServerUI(
                     columns = GridCells.Adaptive(250.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    state = state
+                    state = gridState
                 ) {
                     items(
                         count = serverFiles.size,
@@ -278,30 +275,25 @@ fun ServerUI(
                                     fileDataJson = this,
                                     maxLines = if (expanded) Int.MAX_VALUE else 1,
                                     onDownload = {
-                                        mainViewModel.run {
-                                            downloadManager?.downloadFile(
-                                                url = url,
-                                                mimeType = mimeType,
-                                                fileName = "$name",
-                                                context = context
-                                            )
-                                        }
+                                        mainViewModel.downloadManager.downloadFile(
+                                            url = url,
+                                            mimeType = mimeType,
+                                            fileName = "$name",
+                                            context = context
+                                        )
                                     },
                                     onStreaming = {
                                         mainViewModel.openStreaming(
-                                            context = context,
                                             url = "$url?streaming=true",
                                             fileType = fileType
                                         )
                                     },
                                     onShare = {
-                                        mainViewModel.run {
-                                            context.shareText("$text")
-                                        }
+                                        mainViewModel.onEvent(MainEvent.ShareTextRequested("$text"))
                                     },
                                     onCopy = {
-                                        mainViewModel.copyText(
-                                            context.getString(R.string.text_input), "$text"
+                                        mainViewModel.onEvent(
+                                            MainEvent.CopyTextRequested(context.getString(R.string.text_input), "$text")
                                         )
                                     })
                             }

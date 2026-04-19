@@ -1,7 +1,6 @@
 package dev.msartore.ares.ui.views
 
 import androidx.activity.compose.BackHandler
-import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
@@ -23,19 +22,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import android.content.pm.PackageManager
+import androidx.compose.ui.platform.LocalContext
 import dev.msartore.ares.R
 import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.ui.compose.CardIcon
 import dev.msartore.ares.ui.compose.ServerItem
 import dev.msartore.ares.ui.compose.TextAuto
+import dev.msartore.ares.ui.destinations.MainEvent
 import dev.msartore.ares.viewmodels.MainViewModel
 import dev.msartore.ares.viewmodels.ServerFinderViewModel
 
-@ExperimentalGetImage
 @Composable
 fun ServerFinderUI(
     mainViewModel: MainViewModel, serverFinderViewModel: ServerFinderViewModel
 ) {
+    val context = LocalContext.current
     val state = rememberLazyGridState()
     val transition = updateTransition(
         serverFinderViewModel.selectedItem.value,
@@ -69,7 +71,7 @@ fun ServerFinderUI(
                                         ServerItem(ip = server.ip,
                                             url = "http://${server.ip}:${port}",
                                             openUrl = { url ->
-                                                mainViewModel.openUrl(url)
+                                                mainViewModel.onEvent(MainEvent.UrlOpened(url))
                                             }) {
                                             setServer(server)
                                         }
@@ -123,7 +125,7 @@ fun ServerFinderUI(
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if (mainViewModel.hasCamera()) CardIcon(
+                        if (context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)) CardIcon(
                             iconId = R.drawable.qr_code_scanner_24px,
                             textId = R.string.scan_qrcode,
                             contentDescription = stringResource(id = R.string.scan_qrcode),

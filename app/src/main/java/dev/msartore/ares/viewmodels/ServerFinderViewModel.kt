@@ -10,20 +10,26 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.msartore.ares.base.MviViewModel
 import dev.msartore.ares.models.FileDataJson
 import dev.msartore.ares.models.QrReadingProcess
 import dev.msartore.ares.server.ServerInfo
-import dev.msartore.ares.ui.views.ServerFinderPages
+import dev.msartore.ares.ui.destinations.ServerFinderEvent
+import dev.msartore.ares.ui.destinations.ServerFinderPages
+import dev.msartore.ares.ui.destinations.ServerFinderSideEffect
+import dev.msartore.ares.ui.destinations.ServerFinderState
+import dev.msartore.ares.ui.views.ServerFinderPages as UiPages
 import dev.msartore.ares.utils.cor
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import javax.inject.Inject
 
-class ServerFinderViewModel : ViewModel() {
+@HiltViewModel
+class ServerFinderViewModel @Inject constructor() : MviViewModel<ServerFinderState, ServerFinderEvent, ServerFinderSideEffect>(ServerFinderState()) {
 
     private val servers = mutableStateListOf<ServerInfo>()
-
     val qrReadingProcess = QrReadingProcess()
-    val selectedItem = mutableStateOf(ServerFinderPages.SERVER_LIST)
+    val selectedItem = mutableStateOf(UiPages.SERVER_LIST)
     val serverSelected = mutableStateOf<ServerInfo?>(null)
     var job: Job? = null
     var isNewServer = false
@@ -32,16 +38,72 @@ class ServerFinderViewModel : ViewModel() {
     var currentRotation by mutableFloatStateOf(0f)
     val rotation = Animatable(currentRotation)
     val isRefreshing = mutableStateOf(false)
-    var state: LazyGridState = LazyGridState()
+    var gridState: LazyGridState = LazyGridState()
     var scrollState: ScrollState = ScrollState(0)
     val serversCount = mutableIntStateOf(0)
+
+    override suspend fun reduce(event: ServerFinderEvent) {
+        when (event) {
+            is ServerFinderEvent.ServerDiscovered -> {
+                if (servers.none { it.ip == event.serverInfo.ip }) {
+                    servers.add(event.serverInfo)
+                    serversCount.intValue = servers.size
+                }
+                updateState { copy(servers = servers.toList()) }
+            }
+            ServerFinderEvent.AllServersLost -> {
+                servers.clear()
+                serversCount.intValue = 0
+                updateState { copy(servers = emptyList()) }
+            }
+            is ServerFinderEvent.ServerSelected -> {
+                selectedItem.value = UiPages.SERVER
+                serverSelected.value = event.serverInfo
+                isNewServer = true
+                updateState { copy(serverSelected = event.serverInfo, selectedPage = ServerFinderPages.SERVER) }
+            }
+            ServerFinderEvent.BackToServerList -> {
+                cor {
+                    job?.cancel()
+                    selectedItem.value = UiPages.SERVER_LIST
+                    kotlinx.coroutines.delay(200)
+                    serverSelected.value = null
+                    isRefreshing.value = false
+                    scrollState = ScrollState(0)
+                    error.value = false
+                    serverFiles.clear()
+                    gridState = LazyGridState()
+                }
+                updateState { copy(serverSelected = null, selectedPage = ServerFinderPages.SERVER_LIST, serverFiles = emptyList()) }
+            }
+            is ServerFinderEvent.FilesLoaded -> {
+                serverFiles.addAll(event.files)
+                updateState { copy(serverFiles = event.files, isRefreshing = false) }
+            }
+            ServerFinderEvent.FilesLoadFailed -> {
+                error.value = true
+                updateState { copy(error = true, isRefreshing = false) }
+            }
+            ServerFinderEvent.RefreshFiles -> {
+                updateState { copy(isRefreshing = true) }
+            }
+            ServerFinderEvent.OpenQrScanner -> {
+                qrReadingProcess.isReadingQR.value = true
+                updateState { copy(isQrScannerActive = true) }
+            }
+            ServerFinderEvent.CloseQrScanner -> {
+                qrReadingProcess.isReadingQR.value = false
+                updateState { copy(isQrScannerActive = false) }
+            }
+        }
+    }
 
     fun scanQRCode() {
         qrReadingProcess.isReadingQR.value = true
     }
 
     fun setServer(serverInfo: ServerInfo) {
-        selectedItem.value = ServerFinderPages.SERVER
+        selectedItem.value = UiPages.SERVER
         serverSelected.value = serverInfo
         isNewServer = true
     }
@@ -49,14 +111,14 @@ class ServerFinderViewModel : ViewModel() {
     fun backToScanWifi() {
         cor {
             job?.cancel()
-            selectedItem.value = ServerFinderPages.SERVER_LIST
-            delay(200)
+            selectedItem.value = UiPages.SERVER_LIST
+            kotlinx.coroutines.delay(200)
             serverSelected.value = null
             isRefreshing.value = false
             scrollState = ScrollState(0)
             error.value = false
             serverFiles.clear()
-            state = LazyGridState()
+            gridState = LazyGridState()
         }
     }
 

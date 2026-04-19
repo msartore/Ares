@@ -6,7 +6,6 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.TRANSPORT_WIFI
 import android.util.Log
-import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
@@ -16,7 +15,6 @@ import dev.msartore.ares.utils.cor
 import dev.msartore.ares.utils.encodeAsBitmap
 
 
-@ExperimentalGetImage
 class NetworkCallback(
     val onNetworkLost: () -> Unit,
     private val onNetworkAvailable: (() -> Unit)? = null,

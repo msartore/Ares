@@ -1,6 +1,5 @@
 package dev.msartore.ares.models
 
-import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions
@@ -9,7 +8,6 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import dev.msartore.ares.utils.isValidServerIP
 
-@ExperimentalGetImage
 class BarcodeImageAnalyzer(
     private val onQRFound: ((String, String) -> Unit)? = null,
 ) : ImageAnalysis.Analyzer {

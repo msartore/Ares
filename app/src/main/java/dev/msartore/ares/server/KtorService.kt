@@ -15,7 +15,6 @@ import android.os.Build
 import android.os.CountDownTimer
 import android.os.Environment
 import android.os.PowerManager
-import androidx.camera.core.ExperimentalGetImage
 import androidx.compose.runtime.mutableStateOf
 import dev.msartore.ares.MainActivity
 import dev.msartore.ares.R
@@ -105,7 +104,6 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 
-@ExperimentalGetImage
 class KtorService : Service() {
 
     object KtorServer {

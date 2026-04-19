@@ -31,6 +31,7 @@ import dev.msartore.ares.models.TransferFileType
 import dev.msartore.ares.ui.compose.ExpandableCard
 import dev.msartore.ares.ui.compose.Icon
 import dev.msartore.ares.ui.compose.TextAuto
+import dev.msartore.ares.ui.destinations.MainEvent
 import dev.msartore.ares.viewmodels.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,13 +117,13 @@ fun TransferUI(
                                 Icon(
                                     id = R.drawable.open_in_new_24px
                                 ) {
-                                    mainViewModel.onOpenFile?.invoke(transferFileData.fileData)
+                                    mainViewModel.onEvent(MainEvent.OpenFileRequested(transferFileData.fileData))
                                 }
 
                                 Icon(
                                     id = R.drawable.share_24px
                                 ) {
-                                    mainViewModel.onShareFile?.invoke(transferFileData.fileData)
+                                    mainViewModel.onEvent(MainEvent.ShareFileRequested(transferFileData.fileData))
                                 }
                             }
                         }

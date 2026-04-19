@@ -84,3 +84,4 @@ lint/tmp/
 keystore.properties
 
 .idea/
+docs/mvi-migration

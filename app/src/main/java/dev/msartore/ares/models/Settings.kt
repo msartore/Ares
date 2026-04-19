@@ -28,7 +28,6 @@ class Settings(
     var requestBackgroundActivity: MutableState<Int> = mutableIntStateOf(0)
     var millsToWait: MutableState<String> = mutableStateOf("")
 
-    @androidx.camera.core.ExperimentalGetImage
     suspend fun update() {
         ipTimeout.value = dataStore.readInt(Keys.IPTimeout.key) ?: timeout
         isMaterialYouEnabled.value = dataStore.readBool(Keys.MaterialYou.key) == true
@@ -41,7 +40,6 @@ class Settings(
         KtorService.KtorServer.serverTimer.millsToWait = timeToMillis(millsToWait.value)
     }
 
-    @androidx.camera.core.ExperimentalGetImage
     suspend fun <T> save(key: Keys, value: MutableState<T>) {
         dataStore.write(key.key, value.value)
         update()
