@@ -1,4 +1,4 @@
-package dev.msartore.ares.viewmodels
+package dev.msartore.ares.ui.screens.main
 
 import android.app.DownloadManager
 import android.content.ClipData
@@ -19,9 +19,6 @@ import dev.msartore.ares.models.NetworkInfo
 import dev.msartore.ares.models.Settings
 import dev.msartore.ares.models.TransferFile
 import dev.msartore.ares.models.TransferFileType
-import dev.msartore.ares.ui.screens.main.MainEvent
-import dev.msartore.ares.ui.screens.main.MainSideEffect
-import dev.msartore.ares.ui.screens.main.MainState
 import dev.msartore.ares.utils.BackgroundPStatus
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.MutableStateFlow

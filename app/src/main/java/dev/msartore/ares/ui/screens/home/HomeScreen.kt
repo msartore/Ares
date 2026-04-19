@@ -63,7 +63,7 @@ import dev.msartore.ares.ui.components.TextAuto
 import dev.msartore.ares.utils.BackgroundPStatus
 import dev.msartore.ares.utils.isWideView
 import dev.msartore.ares.utils.shareText
-import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.ui.screens.main.MainViewModel
 import kotlinx.coroutines.launch
 
 @Composable

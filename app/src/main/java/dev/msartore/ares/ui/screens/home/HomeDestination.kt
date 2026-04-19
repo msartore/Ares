@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.msartore.ares.server.KtorService
-import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.ui.screens.main.MainViewModel
 
 @Composable
 fun HomeDestination(

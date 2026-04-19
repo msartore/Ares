@@ -34,7 +34,7 @@ import dev.msartore.ares.utils.Permissions
 import dev.msartore.ares.utils.getIpAndPort
 import dev.msartore.ares.utils.pingServer
 import dev.msartore.ares.utils.work
-import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.ui.screens.main.MainViewModel
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalPermissionsApi::class)

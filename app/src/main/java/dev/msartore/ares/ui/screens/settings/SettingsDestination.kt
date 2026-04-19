@@ -5,7 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.ui.screens.main.MainViewModel
 
 @Composable
 fun SettingsDestination(

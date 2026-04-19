@@ -50,7 +50,7 @@ import dev.msartore.ares.utils.cleanCache
 import dev.msartore.ares.utils.extractFileInformation
 import dev.msartore.ares.utils.filesDataHandler
 import dev.msartore.ares.utils.work
-import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.ui.screens.main.MainViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import javax.inject.Inject
 import android.provider.Settings as AndroidSettings

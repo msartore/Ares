@@ -34,7 +34,7 @@ import dev.msartore.ares.ui.components.ServerItem
 import dev.msartore.ares.ui.components.TextAuto
 import dev.msartore.ares.ui.components.views.ServerUI
 import dev.msartore.ares.ui.screens.main.MainEvent
-import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.ui.screens.main.MainViewModel
 
 @Composable
 fun ServerFinderUI(

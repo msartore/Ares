@@ -18,7 +18,7 @@ import dev.msartore.ares.ui.theme.Theme.background
 import dev.msartore.ares.ui.theme.Theme.container
 import dev.msartore.ares.ui.theme.Theme.darkTheme
 import dev.msartore.ares.utils.cor
-import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.ui.screens.main.MainViewModel
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,

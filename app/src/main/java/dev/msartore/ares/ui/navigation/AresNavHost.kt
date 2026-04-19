@@ -56,7 +56,7 @@ import dev.msartore.ares.ui.screens.main.MainEvent
 import dev.msartore.ares.ui.screens.serverFinder.ServerFinderDestination
 import dev.msartore.ares.ui.screens.settings.SettingsDestination
 import dev.msartore.ares.ui.screens.transfers.TransfersDestination
-import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.ui.screens.main.MainViewModel
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 

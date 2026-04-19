@@ -35,7 +35,7 @@ import dev.msartore.ares.ui.components.views.LicenseUI
 
 import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.work
-import dev.msartore.ares.viewmodels.MainViewModel
+import dev.msartore.ares.ui.screens.main.MainViewModel
 
 @Composable
 internal fun SettingsScreen(
