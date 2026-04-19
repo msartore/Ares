@@ -60,13 +60,17 @@ class NetworkCallback(
     }
 
     private fun findIPV4(linkProperties: LinkProperties): String? {
+        var fallback: String? = null
         linkProperties.linkAddresses.forEach { linkAddress ->
-            linkAddress.run {
-                if (address.toString().contains('.')) return address.toString().substring(1)
-            }
+            val raw = linkAddress.address.hostAddress ?: return@forEach
+            if (!raw.contains('.')) return@forEach  // skip IPv6
+            if (raw.startsWith("169.254.")) return@forEach  // skip link-local
+            if (raw.startsWith("192.168.") || raw.startsWith("10.") ||
+                raw.matches(Regex("^172\\.(1[6-9]|2[0-9]|3[01])\\..+"))
+            ) return raw
+            if (fallback == null) fallback = raw
         }
-
-        return null
+        return fallback
     }
 }
 
