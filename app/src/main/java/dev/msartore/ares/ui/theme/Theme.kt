@@ -102,11 +102,11 @@ fun AresTheme(
     val colorScheme =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             when {
-                mainViewModel.settings?.isMaterialYouEnabled?.value == true && darkTheme -> dynamicDarkColorScheme(
+                mainViewModel.settings.isMaterialYouEnabled.value && darkTheme -> dynamicDarkColorScheme(
                     LocalContext.current
                 )
 
-                mainViewModel.settings?.isMaterialYouEnabled?.value == true && !darkTheme -> dynamicLightColorScheme(
+                mainViewModel.settings.isMaterialYouEnabled.value && !darkTheme -> dynamicLightColorScheme(
                     LocalContext.current
                 )
                 darkTheme -> DarkColors

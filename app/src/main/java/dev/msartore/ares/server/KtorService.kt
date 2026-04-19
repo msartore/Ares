@@ -53,7 +53,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.PartData
 import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
-import io.ktor.server.application.call
 import io.ktor.server.application.install
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
@@ -183,7 +182,7 @@ class KtorService : Service() {
             R.drawable.download_24px,
             if (darkTheme) Color.WHITE else Color.BLACK
         )
-        val wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val wifiManager = getSystemService(WIFI_SERVICE) as WifiManager
         val wifiLock: WifiManager.WifiLock = wifiManager.createWifiLock(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) WifiManager.WIFI_MODE_FULL_HIGH_PERF
             else WifiManager.WIFI_MODE_FULL,

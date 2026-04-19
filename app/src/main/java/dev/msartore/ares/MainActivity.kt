@@ -93,7 +93,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val intentBatteryOptimization = Intent(AndroidSettings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-            data = Uri.parse("package:$packageName")
+            data = "package:$packageName".toUri()
         }
         var permissionState: MultiplePermissionsState? = null
         val getContentPermission =
@@ -166,7 +166,7 @@ class MainActivity : ComponentActivity() {
                     mainViewModel.sideEffects.collect { effect ->
                         when (effect) {
                             is MainSideEffect.CopyToClipboard -> {
-                                val mgr = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                val mgr = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                                 mgr.setPrimaryClip(ClipData.newPlainText(effect.label, effect.text))
                             }
                             is MainSideEffect.ShareText -> {
@@ -229,7 +229,6 @@ class MainActivity : ComponentActivity() {
                         AresNavHost(
                             mainViewModel = mainViewModel,
                             nsdFlow = nsdFlow,
-                            httpClient = mainViewModel.client,
                             navigateToSettingsScreen = navigateToSettingsScreen,
                             onLaunchFilePicker = { getContent.launch(arrayOf("*/*")) },
                             onStartServer = { startForegroundService(service) },

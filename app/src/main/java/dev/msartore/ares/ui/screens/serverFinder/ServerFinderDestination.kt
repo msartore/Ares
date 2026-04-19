@@ -16,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import dev.msartore.ares.R
@@ -37,7 +35,6 @@ import dev.msartore.ares.utils.getIpAndPort
 import dev.msartore.ares.utils.pingServer
 import dev.msartore.ares.utils.work
 import dev.msartore.ares.viewmodels.MainViewModel
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -46,10 +43,8 @@ fun ServerFinderDestination(
     viewModel: ServerFinderViewModel = hiltViewModel(),
     mainViewModel: MainViewModel,
     nsdFlow: Flow<NsdServiceInfo?>,
-    httpClient: HttpClient,
     navigateToSettingsScreen: () -> Unit,
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         nsdFlow.collect { nsdInfo ->

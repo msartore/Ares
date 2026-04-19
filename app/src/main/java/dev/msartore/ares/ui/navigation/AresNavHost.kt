@@ -71,7 +71,6 @@ sealed class MainRoutes(val route: String, val stringId: Int) {
 fun AresNavHost(
     mainViewModel: MainViewModel,
     nsdFlow: Flow<NsdServiceInfo?>,
-    httpClient: HttpClient,
     navigateToSettingsScreen: () -> Unit,
     onLaunchFilePicker: () -> Unit,
     onStartServer: () -> Unit,
@@ -169,7 +168,6 @@ fun AresNavHost(
                         ServerFinderDestination(
                             mainViewModel = mainViewModel,
                             nsdFlow = nsdFlow,
-                            httpClient = httpClient,
                             navigateToSettingsScreen = navigateToSettingsScreen,
                         )
                     }

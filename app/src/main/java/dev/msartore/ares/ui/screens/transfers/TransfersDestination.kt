@@ -9,7 +9,6 @@ import dev.msartore.ares.viewmodels.MainViewModel
 fun TransfersDestination(
     mainViewModel: MainViewModel,
 ) {
-    val state by mainViewModel.state.collectAsStateWithLifecycle()
 
     TransferUI(
         mainViewModel = mainViewModel,
