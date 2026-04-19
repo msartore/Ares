@@ -124,9 +124,6 @@ dependencies {
     // Open source notices  libraries
     implementation libs.play.services.oss.licenses
 
-    // Material theme
-    implementation libs.material
-
     implementation libs.lifecycle.viewmodel.compose
     implementation libs.lifecycle.runtime.ktx
     implementation libs.activity.compose

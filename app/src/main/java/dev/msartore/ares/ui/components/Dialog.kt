@@ -45,7 +45,7 @@ fun Dialog(
             modifier = Modifier
                 .wrapContentSize()
                 .background(
-                    color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp)
+                    color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp)
                 )
                 .padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -92,7 +92,16 @@ fun DialogContainer(
         properties = dialogProperties,
         onDismissRequest = onDismissRequest,
     ) {
-        content()
+        Column(
+            modifier = Modifier
+                .wrapContentSize()
+                .background(
+                    color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp)
+                )
+                .padding(16.dp)
+        ) {
+            content()
+        }
     }
 }
 
@@ -106,6 +115,15 @@ fun DialogContainer(
         properties = dialogProperties,
         onDismissRequest = { status.value = false },
     ) {
-        content()
+        Column(
+            modifier = Modifier
+                .wrapContentSize()
+                .background(
+                    color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp)
+                )
+                .padding(16.dp)
+        ) {
+            content()
+        }
     }
 }

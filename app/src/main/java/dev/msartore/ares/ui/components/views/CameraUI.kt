@@ -47,7 +47,7 @@ fun CameraUI(
         ) {
             Icon(
                 modifier = Modifier.background(
-                    MaterialTheme.colorScheme.background, RoundedCornerShape(50.dp)
+                    MaterialTheme.colorScheme.surface, RoundedCornerShape(50.dp)
                 ),
                 painter = painterResource(id = R.drawable.arrow_back_24px),
                 contentDescription = stringResource(id = R.string.back),
@@ -57,7 +57,7 @@ fun CameraUI(
 
             Icon(
                 modifier = Modifier.background(
-                    MaterialTheme.colorScheme.background, RoundedCornerShape(50.dp)
+                    MaterialTheme.colorScheme.surface, RoundedCornerShape(50.dp)
                 ),
                 painter = painterResource(
                     id = if (isFlashEnabled.value) R.drawable.flash_on_24px else R.drawable.flash_off_24px

@@ -234,7 +234,7 @@ fun AresNavHost(
                     Column(
                         modifier = Modifier
                             .wrapContentSize()
-                            .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally

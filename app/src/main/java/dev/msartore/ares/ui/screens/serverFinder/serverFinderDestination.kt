@@ -128,8 +128,7 @@ fun NavGraphBuilder.serverFinderDestination(
                 Column(
                     modifier = Modifier
                         .wrapContentSize()
-                        .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
-                        .padding(16.dp),
+                        .padding(vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -150,7 +149,6 @@ fun NavGraphBuilder.serverFinderDestination(
                 Column(
                     modifier = Modifier
                         .wrapContentSize()
-                        .background(MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp))
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,

@@ -1,6 +1,7 @@
 package dev.msartore.ares.ui.components
 
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,7 +24,7 @@ fun TextAuto(
     fontSize: TextUnit = TextUnit.Unspecified,
     lineHeight: TextUnit = 17.sp,
     maxLines: Int = 2,
-    color: Color = Color.Unspecified,
+    color: Color = MaterialTheme.colorScheme.onSurface,
     style: TextStyle = LocalTextStyle.current
 ) {
     if (id != null) Text(
