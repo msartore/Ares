@@ -8,8 +8,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import dev.msartore.ares.utils.cor
-import io.ktor.server.application.ApplicationCall
-import io.ktor.util.pipeline.PipelineContext
+import kotlinx.coroutines.Job
 import java.io.File
 import java.util.UUID
 
@@ -60,7 +59,7 @@ data class FileDownload(
 )
 
 class FileTransfer(
-    var pipelineContext: PipelineContext<Unit, ApplicationCall>? = null,
+    var job: Job? = null,
     val status: MutableState<FileTransferStages> = mutableStateOf(FileTransferStages.INACTIVE),
     var sizeTransferred: MutableState<Float> = mutableFloatStateOf(0f),
     var size: Int? = null,
@@ -72,7 +71,7 @@ class FileTransfer(
     fun reset() {
         cor {
             status.value = FileTransferStages.INACTIVE
-            pipelineContext = null
+            job = null
             size = null
             file = null
             sizeTransferred.value = 0f

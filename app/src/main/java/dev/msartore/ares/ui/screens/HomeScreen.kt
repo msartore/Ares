@@ -278,7 +278,7 @@ fun HomeScreen(
                         Box {
                             IconCard(
                                 id = R.drawable.add_24px,
-                                contentDescription = stringResource(id = androidx.compose.ui.R.string.dropdown_menu)
+                                contentDescription = stringResource(id = R.string.dropdown_menu)
                             ) {
                                 expanded.value = true
                             }
@@ -336,7 +336,7 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             state = lazyGridState
         ) {
-            items(count = concurrentMutableList.size.value, key = {
+            items(count = concurrentMutableList.size.intValue, key = {
                 concurrentMutableList.list.elementAt(it).uuid
             }) { index ->
                 concurrentMutableList.list.elementAt(index).run {

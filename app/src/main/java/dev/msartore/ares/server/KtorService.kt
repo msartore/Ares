@@ -55,7 +55,7 @@ import io.ktor.http.content.forEachPart
 import io.ktor.http.content.streamProvider
 import io.ktor.server.application.call
 import io.ktor.server.application.install
-import io.ktor.server.engine.ApplicationEngine
+import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.html.respondHtml
 import io.ktor.server.jetty.Jetty
@@ -71,9 +71,11 @@ import io.ktor.server.response.respondRedirect
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import io.ktor.utils.io.consumeEachBufferRange
 import io.ktor.utils.io.jvm.javaio.toByteReadChannel
+import io.ktor.utils.io.readAvailable
+import io.ktor.utils.io.writeFully
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.html.ButtonType
 import kotlinx.html.FormEncType
 import kotlinx.html.FormMethod
@@ -115,7 +117,7 @@ class KtorService : Service() {
         val fileZip = FileZip()
         val isServerOn = mutableStateOf(false)
 
-        var server: ApplicationEngine? = null
+        var server: EmbeddedServer<*, *>? = null
         var fileTransfer = FileTransfer()
         val serverTimer: ServerTimer = ServerTimer()
     }
@@ -195,7 +197,7 @@ class KtorService : Service() {
             install(AutoHeadResponse)
             routing {
                 get("/download_all") {
-                    fileTransfer.pipelineContext = this
+                    fileTransfer.job = coroutineContext[Job]
                     fileTransfer.runCatching {
                         if (fileZip.version != concurrentMutableList.version) {
                             var fileSizeTransferred = 0
@@ -284,7 +286,7 @@ class KtorService : Service() {
                     wakeLock.release()
                 }
                 get("/{name}") {
-                    fileTransfer.pipelineContext = this
+                    fileTransfer.job = coroutineContext[Job]
                     fileTransfer.runCatching {
                         status.value = FileTransferStages.INITIALIZING
 
@@ -313,13 +315,16 @@ class KtorService : Service() {
                             call.respondBytesWriter(
                                 contentType = ContentType.Any, contentLength = file.size?.toLong()
                             ) {
-                                inputStream?.toByteReadChannel()
-                                    ?.consumeEachBufferRange { buffer, last ->
-                                        writeFully(buffer)
-                                        !last
-                                    }.also {
-                                        inputStream?.close()
+                                val channel = inputStream?.toByteReadChannel()
+                                if (channel != null) {
+                                    val buffer = ByteArray(8192)
+                                    while (true) {
+                                        val read = channel.readAvailable(buffer)
+                                        if (read <= 0) break
+                                        writeFully(buffer, 0, read)
                                     }
+                                    inputStream.close()
+                                }
                             }
                             status.value = FileTransferStages.FINALIZING
                         }
@@ -345,12 +350,14 @@ class KtorService : Service() {
                             call.respondBytesWriter(
                                 contentType = ContentType.Text.CSS,
                             ) {
-                                asset.toByteReadChannel().consumeEachBufferRange { buffer, last ->
-                                    writeFully(buffer)
-                                    !last
-                                }.also {
-                                    asset.close()
+                                val channel = asset.toByteReadChannel()
+                                val buffer = ByteArray(8192)
+                                while (true) {
+                                    val read = channel.readAvailable(buffer)
+                                    if (read <= 0) break
+                                    writeFully(buffer, 0, read)
                                 }
+                                asset.close()
                             }
                         }
 
@@ -384,7 +391,7 @@ class KtorService : Service() {
                     }
                 }
                 post("/upload") {
-                    fileTransfer.pipelineContext = this
+                    fileTransfer.job = coroutineContext[Job]
                     fileTransfer.runCatching {
                         status.value = FileTransferStages.INITIALIZING
 
@@ -437,19 +444,21 @@ class KtorService : Service() {
                                                 size = contentLength?.toInt()
 
                                                 file?.outputStream()?.channel.use {
-                                                    part.streamProvider().toByteReadChannel()
-                                                        .consumeEachBufferRange { buffer, last ->
+                                                    val channel = part.streamProvider().toByteReadChannel()
+                                                    val buffer = java.nio.ByteBuffer.allocateDirect(8192)
+                                                    while (true) {
+                                                        buffer.clear()
+                                                        val read = channel.readAvailable(buffer)
+                                                        if (read <= 0) break
+                                                        buffer.flip()
+                                                        it?.write(buffer)
 
-                                                            it?.write(buffer)
+                                                        fileSizeTransferred += read
 
-                                                            fileSizeTransferred += buffer.capacity()
-
-                                                            sizeTransferred.value =
-                                                                fileSizeTransferred / (contentLength?.toFloatOrNull()
-                                                                    ?: 0f)
-
-                                                            !last
-                                                        }
+                                                        sizeTransferred.value =
+                                                            fileSizeTransferred / (contentLength?.toFloatOrNull()
+                                                                ?: 0f)
+                                                    }
                                                 }
                                             }
 
@@ -598,7 +607,7 @@ class KtorService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        server?.stop(0, 0)
+        server?.stop()
         isServerOn.value = false
     }
 }

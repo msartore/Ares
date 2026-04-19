@@ -68,7 +68,7 @@ fun TransferDialog(
                 ) {
                     TextButton(onClick = {
                         runCatching {
-                            fileTransfer.pipelineContext?.cancel()
+                            fileTransfer.job?.cancel()
                             fileTransfer.cancelled = true
                         }.onFailure {
                             it.printStackTrace()
