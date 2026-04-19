@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import dev.msartore.ares.R
 import dev.msartore.ares.models.FileData
 import dev.msartore.ares.models.FileType
+import dev.msartore.ares.models.Settings
 import dev.msartore.ares.server.KtorService.KtorServer.concurrentMutableList
 import dev.msartore.ares.server.KtorService.KtorServer.isServerOn
 import dev.msartore.ares.server.KtorService.KtorServer.port
@@ -70,7 +71,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     state: HomeState,
     onEvent: (HomeEvent) -> Unit,
-    settings: dev.msartore.ares.models.Settings?,
+    settings: Settings?,
     mainViewModel: MainViewModel,
     onBackgroundClick: () -> Unit,
     maxWidth: Dp = 0.dp,

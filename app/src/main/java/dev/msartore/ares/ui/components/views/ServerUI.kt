@@ -1,10 +1,5 @@
 package dev.msartore.ares.ui.components.views
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +16,9 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,14 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import dev.msartore.ares.R
-import dev.msartore.ares.models.FileType
 import dev.msartore.ares.server.KtorService.KtorServer.port
 import dev.msartore.ares.server.ServerInfo
 import dev.msartore.ares.ui.components.ExpandableCard
@@ -49,23 +40,22 @@ import dev.msartore.ares.ui.components.FileItem
 import dev.msartore.ares.ui.components.Icon
 import dev.msartore.ares.ui.components.TextAuto
 import dev.msartore.ares.ui.screens.main.MainEvent
+import dev.msartore.ares.ui.screens.main.MainViewModel
 import dev.msartore.ares.ui.screens.serverFinder.ServerFinderEvent
 import dev.msartore.ares.ui.screens.serverFinder.ServerFinderState
-import dev.msartore.ares.ui.screens.serverFinder.ServerFinderViewModel
 import dev.msartore.ares.utils.downloadFile
 import dev.msartore.ares.utils.packageInfo
 import dev.msartore.ares.utils.serverInfoExtraction
 import dev.msartore.ares.utils.work
-import dev.msartore.ares.ui.screens.main.MainViewModel
 
 @Composable
 fun ServerUI(
     serverInfo: ServerInfo?,
     mainViewModel: MainViewModel,
-    serverFinderViewModel: ServerFinderViewModel,
+    state: ServerFinderState,
+    onEvent: (ServerFinderEvent) -> Unit,
 ) {
     val context = LocalContext.current
-    val state = serverFinderViewModel.state.value
     val scrollState = rememberScrollState()
     val gridState = rememberLazyGridState()
     var expanded by remember { mutableStateOf(false) }
@@ -78,10 +68,10 @@ fun ServerUI(
                     serverInfoExtraction(serverInfo.ip, client = mainViewModel.client)?.let { (version, list) ->
                         lowerVersion = (version.filter { it.isDigit() }.toIntOrNull() ?: 0) < 
                             (context.packageInfo().versionName?.filter { it.isDigit() }?.toIntOrNull() ?: 0)
-                        serverFinderViewModel.onEvent(ServerFinderEvent.FilesLoaded(list))
+                        onEvent(ServerFinderEvent.FilesLoaded(list))
                     }
                 }.onFailure {
-                    serverFinderViewModel.onEvent(ServerFinderEvent.FilesLoadFailed)
+                    onEvent(ServerFinderEvent.FilesLoadFailed)
                 }
             }
         }
@@ -104,7 +94,7 @@ fun ServerUI(
                         painter = painterResource(id = R.drawable.arrow_back_24px),
                         contentDescription = stringResource(id = R.string.back),
                     ) {
-                        serverFinderViewModel.onEvent(ServerFinderEvent.BackToServerList)
+                        onEvent(ServerFinderEvent.BackToServerList)
                     }
 
                     TextAuto(
@@ -134,7 +124,7 @@ fun ServerUI(
                                 DropdownMenuItem(
                                     text = { TextAuto(id = R.string.refresh) },
                                     onClick = {
-                                        serverFinderViewModel.onEvent(ServerFinderEvent.RefreshFiles)
+                                        onEvent(ServerFinderEvent.RefreshFiles)
                                         expanded = false
                                     },
                                     leadingIcon = {
@@ -160,7 +150,7 @@ fun ServerUI(
                         id = R.drawable.refresh_24px,
                         contentDescription = stringResource(id = R.string.refresh),
                     ) {
-                        serverFinderViewModel.onEvent(ServerFinderEvent.RefreshFiles)
+                        onEvent(ServerFinderEvent.RefreshFiles)
                     }
                 }
             }

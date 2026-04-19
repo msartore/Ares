@@ -38,7 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.window.core.layout.WindowWidthSizeClass
@@ -46,18 +45,15 @@ import dev.msartore.ares.R
 import dev.msartore.ares.server.KtorService
 import dev.msartore.ares.ui.components.DialogContainer
 import dev.msartore.ares.ui.components.TransferDialog
-import dev.msartore.ares.ui.components.DialogContainer
 import dev.msartore.ares.ui.components.Icon
 import dev.msartore.ares.ui.components.SnackBarDownload
 import dev.msartore.ares.ui.components.TextAuto
-import dev.msartore.ares.ui.components.TransferDialog
-import dev.msartore.ares.ui.screens.home.HomeDestination
+import dev.msartore.ares.ui.screens.home.homeDestination
 import dev.msartore.ares.ui.screens.main.MainEvent
-import dev.msartore.ares.ui.screens.serverFinder.ServerFinderDestination
-import dev.msartore.ares.ui.screens.settings.SettingsDestination
-import dev.msartore.ares.ui.screens.transfers.TransfersDestination
+import dev.msartore.ares.ui.screens.serverFinder.serverFinderDestination
+import dev.msartore.ares.ui.screens.settings.settingsDestination
+import dev.msartore.ares.ui.screens.transfers.transfersDestination
 import dev.msartore.ares.ui.screens.main.MainViewModel
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 
 sealed class MainRoutes(val route: String, val stringId: Int) {
@@ -153,34 +149,29 @@ fun AresNavHost(
                     navController = navController,
                     startDestination = MainRoutes.HOME.route
                 ) {
-                    composable(MainRoutes.HOME.route) {
-                        HomeDestination(
-                            settings = mainViewModel.settings,
-                            mainViewModel = mainViewModel,
-                            onLaunchFilePicker = onLaunchFilePicker,
-                            onStartServer = onStartServer,
-                            onStopServer = onStopServer,
-                            onBackgroundClick = onBackgroundClick,
-                            maxWidth = maxWidth,
-                        )
-                    }
-                    composable(MainRoutes.SERVER_FINDER.route) {
-                        ServerFinderDestination(
-                            mainViewModel = mainViewModel,
-                            nsdFlow = nsdFlow,
-                            navigateToSettingsScreen = navigateToSettingsScreen,
-                        )
-                    }
-                    composable(MainRoutes.TRANSFERS.route) {
-                        TransfersDestination(mainViewModel = mainViewModel)
-                    }
-                    composable(MainRoutes.SETTINGS.route) {
-                        SettingsDestination(
-                            settings = mainViewModel.settings,
-                            mainViewModel = mainViewModel,
-                            onLaunchOssLicenses = onLaunchOssLicenses,
-                        )
-                    }
+                    homeDestination(
+                        settings = mainViewModel.settings,
+                        mainViewModel = mainViewModel,
+                        onLaunchFilePicker = onLaunchFilePicker,
+                        onStartServer = onStartServer,
+                        onStopServer = onStopServer,
+                        onBackgroundClick = onBackgroundClick,
+                        maxWidth = maxWidth,
+                    )
+
+                    serverFinderDestination(
+                        mainViewModel = mainViewModel,
+                        nsdFlow = nsdFlow,
+                        navigateToSettingsScreen = navigateToSettingsScreen,
+                    )
+
+                    transfersDestination(mainViewModel = mainViewModel)
+
+                    settingsDestination(
+                        settings = mainViewModel.settings,
+                        mainViewModel = mainViewModel,
+                        onLaunchOssLicenses = onLaunchOssLicenses,
+                    )
                 }
 
                 // Download snackbars overlay

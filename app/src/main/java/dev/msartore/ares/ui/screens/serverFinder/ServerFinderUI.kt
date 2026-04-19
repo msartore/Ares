@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import android.content.pm.PackageManager
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import dev.msartore.ares.R
 import dev.msartore.ares.server.KtorService.KtorServer.port
@@ -38,12 +39,14 @@ import dev.msartore.ares.ui.screens.main.MainViewModel
 
 @Composable
 fun ServerFinderUI(
-    mainViewModel: MainViewModel, serverFinderViewModel: ServerFinderViewModel
+    state: ServerFinderState,
+    onEvent: (ServerFinderEvent) -> Unit,
+    mainViewModel: MainViewModel,
 ) {
     val context = LocalContext.current
-    val state = rememberLazyGridState()
+    val gridState = rememberLazyGridState()
     
-    var selectedPage by mutableStateOf(ServerFinderPages.SERVER_LIST)
+    val selectedPage = state.selectedPage
 
     val pageTransition = updateTransition(
         targetState = selectedPage,
@@ -59,7 +62,7 @@ fun ServerFinderUI(
                     verticalArrangement = Arrangement.Top
                 ) {
                     when {
-                        serverFinderViewModel.state.value.servers.isNotEmpty() -> {
+                        state.servers.isNotEmpty() -> {
                             TextAuto(id = R.string.servers)
 
                             LazyVerticalGrid(
@@ -69,10 +72,10 @@ fun ServerFinderUI(
                                 columns = GridCells.Adaptive(250.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
                                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                state = state
+                                state = gridState
                             ) {
                                 items(
-                                    items = serverFinderViewModel.state.value.servers
+                                    items = state.servers
                                 ) { server ->
                                     ServerItem(
                                         ip = server.ip,
@@ -80,7 +83,7 @@ fun ServerFinderUI(
                                         openUrl = { url ->
                                             mainViewModel.onEvent(MainEvent.UrlOpened(url))
                                         }) {
-                                            serverFinderViewModel.onEvent(ServerFinderEvent.ServerSelected(server))
+                                            onEvent(ServerFinderEvent.ServerSelected(server))
                                         }
                                 }
                             }
@@ -113,7 +116,7 @@ fun ServerFinderUI(
     }
 
     BackHandler(selectedPage == ServerFinderPages.SERVER) {
-        serverFinderViewModel.onEvent(ServerFinderEvent.BackToServerList)
+        onEvent(ServerFinderEvent.BackToServerList)
     }
 
     pageTransition.AnimatedContent {
@@ -136,17 +139,18 @@ fun ServerFinderUI(
                             textId = R.string.scan_qrcode,
                             contentDescription = stringResource(id = R.string.scan_qrcode),
                         ) {
-                            serverFinderViewModel.onEvent(ServerFinderEvent.OpenQrScanner)
+                            onEvent(ServerFinderEvent.OpenQrScanner)
                         }
                     }
                 }
 
                 ServerFinderPages.SERVER -> {
-                    serverFinderViewModel.state.value.serverSelected?.let { serverInfo ->
+                    state.serverSelected?.let { serverInfo ->
                         ServerUI(
                             serverInfo = serverInfo,
                             mainViewModel = mainViewModel,
-                            serverFinderViewModel = serverFinderViewModel
+                            state = state,
+                            onEvent = onEvent
                         )
                     }
                 }
